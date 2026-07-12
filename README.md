@@ -16,7 +16,11 @@ No build step, no server.
 
 ## Try it
 
-Open `index.html` in any browser (keep `pptxgen.bundle.js` next to it). That's it.
+**Live app:** https://aihunter9892.github.io/aiapp/ (auto-deployed by GitHub Pages on every push).
+Use this link for real work — file downloads (PPT/Word) don't work inside sandboxed
+preview windows, and the app shows a notice pointing here when that happens.
+
+Or open `index.html` in any browser (keep `pptxgen.bundle.js` next to it). That's it.
 
 1. Enter the client's **company name** and **industry**
 2. Pick the **target audience** (Managers, Sales/BD, IT, HR, Marketing, Finance, Operations, Leadership, All Employees)

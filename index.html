@@ -135,6 +135,18 @@
   :root[data-theme="dark"] .btn-ghost{ color:#E5DEF2; }
   @media (prefers-color-scheme: dark){ .btn-ghost{ color:#E5DEF2; } }
 
+  .dl-note{
+    max-width:840px; margin:0 auto 16px; display:none;
+    background:var(--orange-soft); border:1px solid var(--orange); border-left:4px solid var(--orange);
+    border-radius:8px; padding:12px 16px; font-size:13px; line-height:1.6; color:#3A3A4A;
+  }
+  .dl-note b{ color:var(--purple); }
+  .dl-note a{ color:var(--purple); font-weight:700; }
+  .dl-note .url{
+    user-select:all; background:#fff; border:1px solid var(--line); border-radius:5px;
+    padding:2px 8px; font-family:ui-monospace, Menlo, Consolas, monospace; font-size:12px;
+  }
+
   .empty{ max-width:840px; margin:60px auto; text-align:center; color:var(--ink-soft); }
   :root[data-theme="dark"] .empty{ color:#B9AFD3; }
   @media (prefers-color-scheme: dark){ .empty{ color:#B9AFD3; } }
@@ -375,7 +387,7 @@
         <p class="hint">Shown as the programme's Emphasis — and sent to the AI engine when one is connected.</p>
       </div>
 
-      <button type="submit" class="btn-generate" id="btnGen">Generate curriculum</button>
+      <button type="button" class="btn-generate" id="btnGen">Generate curriculum</button>
       <p class="gen-note">Runs on the <b id="engineNote">built-in demo engine</b> — no API key needed for the prototype.</p>
       <div class="err" id="errBox"></div>
     </form>
@@ -383,6 +395,12 @@
 
   <!-- ============ PREVIEW ============ -->
   <main class="stage">
+    <div class="dl-note" id="dlNote">
+      <b>Heads-up: this preview window blocks file downloads.</b><br>
+      Use the full app instead — everything is identical there and PPT, Word and PDF downloads all work:
+      <a href="https://aihunter9892.github.io/aiapp/" target="_blank" rel="noopener">open the full app</a>
+      &nbsp;·&nbsp; or copy the address: <span class="url">https://aihunter9892.github.io/aiapp/</span>
+    </div>
     <div class="stage-toolbar" id="toolbar">
       <span class="tip">✎ Click any text to tweak it — edits apply to the on-screen &amp; PDF version.</span>
       <span class="toolbar-btns">
@@ -1076,6 +1094,7 @@ function render(cur, input){
   document.getElementById("emptyState").style.display = "none";
   document.getElementById("doc").style.display = "block";
   document.getElementById("toolbar").style.display = "flex";
+  sandboxNotice();
   document.getElementById("doc").scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
@@ -1182,6 +1201,7 @@ ${list(cur.nextSteps)}
 
 function downloadWord(){
   if(!LAST) return;
+  sandboxNotice(); // still attempt the download below, in case the host allows it
   const html = wordHTML(LAST.cur, LAST.input);
   const blob = new Blob(["﻿", html], { type:"application/msword" });
   const a = document.createElement("a");
@@ -1197,6 +1217,7 @@ function downloadWord(){
 
 function downloadPpt(){
   if(!LAST) return;
+  sandboxNotice(); // still attempt the download below, in case the host allows it
   if(typeof PptxGenJS === "undefined"){
     alert("PowerPoint export needs pptxgen.bundle.js next to index.html (included in the repo).");
     return;
@@ -1374,11 +1395,25 @@ function downloadPpt(){
 
 const $ = id => document.getElementById(id);
 
+/* Sandboxed hosting (e.g. the claude.ai preview) silently blocks file
+   downloads. Two tells: an opaque origin over http(s) (file:// also has an
+   opaque origin but downloads fine), or being iframed by the claude.ai
+   artifact viewer (detectable only via document.referrer, since the parent
+   is cross-origin). */
+const inIframe = (()=>{ try{ return window.self !== window.top; }catch{ return true; } })();
+const SANDBOXED = (window.origin === "null" && location.protocol !== "file:")
+  || (inIframe && /claude\.ai|claudeusercontent\.com|anthropic\.com/i.test(document.referrer));
+function sandboxNotice(){
+  if(!SANDBOXED) return;
+  $("dlNote").style.display = "block";
+  $("dlNote").scrollIntoView({ behavior:"smooth", block:"nearest" });
+}
+
 function engineCfg(){
   try{ return JSON.parse(localStorage.getItem("sk_engine")) || { provider:"demo" }; }
   catch{ return { provider:"demo" }; }
 }
-function saveEngineCfg(cfg){ localStorage.setItem("sk_engine", JSON.stringify(cfg)); }
+function saveEngineCfg(cfg){ try{ localStorage.setItem("sk_engine", JSON.stringify(cfg)); }catch{} }
 
 function refreshEngineLabels(){
   const cfg = engineCfg();
@@ -1387,8 +1422,7 @@ function refreshEngineLabels(){
   $("engineNote").textContent = cfg.provider==="demo" ? "built-in demo engine" : `${label} (live AI)`;
 }
 
-$("curForm").addEventListener("submit", async (e)=>{
-  e.preventDefault();
+async function generate(){
   const errBox = $("errBox"); errBox.style.display = "none";
   const input = {
     company: $("fCompany").value.trim() || "Your Company",
@@ -1424,7 +1458,9 @@ $("curForm").addEventListener("submit", async (e)=>{
     btn.disabled = false;
     btn.textContent = "Generate curriculum";
   }
-});
+}
+$("btnGen").addEventListener("click", generate);
+$("curForm").addEventListener("submit", (e)=>{ e.preventDefault(); generate(); });
 
 $("btnPrint").addEventListener("click", ()=> window.print());
 $("btnWord").addEventListener("click", downloadWord);
