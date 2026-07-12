@@ -1,6 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
 import type { Config } from "../config.js";
 import type { Store } from "../db.js";
+import { textOf, type LlmClient } from "../llm/index.js";
 import { COMMITMENT_SCAN_PROMPT } from "../agent/prompts.js";
 import { logger } from "../logger.js";
 
@@ -40,15 +40,12 @@ const SCHEMA = {
  * owes others, what others owe the user) and records them in the ledger.
  */
 export class CommitmentScanner {
-  private client: Anthropic;
-
   constructor(
     private cfg: Config,
+    private llm: LlmClient,
     private store: Store,
     private selfJid: () => string
-  ) {
-    this.client = new Anthropic({ apiKey: cfg.anthropicApiKey });
-  }
+  ) {}
 
   async scan(): Promise<number> {
     const now = Math.floor(Date.now() / 1000);
@@ -75,11 +72,10 @@ export class CommitmentScanner {
         .join("\n");
 
       try {
-        const response = await this.client.messages.create({
-          model: this.cfg.model,
-          max_tokens: 2048,
+        const response = await this.llm.chat({
           system: COMMITMENT_SCAN_PROMPT,
-          output_config: { format: { type: "json_schema", schema: SCHEMA } },
+          maxTokens: 2048,
+          jsonSchema: SCHEMA as unknown as Record<string, unknown>,
           messages: [
             {
               role: "user",
@@ -88,9 +84,9 @@ export class CommitmentScanner {
           ],
         });
 
-        const text = response.content.find((b) => b.type === "text");
-        if (!text || text.type !== "text") continue;
-        const parsed = JSON.parse(text.text) as { commitments: ExtractedCommitment[] };
+        const text = textOf(response);
+        if (!text) continue;
+        const parsed = JSON.parse(text) as { commitments: ExtractedCommitment[] };
 
         for (const c of parsed.commitments) {
           if (this.store.hasSimilarCommitment(chatJid, c.description)) continue;

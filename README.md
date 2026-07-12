@@ -2,7 +2,9 @@
 
 Talon is a personal AI executive assistant that lives in **your actual WhatsApp number** — not a separate bot account, not a new app. Pair once with a QR code and it appears in your **self-chat** ("message yourself"). From there it manages your day: commitments, reminders, scheduled messages, chat summaries, tone-matched drafts, a morning digest, your calendar, and auto-replies while you're away.
 
-Everything runs **locally on your machine**: your message archive lives in a SQLite file you own, and the only external calls are to the Claude API (and Google Calendar, if you connect it). No third-party server ever sees your chats.
+Everything runs **locally on your machine**: your message archive lives in a SQLite file you own, and the only external calls are to the LLM API *you* choose (and Google Calendar, if you connect it). No third-party server ever sees your chats.
+
+**Bring your own LLM.** Talon is provider-agnostic — you pick both the API and the model. Anthropic (Claude) is the default, and any OpenAI-compatible endpoint works too: OpenAI, Groq, Ollama (fully local!), OpenRouter, Together, DeepSeek, Gemini's compatibility endpoint, LM Studio, vLLM…
 
 ## What it does
 
@@ -19,12 +21,12 @@ Everything runs **locally on your machine**: your message archive lives in a SQL
 
 ## Quick start
 
-Requires Node.js 20+ and an [Anthropic API key](https://platform.claude.com).
+Requires Node.js 20+ and an API key for the LLM provider of your choice.
 
 ```bash
 git clone <this repo> && cd aiapp
 npm install
-cp .env.example .env       # add your ANTHROPIC_API_KEY
+cp .env.example .env       # set LLM_PROVIDER, LLM_API_KEY, LLM_MODEL
 npm run build
 npm start
 ```
@@ -53,8 +55,10 @@ All via `.env` (see `.env.example`):
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | — | Required |
-| `TALON_MODEL` | `claude-opus-4-8` | Claude model for all reasoning |
+| `LLM_PROVIDER` | `anthropic` | `anthropic`, or `openai` for any OpenAI-compatible endpoint |
+| `LLM_API_KEY` | — | Required — key for your provider (`ANTHROPIC_API_KEY`/`OPENAI_API_KEY` work as fallbacks) |
+| `LLM_MODEL` | per provider | Any model your provider serves (`claude-opus-4-8` / `gpt-4o` defaults) |
+| `LLM_BASE_URL` | per provider | Point at Groq, Ollama, OpenRouter, a proxy, … |
 | `TALON_NAME` | `Talon` | Assistant name |
 | `TALON_TIMEZONE` | system | IANA timezone for times & digest |
 | `TALON_DIGEST_TIME` | `07:30` | Daily digest time (24h local) |
@@ -69,18 +73,19 @@ All via `.env` (see `.env.example`):
 WhatsApp (your number, multi-device Web protocol via Baileys)
       │  ingests every message → SQLite (local, yours)
       ▼
- self-chat message ──► Agent (Claude, tool loop) ──► tools:
+ self-chat message ──► Agent (your LLM, tool loop) ──► tools:
                                                      chats · history · send/schedule
                                                      reminders · commitments
                                                      away mode · calendar
  background (20s tick):
    due reminders → self-chat        scheduled messages → target chat
-   morning digest (once daily)      commitment scanner (Claude, structured output)
+   morning digest (once daily)      commitment scanner (your LLM, structured output)
    away-mode auto-replies on incoming DMs
 ```
 
 - `src/whatsapp.ts` — Baileys connection, QR pairing, message ingestion, send helpers
-- `src/agent/` — system prompt, tool definitions, manual tool-use loop (adaptive thinking, prompt-cached system prompt)
+- `src/llm/` — provider abstraction: Anthropic SDK client + a zero-dependency OpenAI-compatible client (plain fetch); both API and model are user-configurable
+- `src/agent/` — system prompt, tool definitions, provider-agnostic tool-use loop
 - `src/features/` — scheduler heartbeat, commitment scanner, digest builder, away responder
 - `src/db.ts` — SQLite schema and queries (messages, chats, reminders, scheduled messages, commitments, settings)
 - `src/integrations/calendar.ts` — Google Calendar over raw REST (refresh-token OAuth), zero extra deps

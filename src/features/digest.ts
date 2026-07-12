@@ -1,6 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
 import type { Config } from "../config.js";
 import type { Store } from "../db.js";
+import { textOf, type LlmClient } from "../llm/index.js";
 import type { GoogleCalendar } from "../integrations/calendar.js";
 import { logger } from "../logger.js";
 
@@ -9,16 +9,13 @@ import { logger } from "../logger.js";
  * (reminders + commitments), and today's calendar.
  */
 export class DigestBuilder {
-  private client: Anthropic;
-
   constructor(
     private cfg: Config,
+    private llm: LlmClient,
     private store: Store,
     private selfJid: () => string,
     private calendar?: GoogleCalendar
-  ) {
-    this.client = new Anthropic({ apiKey: cfg.anthropicApiKey });
-  }
+  ) {}
 
   async build(): Promise<string> {
     const now = new Date();
@@ -70,9 +67,8 @@ export class DigestBuilder {
       })
       .join("\n");
 
-    const response = await this.client.messages.create({
-      model: this.cfg.model,
-      max_tokens: 2048,
+    const response = await this.llm.chat({
+      maxTokens: 2048,
       system: `You write a concise WhatsApp morning digest for your user. WhatsApp formatting only (*bold*, _italics_, "-" lists — no markdown headers). Structure: greeting with today's date; "*Overnight*" — 1-line-per-chat summary of anything that matters from the transcript (skip noise; if nothing matters say "Quiet night."); "*Today*" — calendar events, reminders, and commitments due, merged into one prioritized list; a closing one-liner if something urgently needs attention. Keep the whole digest under 200 words.`,
       messages: [
         {
@@ -94,7 +90,6 @@ ${calendarBlock || "(no calendar connected)"}`,
       ],
     });
 
-    const text = response.content.find((b) => b.type === "text");
-    return text && text.type === "text" ? text.text : "Good morning! (digest unavailable)";
+    return textOf(response) || "Good morning! (digest unavailable)";
   }
 }

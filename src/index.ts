@@ -1,6 +1,7 @@
 import { loadConfig } from "./config.js";
 import { Store } from "./db.js";
 import { WhatsAppClient } from "./whatsapp.js";
+import { createLlm } from "./llm/index.js";
 import { Agent } from "./agent/agent.js";
 import { GoogleCalendar } from "./integrations/calendar.js";
 import { CommitmentScanner } from "./features/commitments.js";
@@ -14,11 +15,12 @@ async function main() {
   const store = new Store(cfg.dataDir);
   const wa = new WhatsAppClient(store, cfg.dataDir);
   const calendar = cfg.google ? new GoogleCalendar(cfg.google) : undefined;
+  const llm = createLlm(cfg);
 
-  const agent = new Agent(cfg, { store, wa, calendar });
-  const away = new AwayResponder(cfg, store, wa);
-  const commitments = new CommitmentScanner(cfg, store, () => wa.ownJid);
-  const digest = new DigestBuilder(cfg, store, () => wa.ownJid, calendar);
+  const agent = new Agent(cfg, llm, { store, wa, calendar });
+  const away = new AwayResponder(cfg, llm, store, wa);
+  const commitments = new CommitmentScanner(cfg, llm, store, () => wa.ownJid);
+  const digest = new DigestBuilder(cfg, llm, store, () => wa.ownJid, calendar);
   const scheduler = new Scheduler(cfg, store, wa, digest, commitments);
 
   wa.onMessage(async (msg) => {

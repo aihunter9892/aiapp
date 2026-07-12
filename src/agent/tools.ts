@@ -1,4 +1,4 @@
-import type Anthropic from "@anthropic-ai/sdk";
+import type { ToolDefinition } from "../llm/index.js";
 import type { Store } from "../db.js";
 import type { WhatsAppClient } from "../whatsapp.js";
 import type { GoogleCalendar } from "../integrations/calendar.js";
@@ -20,8 +20,8 @@ function parseISO(iso: string): number {
   return Math.floor(ms / 1000);
 }
 
-export function buildTools(calendarEnabled: boolean): Anthropic.Tool[] {
-  const tools: Anthropic.Tool[] = [
+export function buildTools(calendarEnabled: boolean): ToolDefinition[] {
+  const tools: ToolDefinition[] = [
     {
       name: "list_chats",
       description:

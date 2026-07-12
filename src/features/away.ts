@@ -1,6 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
 import type { Config } from "../config.js";
 import type { Store } from "../db.js";
+import { textOf, type LlmClient } from "../llm/index.js";
 import type { WhatsAppClient, IncomingMessage } from "../whatsapp.js";
 import { awayReplyPrompt } from "../agent/prompts.js";
 import { logger } from "../logger.js";
@@ -12,16 +12,14 @@ const MIN_SECONDS_BETWEEN_REPLIES = 120;
  * behalf, in their tone for that chat, clearly marked as an auto-reply.
  */
 export class AwayResponder {
-  private client: Anthropic;
   private lastReplyAt = new Map<string, number>();
 
   constructor(
     private cfg: Config,
+    private llm: LlmClient,
     private store: Store,
     private wa: WhatsAppClient
-  ) {
-    this.client = new Anthropic({ apiKey: cfg.anthropicApiKey });
-  }
+  ) {}
 
   enabled(): boolean {
     return this.store.getSetting("away_mode") === "1";
@@ -42,9 +40,8 @@ export class AwayResponder {
     const note = this.store.getSetting("away_note") ?? "";
 
     try {
-      const response = await this.client.messages.create({
-        model: this.cfg.model,
-        max_tokens: 1024,
+      const response = await this.llm.chat({
+        maxTokens: 1024,
         system: awayReplyPrompt(this.cfg.assistantName),
         messages: [
           {
@@ -54,8 +51,7 @@ export class AwayResponder {
         ],
       });
 
-      const text = response.content.find((b) => b.type === "text");
-      const reply = text && text.type === "text" ? text.text.trim() : "";
+      const reply = textOf(response);
       if (!reply || reply === "NO_REPLY") return;
 
       await this.wa.sendText(msg.chatJid, reply);

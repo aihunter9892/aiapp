@@ -1,5 +1,12 @@
-import Anthropic from "@anthropic-ai/sdk";
 import type { Config } from "../config.js";
+import {
+  textOf,
+  toolUsesOf,
+  type ChatMessage,
+  type LlmClient,
+  type ToolDefinition,
+  type ToolResultBlock,
+} from "../llm/index.js";
 import { buildSystemPrompt } from "./prompts.js";
 import { buildTools, executeTool, type ToolContext } from "./tools.js";
 import { logger } from "../logger.js";
@@ -9,20 +16,20 @@ const MAX_HISTORY_TURNS = 30;
 
 /**
  * The conversational agent behind the self-chat. Maintains a rolling
- * in-memory conversation and runs a manual tool-use loop against Claude.
+ * in-memory conversation and runs a provider-agnostic tool-use loop —
+ * works with whichever LLM API and model the user configured.
  */
 export class Agent {
-  private client: Anthropic;
-  private history: Anthropic.MessageParam[] = [];
+  private history: ChatMessage[] = [];
   private system: string;
-  private tools: Anthropic.Tool[];
+  private tools: ToolDefinition[];
   private busy: Promise<void> = Promise.resolve();
 
   constructor(
     private cfg: Config,
+    private llm: LlmClient,
     private ctx: ToolContext
   ) {
-    this.client = new Anthropic({ apiKey: cfg.anthropicApiKey });
     const calendarEnabled = Boolean(ctx.calendar);
     this.system = buildSystemPrompt(cfg, calendarEnabled);
     this.tools = buildTools(calendarEnabled);
@@ -48,27 +55,19 @@ export class Agent {
     let finalText = "";
 
     for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
-      const response = await this.client.messages.create({
-        model: this.cfg.model,
-        max_tokens: 4096,
-        thinking: { type: "adaptive" },
-        system: [{ type: "text", text: this.system, cache_control: { type: "ephemeral" } }],
-        tools: this.tools,
+      const response = await this.llm.chat({
+        system: this.system,
         messages: this.history,
+        tools: this.tools,
+        maxTokens: 4096,
       });
 
       this.history.push({ role: "assistant", content: response.content });
 
-      const toolUses = response.content.filter(
-        (b): b is Anthropic.ToolUseBlock => b.type === "tool_use"
-      );
-      const textBlocks = response.content
-        .filter((b): b is Anthropic.TextBlock => b.type === "text")
-        .map((b) => b.text)
-        .join("\n")
-        .trim();
+      const toolUses = toolUsesOf(response);
+      const textBlocks = textOf(response);
 
-      if (response.stop_reason === "refusal") {
+      if (response.stopReason === "refusal") {
         finalText = "I can't help with that one.";
         break;
       }
@@ -78,10 +77,10 @@ export class Agent {
         break;
       }
 
-      const results: Anthropic.ToolResultBlockParam[] = [];
+      const results: ToolResultBlock[] = [];
       for (const tu of toolUses) {
         try {
-          const output = await executeTool(this.ctx, tu.name, tu.input as Record<string, unknown>);
+          const output = await executeTool(this.ctx, tu.name, tu.input);
           results.push({ type: "tool_result", tool_use_id: tu.id, content: output });
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
@@ -110,7 +109,6 @@ export class Agent {
    */
   private trimHistory() {
     if (this.history.length <= MAX_HISTORY_TURNS * 2) return;
-    // find the first plain-text user message after the overflow point
     let cut = this.history.length - MAX_HISTORY_TURNS * 2;
     while (cut < this.history.length) {
       const m = this.history[cut];
