@@ -1,0 +1,31 @@
+{
+  "name": "talon",
+  "version": "0.1.0",
+  "description": "Talon — your AI executive assistant that lives inside your own WhatsApp. Commitment tracking, reminders, scheduled messages, chat summaries, tone-matched drafts, morning digest, calendar, and away-mode auto-replies.",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.111.0",
+    "baileys": "^6.7.16",
+    "better-sqlite3": "^12.2.0",
+    "dotenv": "^16.4.5",
+    "pino": "^9.5.0",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.10.0",
+    "@types/qrcode-terminal": "^0.12.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
