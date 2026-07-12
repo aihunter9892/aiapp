@@ -1,26 +1,34 @@
 # Skillopedia Curriculum Builder (Prototype)
 
-An AI-powered curriculum builder for **Skillopedia**. Clients (or you, on a call) enter a
-company name, target audience and workshop format — and instantly get a fully branded,
-client-ready Skillopedia training curriculum, matching the format of Skillopedia's real
-proposals: program overview, learning outcomes, time-slotted session plan with hands-on
-activities, AI tools covered, participant takeaways, and the trainer / Skillopedia profile.
+An AI-powered curriculum builder for **Skillopedia** in the real brand identity —
+Skillopedia logo, purple & orange colour scheme, and the exact outline format of
+Skillopedia's client documents (Programme at a Glance → Objectives → Day Schedule →
+module-wise detail with hands-on exercises → takeaways → operational notes →
+facilitator profile → next steps → contact).
 
-The whole prototype is **one file**: `index.html`. No build step, no server, no dependencies.
+Clients (or you, on a call) enter a company name, target audience and workshop format —
+and instantly get a fully branded, client-ready curriculum they can download as a
+**PowerPoint deck (.pptx)**, a **Word document (.doc)**, or a **print-ready PDF**.
+
+Files: `index.html` (the whole app, logo embedded) + `pptxgen.bundle.js`
+(vendored [PptxGenJS](https://github.com/gitbrent/PptxGenJS) for the PPT export).
+No build step, no server.
 
 ## Try it
 
-Open `index.html` in any browser. That's it.
+Open `index.html` in any browser (keep `pptxgen.bundle.js` next to it). That's it.
 
 1. Enter the client's **company name** and **industry**
 2. Pick the **target audience** (Managers, Sales/BD, IT, HR, Marketing, Finance, Operations, Leadership, All Employees)
-3. Pick the **format** — 2-hour masterclass, half day, full day, or 2-day bootcamp
+3. Pick the **format** — 2-hour masterclass, half day, full day (9:00–17:00), or 2-day bootcamp
 4. Pick the **delivery mode** and add any **special focus** notes
-5. Hit **Generate curriculum**
+5. Hit **Generate curriculum**, then download as **PPT**, **Word**, or **PDF**
 
-The generated document is fully **click-to-edit** (tweak any line before sending) and
-**Download PDF / Print** produces a clean, print-ready branded PDF via the browser's
-print dialog.
+The PowerPoint export mirrors the Skillopedia proposal-deck style: purple cover with
+logo card and stats bar, at-a-glance and objectives slides, schedule table per day,
+one branded slide per module (with hands-on box and tools), takeaways, the facilitator
+slide with photo, and a contact closing slide. The Word export follows the Skillopedia
+outline document format. The on-screen version is **click-to-edit** before printing.
 
 ## Engines
 
