@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skillopedia Curriculum Builder</title>
+<style>
+  /* ---------- Design tokens ---------- */
+  :root{
+    --navy-900:#0B1530;
+    --navy-800:#122048;
+    --navy-700:#1B2C5E;
+    --navy-100:#E7EAF3;
+    --amber:#F58220;
+    --amber-deep:#D96A0B;
+    --amber-soft:#FDEFE0;
+    --paper:#FFFFFF;
+    --app-bg:#F3F1EC;
+    --panel-bg:#122048;
+    --panel-ink:#F4F6FB;
+    --panel-muted:#9AA6C4;
+    --ink:#1A2237;
+    --ink-soft:#4C5670;
+    --line:#DAD5CA;
+    --doc-line:#E3E0D8;
+    --good:#1E9E6A;
+    --radius:10px;
+    --sans:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  :root[data-theme="dark"], :root[data-theme="dark"] body{ color-scheme: dark; }
+  @media (prefers-color-scheme: dark){
+    :root{ --app-bg:#0D1426; --line:#26314F; }
+  }
+  :root[data-theme="dark"]{ --app-bg:#0D1426; --line:#26314F; }
+  :root[data-theme="light"]{ --app-bg:#F3F1EC; --line:#DAD5CA; }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html, body{ height:100%; }
+  body{
+    font-family:var(--sans);
+    background:var(--app-bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  button{ font-family:inherit; cursor:pointer; }
+  input, select, textarea{ font-family:inherit; font-size:14px; }
+
+  /* ---------- App shell ---------- */
+  .topbar{
+    background:var(--navy-900);
+    color:#fff;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 22px;
+    gap:16px;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand svg{ display:block; }
+  .brand-name{ font-size:19px; font-weight:800; letter-spacing:.01em; line-height:1.1; }
+  .brand-sub{ font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--panel-muted); margin-top:3px; }
+  .topbar-actions{ display:flex; gap:10px; align-items:center; }
+  .chip-engine{
+    font-size:12px; color:var(--panel-muted);
+    border:1px solid var(--navy-700); border-radius:999px;
+    padding:6px 12px; background:transparent; color:#C9D2E8;
+    display:flex; align-items:center; gap:7px;
+  }
+  .chip-engine .dot{ width:7px; height:7px; border-radius:50%; background:var(--good); }
+  .chip-engine:hover{ border-color:var(--amber); }
+
+  .layout{
+    display:grid;
+    grid-template-columns:390px 1fr;
+    min-height:calc(100vh - 63px);
+  }
+  @media (max-width: 940px){
+    .layout{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- Form panel ---------- */
+  .panel{
+    background:var(--panel-bg);
+    color:var(--panel-ink);
+    padding:28px 26px 40px;
+  }
+  .panel h2{ font-size:16px; font-weight:700; letter-spacing:.01em; }
+  .panel .lede{ font-size:13px; color:var(--panel-muted); margin-top:6px; line-height:1.55; max-width:34ch; }
+  .field{ margin-top:20px; }
+  .field label{
+    display:block; font-size:11px; font-weight:700;
+    letter-spacing:.12em; text-transform:uppercase;
+    color:var(--panel-muted); margin-bottom:8px;
+  }
+  .field input[type=text], .field select, .field textarea{
+    width:100%;
+    background:var(--navy-800);
+    border:1px solid var(--navy-700);
+    color:var(--panel-ink);
+    border-radius:8px;
+    padding:11px 12px;
+    outline:none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    border-color:var(--amber);
+    box-shadow:0 0 0 3px rgba(245,130,32,.18);
+  }
+  .field textarea{ resize:vertical; min-height:64px; }
+  .hint{ font-size:11.5px; color:var(--panel-muted); margin-top:6px; line-height:1.5; }
+
+  .format-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .format-grid input{ position:absolute; opacity:0; pointer-events:none; }
+  .format-card{
+    border:1px solid var(--navy-700);
+    background:var(--navy-800);
+    border-radius:8px;
+    padding:10px 12px;
+    display:block;
+    cursor:pointer;
+  }
+  .format-card b{ display:block; font-size:13px; font-weight:700; }
+  .format-card span{ display:block; font-size:11px; color:var(--panel-muted); margin-top:3px; }
+  .format-grid input:checked + .format-card{
+    border-color:var(--amber);
+    background:linear-gradient(0deg, rgba(245,130,32,.13), rgba(245,130,32,.13)) var(--navy-800);
+  }
+  .format-grid input:focus-visible + .format-card{ outline:2px solid var(--amber); outline-offset:2px; }
+
+  .mode-row{ display:flex; gap:8px; }
+  .mode-row input{ position:absolute; opacity:0; pointer-events:none; }
+  .mode-pill{
+    border:1px solid var(--navy-700); background:var(--navy-800);
+    border-radius:999px; padding:7px 14px; font-size:12.5px; cursor:pointer;
+    color:var(--panel-ink);
+  }
+  .mode-row input:checked + .mode-pill{ border-color:var(--amber); color:#fff; background:rgba(245,130,32,.16); }
+  .mode-row input:focus-visible + .mode-pill{ outline:2px solid var(--amber); outline-offset:2px; }
+
+  .btn-generate{
+    margin-top:26px;
+    width:100%;
+    background:var(--amber);
+    color:#221100;
+    font-weight:800;
+    font-size:15px;
+    border:none;
+    border-radius:9px;
+    padding:14px;
+    letter-spacing:.01em;
+  }
+  .btn-generate:hover{ background:#FF9435; }
+  .btn-generate:disabled{ opacity:.6; cursor:wait; }
+  .gen-note{ font-size:11.5px; color:var(--panel-muted); text-align:center; margin-top:10px; }
+  .gen-note b{ color:#C9D2E8; }
+  .err{
+    margin-top:14px; font-size:12.5px; line-height:1.5;
+    background:rgba(214,69,69,.14); border:1px solid rgba(214,69,69,.5);
+    color:#FFC9C9; border-radius:8px; padding:10px 12px; display:none;
+  }
+
+  /* ---------- Preview area ---------- */
+  .stage{
+    padding:30px clamp(16px, 4vw, 48px) 80px;
+    overflow-x:auto;
+  }
+  .stage-toolbar{
+    max-width:840px; margin:0 auto 16px;
+    display:none;
+    align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .stage-toolbar .tip{ font-size:12.5px; color:var(--ink-soft); }
+  :root[data-theme="dark"] .stage-toolbar .tip{ color:#9AA6C4; }
+  @media (prefers-color-scheme: dark){ .stage-toolbar .tip{ color:#9AA6C4; } }
+  .toolbar-btns{ display:flex; gap:8px; }
+  .btn-ghost, .btn-solid{
+    border-radius:8px; font-size:13px; font-weight:700; padding:9px 16px;
+  }
+  .btn-solid{ background:var(--navy-800); color:#fff; border:1px solid var(--navy-800); }
+  .btn-solid:hover{ background:var(--navy-700); }
+  .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+  :root[data-theme="dark"] .btn-ghost{ color:#E7EAF3; }
+  @media (prefers-color-scheme: dark){ .btn-ghost{ color:#E7EAF3; } }
+
+  .empty{
+    max-width:840px; margin:60px auto; text-align:center; color:var(--ink-soft);
+  }
+  :root[data-theme="dark"] .empty{ color:#9AA6C4; }
+  @media (prefers-color-scheme: dark){ .empty{ color:#9AA6C4; } }
+  .empty .big{ font-size:20px; font-weight:800; color:inherit; margin-top:18px; }
+  .empty p{ font-size:14px; margin-top:8px; line-height:1.6; }
+
+  /* ---------- The curriculum document (always light — it's a print piece) ---------- */
+  .doc{
+    max-width:840px;
+    margin:0 auto;
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:6px;
+    box-shadow:0 2px 6px rgba(11,21,48,.10), 0 14px 40px rgba(11,21,48,.12);
+    overflow:hidden;
+    display:none;
+  }
+  .doc-head{
+    background:var(--navy-900);
+    color:#fff;
+    padding:34px 44px 30px;
+    position:relative;
+  }
+  .doc-head::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0;
+    height:5px;
+    background:linear-gradient(90deg, var(--amber) 0 34%, #FBB040 34% 60%, #2E4A9E 60% 100%);
+  }
+  .doc-brandrow{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .doc-eyebrow{
+    font-size:10.5px; letter-spacing:.22em; text-transform:uppercase;
+    color:#FBB040; font-weight:700;
+  }
+  .doc-title{
+    font-size:31px; font-weight:800; line-height:1.15;
+    margin-top:10px; letter-spacing:-.01em; text-wrap:balance; max-width:22ch;
+  }
+  .doc-client{ font-size:14.5px; color:#C9D2E8; margin-top:10px; }
+  .doc-client b{ color:#fff; }
+  .doc-meta{
+    display:flex; flex-wrap:wrap; gap:10px; margin-top:22px;
+  }
+  .meta-chip{
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:999px;
+    font-size:12px; padding:6px 13px; color:#E7EAF3;
+  }
+  .meta-chip b{ color:#FBB040; font-weight:700; }
+
+  .doc-body{ padding:36px 44px 10px; }
+  .doc h3.sec{
+    font-size:12px; font-weight:800; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--amber-deep);
+    display:flex; align-items:center; gap:12px;
+    margin:34px 0 14px;
+  }
+  .doc h3.sec::after{ content:""; flex:1; height:1px; background:var(--doc-line); }
+  .doc h3.sec:first-child{ margin-top:0; }
+  .doc .overview{ font-size:14.5px; line-height:1.7; color:var(--ink); max-width:70ch; }
+
+  .outcomes{ list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:10px 22px; }
+  @media (max-width:640px){ .outcomes{ grid-template-columns:1fr; } }
+  .outcomes li{
+    font-size:13.5px; line-height:1.55; padding-left:24px; position:relative;
+  }
+  .outcomes li::before{
+    content:"✓"; position:absolute; left:0; top:0;
+    color:var(--good); font-weight:800;
+  }
+
+  .agenda{ width:100%; border-collapse:collapse; }
+  .agenda .day-row td{
+    background:var(--navy-800); color:#fff; font-weight:800; font-size:13px;
+    padding:9px 14px; letter-spacing:.06em; text-transform:uppercase;
+  }
+  .agenda td{ vertical-align:top; border-bottom:1px solid var(--doc-line); padding:15px 14px 15px 0; }
+  .agenda .t{
+    white-space:nowrap; font-size:12px; font-weight:700; color:var(--ink-soft);
+    font-variant-numeric:tabular-nums;
+    padding-left:14px; width:112px;
+  }
+  .agenda .m b{ font-size:14.5px; display:block; color:var(--navy-800); }
+  .agenda .m ul{ margin:8px 0 0; padding-left:17px; }
+  .agenda .m li{ font-size:13px; line-height:1.55; margin-top:3px; }
+  .agenda .m .act{
+    margin-top:10px; font-size:12.5px; line-height:1.5;
+    background:var(--amber-soft); border-left:3px solid var(--amber);
+    padding:8px 12px; border-radius:0 6px 6px 0;
+  }
+  .agenda .m .act b{ display:inline; font-size:12.5px; color:var(--amber-deep); text-transform:uppercase; letter-spacing:.06em; }
+  .agenda .break-row td{
+    padding:9px 14px; font-size:12px; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--ink-soft); background:#F6F4EF;
+    border-bottom:1px solid var(--doc-line);
+  }
+
+  .tools{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tool{
+    font-size:12.5px; font-weight:600;
+    border:1px solid var(--doc-line); border-radius:999px;
+    padding:6px 13px; background:#FBFAF7; color:var(--navy-800);
+  }
+
+  .takeaways{ list-style:none; display:grid; gap:9px; }
+  .takeaways li{ font-size:13.5px; line-height:1.55; padding-left:26px; position:relative; }
+  .takeaways li::before{
+    content:""; position:absolute; left:2px; top:5px;
+    width:9px; height:9px; background:var(--amber); border-radius:2px;
+  }
+
+  .duo{ display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:6px; }
+  @media (max-width:640px){ .duo{ grid-template-columns:1fr; } }
+  .bio{ font-size:13px; line-height:1.65; color:var(--ink); }
+  .bio .who{ font-size:15px; font-weight:800; color:var(--navy-800); }
+  .bio .role{ font-size:12px; color:var(--amber-deep); font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin:2px 0 8px; }
+
+  .doc-foot{
+    margin-top:38px;
+    background:var(--navy-900); color:#C9D2E8;
+    padding:18px 44px;
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    font-size:12px;
+  }
+  .doc-foot b{ color:#fff; }
+  .doc-foot .fbrand{ display:flex; align-items:center; gap:9px; font-weight:800; color:#fff; font-size:13px; }
+
+  [contenteditable]:focus{ outline:2px dashed rgba(245,130,32,.55); outline-offset:3px; border-radius:2px; }
+
+  /* ---------- Settings modal ---------- */
+  dialog{
+    border:none; border-radius:12px; padding:0;
+    width:min(480px, calc(100vw - 32px));
+    box-shadow:0 24px 80px rgba(0,0,0,.35);
+  }
+  dialog::backdrop{ background:rgba(11,21,48,.55); }
+  .modal-inner{ padding:26px 26px 24px; background:var(--paper); color:var(--ink); }
+  .modal-inner h3{ font-size:17px; font-weight:800; }
+  .modal-inner .sub{ font-size:13px; color:var(--ink-soft); margin-top:6px; line-height:1.55; }
+  .modal-inner .field label{ color:var(--ink-soft); }
+  .modal-inner .field input, .modal-inner .field select{
+    background:#F7F5F0; border:1px solid var(--line); color:var(--ink);
+  }
+  .modal-btns{ display:flex; justify-content:flex-end; gap:10px; margin-top:24px; }
+
+  .spin{
+    display:inline-block; width:14px; height:14px; border-radius:50%;
+    border:2px solid rgba(34,17,0,.35); border-top-color:#221100;
+    animation:spin .7s linear infinite; vertical-align:-2px; margin-right:8px;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .spin{ animation-duration:1.6s; } }
+
+  /* ---------- Print: the document only ---------- */
+  @media print{
+    body{ background:#fff; }
+    .topbar, .panel, .stage-toolbar, .empty{ display:none !important; }
+    .layout{ display:block; }
+    .stage{ padding:0; overflow:visible; }
+    .doc{ box-shadow:none; border-radius:0; max-width:none; }
+    .doc-head, .doc-foot, .agenda .day-row td{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .agenda tr, .doc h3.sec{ break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true">
+      <rect width="38" height="38" rx="9" fill="#F58220"/>
+      <path d="M9 14.5 L19 9 L29 14.5 L19 20 Z" fill="#0B1530"/>
+      <path d="M13.5 18.5 V24 C13.5 24 15.5 26.5 19 26.5 C22.5 26.5 24.5 24 24.5 24 V18.5 L19 21.5 Z" fill="#0B1530" opacity=".82"/>
+      <rect x="27.6" y="14.5" width="1.8" height="8" rx="0.9" fill="#0B1530"/>
+    </svg>
+    <div>
+      <div class="brand-name">Skillopedia</div>
+      <div class="brand-sub">Curriculum Builder</div>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button class="chip-engine" id="engineChip" title="AI engine settings">
+      <span class="dot"></span><span id="engineLabel">Engine: Built-in demo</span>
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ============ FORM ============ -->
+  <aside class="panel">
+    <h2>Design a client-ready curriculum</h2>
+    <p class="lede">Fill in the client's details and get a fully branded Skillopedia training curriculum in seconds.</p>
+
+    <form id="curForm">
+      <div class="field">
+        <label for="fCompany">Company name</label>
+        <input type="text" id="fCompany" placeholder="e.g. Birla Estates" required>
+      </div>
+
+      <div class="field">
+        <label for="fIndustry">Industry</label>
+        <input type="text" id="fIndustry" placeholder="e.g. Real Estate" list="indList">
+        <datalist id="indList">
+          <option>Real Estate</option><option>IT & Software</option><option>Banking & Financial Services</option>
+          <option>Pharma & Healthcare</option><option>Manufacturing</option><option>FMCG</option>
+          <option>Retail & E-commerce</option><option>Education</option><option>Media & Advertising</option>
+          <option>Logistics</option><option>Hospitality</option>
+        </datalist>
+      </div>
+
+      <div class="field">
+        <label for="fAudience">Target audience</label>
+        <select id="fAudience">
+          <option value="managers">Managers & Team Leads</option>
+          <option value="sales">Sales & Business Development</option>
+          <option value="it">IT & Engineering Teams</option>
+          <option value="hr">HR & L&D Teams</option>
+          <option value="marketing">Marketing Teams</option>
+          <option value="finance">Finance & Accounts</option>
+          <option value="operations">Operations Teams</option>
+          <option value="leadership">Senior Leadership / CXOs</option>
+          <option value="general">All Employees (Cross-functional)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Format</label>
+        <div class="format-grid" role="radiogroup" aria-label="Workshop format">
+          <span><input type="radio" name="fFormat" id="fmt-mc" value="masterclass">
+          <label class="format-card" for="fmt-mc"><b>2-Hour Session</b><span>Power masterclass</span></label></span>
+          <span><input type="radio" name="fFormat" id="fmt-half" value="half">
+          <label class="format-card" for="fmt-half"><b>Half Day</b><span>4-hour workshop</span></label></span>
+          <span><input type="radio" name="fFormat" id="fmt-full" value="full" checked>
+          <label class="format-card" for="fmt-full"><b>Full Day</b><span>One-day immersive</span></label></span>
+          <span><input type="radio" name="fFormat" id="fmt-two" value="twoday">
+          <label class="format-card" for="fmt-two"><b>2 Days</b><span>Deep-dive bootcamp</span></label></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Delivery mode</label>
+        <div class="mode-row" role="radiogroup" aria-label="Delivery mode">
+          <span><input type="radio" name="fMode" id="mode-inp" value="In-Person" checked>
+          <label class="mode-pill" for="mode-inp">In-person</label></span>
+          <span><input type="radio" name="fMode" id="mode-vir" value="Virtual (Live)">
+          <label class="mode-pill" for="mode-vir">Virtual</label></span>
+          <span><input type="radio" name="fMode" id="mode-hyb" value="Hybrid">
+          <label class="mode-pill" for="mode-hyb">Hybrid</label></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fFocus">Special focus <span style="text-transform:none;letter-spacing:0;font-weight:400">(optional)</span></label>
+        <textarea id="fFocus" placeholder="e.g. Heavy on proposal writing and client follow-ups; team already uses ChatGPT casually"></textarea>
+        <p class="hint">Used to tailor the overview — and sent to the AI engine when one is connected.</p>
+      </div>
+
+      <button type="submit" class="btn-generate" id="btnGen">Generate curriculum</button>
+      <p class="gen-note">Runs on the <b id="engineNote">built-in demo engine</b> — no API key needed for the prototype.</p>
+      <div class="err" id="errBox"></div>
+    </form>
+  </aside>
+
+  <!-- ============ PREVIEW ============ -->
+  <main class="stage">
+    <div class="stage-toolbar" id="toolbar">
+      <span class="tip">✎ Click any text in the document to edit it before downloading.</span>
+      <span class="toolbar-btns">
+        <button class="btn-ghost" id="btnReset">Start over</button>
+        <button class="btn-solid" id="btnPrint">Download PDF / Print</button>
+      </span>
+    </div>
+
+    <div class="empty" id="emptyState">
+      <svg width="72" height="72" viewBox="0 0 38 38" aria-hidden="true" style="opacity:.9">
+        <rect width="38" height="38" rx="9" fill="#F58220"/>
+        <path d="M9 14.5 L19 9 L29 14.5 L19 20 Z" fill="#0B1530"/>
+        <path d="M13.5 18.5 V24 C13.5 24 15.5 26.5 19 26.5 C22.5 26.5 24.5 24 24.5 24 V18.5 L19 21.5 Z" fill="#0B1530" opacity=".82"/>
+        <rect x="27.6" y="14.5" width="1.8" height="8" rx="0.9" fill="#0B1530"/>
+      </svg>
+      <div class="big">Your branded curriculum will appear here</div>
+      <p>Enter the client's company, audience and format on the left.<br>Every curriculum carries the Skillopedia format, branding and trainer profile.</p>
+    </div>
+
+    <article class="doc" id="doc" aria-live="polite"></article>
+  </main>
+</div>
+
+<!-- ============ ENGINE SETTINGS ============ -->
+<dialog id="engineModal">
+  <div class="modal-inner">
+    <h3>AI engine</h3>
+    <p class="sub">The prototype ships with a built-in demo engine (no key needed). Connect a live model when you're ready — the same branded template is used either way.</p>
+    <div class="field">
+      <label for="sProvider">Provider</label>
+      <select id="sProvider">
+        <option value="demo">Built-in demo engine (no API key)</option>
+        <option value="groq">Groq</option>
+        <option value="gemini">Google Gemini</option>
+        <option value="openai">OpenAI</option>
+        <option value="claude">Anthropic Claude</option>
+      </select>
+    </div>
+    <div class="field" id="rowKey" style="display:none">
+      <label for="sKey">API key</label>
+      <input type="password" id="sKey" placeholder="Paste your API key" autocomplete="off">
+      <p class="hint" style="color:var(--ink-soft)">Stored only in this browser (localStorage). For production, move the call to a small server/WordPress plugin so the key is never exposed.</p>
+    </div>
+    <div class="field" id="rowModel" style="display:none">
+      <label for="sModel">Model</label>
+      <input type="text" id="sModel" placeholder="Model ID">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-ghost" id="btnCancelEngine" type="button">Cancel</button>
+      <button class="btn-solid" id="btnSaveEngine" type="button">Save</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   1. CONTENT LIBRARY  (the built-in demo engine)
+   Curriculum modules follow the Skillopedia session format:
+   title → what we cover → hands-on activity → tools used.
+===================================================================== */
+
+const AUDIENCES = {
+  managers:  { name:"Managers & Team Leads",           short:"Managers" },
+  sales:     { name:"Sales & Business Development",    short:"BD & Sales teams" },
+  it:        { name:"IT & Engineering Teams",          short:"IT teams" },
+  hr:        { name:"HR & L&D Teams",                  short:"HR teams" },
+  marketing: { name:"Marketing Teams",                 short:"Marketing teams" },
+  finance:   { name:"Finance & Accounts",              short:"Finance teams" },
+  operations:{ name:"Operations Teams",                short:"Operations teams" },
+  leadership:{ name:"Senior Leadership / CXOs",        short:"Leadership" },
+  general:   { name:"All Employees (Cross-functional)",short:"teams" }
+};
+
+const M = {
+  landscape: {
+    title:"Generative AI: The Landscape Today",
+    points:[
+      "What Generative AI can (and can't) do — beyond the hype",
+      "ChatGPT vs Gemini vs Claude vs Copilot: which tool for which job",
+      "Where AI is already creating value in {industry}",
+      "Live tour: the AI toolkit every professional needs in 2026"
+    ],
+    activity:"10 tasks in 10 minutes — a rapid-fire live demo of AI doing a full morning's work.",
+    tools:["ChatGPT","Google Gemini","Microsoft Copilot","Claude"]
+  },
+  prompting: {
+    title:"Prompt Engineering Masterclass",
+    points:[
+      "The anatomy of a great prompt: Role → Context → Task → Format",
+      "Iterating and refining outputs like a pro",
+      "Building a reusable prompt library for {audienceShort}",
+      "Advanced: chained prompts, personas and structured outputs"
+    ],
+    activity:"Prompt Battle — teams compete to produce the best output for a real {company} scenario.",
+    tools:["ChatGPT","Google Gemini"]
+  },
+  responsible: {
+    title:"Responsible AI at Work",
+    points:[
+      "Data privacy and confidentiality: what never goes into a public AI tool",
+      "Hallucinations — how to fact-check and verify AI output",
+      "Copyright, bias and disclosure basics",
+      "A simple AI usage policy for {company}"
+    ],
+    activity:"Spot the Risk — audit real AI outputs for errors, leaks and hallucinations.",
+    tools:["Perplexity"]
+  },
+  action: {
+    title:"Your 30-Day AI Action Plan",
+    points:[
+      "Choosing your personal AI toolkit",
+      "Identifying 3 workflows to transform in the next 30 days",
+      "Team adoption roadmap and habit-building",
+      "Measuring the hours saved"
+    ],
+    activity:"Every participant writes and shares a personal 30-day AI action plan.",
+    tools:[]
+  },
+  assistant: {
+    title:"Build Your Own AI Assistant",
+    points:[
+      "Custom GPTs & Gemini Gems: your knowledge, your rules",
+      "Feeding SOPs and documents into a private assistant",
+      "No-code automation: connecting AI to email, sheets and chat",
+      "When to graduate to agents and APIs"
+    ],
+    activity:"Build a working custom AI assistant for a real {company} use case — live.",
+    tools:["Custom GPTs","Gemini Gems","Zapier","NotebookLM"]
+  },
+
+  /* ---- audience-specific ---- */
+  m_productivity:{ title:"AI-Powered Manager Productivity",
+    points:["Emails, minutes of meeting and status reports in minutes","Summarising long documents, threads and decks instantly","Meeting preparation and follow-ups with AI","Personal knowledge management with NotebookLM"],
+    activity:"Turn a messy email thread into a crisp, client-ready status update.",
+    tools:["ChatGPT","Microsoft Copilot","NotebookLM"] },
+  m_data:{ title:"Data Analysis & Decision-Making with AI",
+    points:["Analysing Excel/Sheets data by simply asking questions","From raw data to charts, insights and recommendations","Scenario thinking and pros/cons analysis with AI","Building a one-page decision brief"],
+    activity:"Upload a real dataset and extract insights, charts and an executive summary live.",
+    tools:["ChatGPT (Data Analysis)","Gemini + Sheets","Claude"] },
+  m_people:{ title:"AI for People Leadership",
+    points:["Drafting performance feedback that is fair and specific","1:1 agendas, delegation notes and development plans","Handling difficult conversations — AI as a rehearsal partner","Team communication that lands"],
+    activity:"Draft a growth plan for a (fictional) team member and stress-test it with AI.",
+    tools:["ChatGPT","Claude"] },
+  m_reports:{ title:"Presentations & Reports on Autopilot",
+    points:["From bullet points to a full deck in minutes","Visualising ideas: diagrams, infographics and one-pagers","Executive summaries that get read","Formatting and polishing with AI"],
+    activity:"Create a management-ready presentation from rough notes in 15 minutes.",
+    tools:["Gamma","Canva AI","Napkin AI"] },
+
+  s_leads:{ title:"AI for Lead Generation & Prospect Research",
+    points:["Deep prospect and account research in minutes","Building ideal customer profiles with AI","Signals and triggers: knowing when to reach out","Territory and pipeline planning"],
+    activity:"Build a complete target-account brief for a live prospect in 15 minutes.",
+    tools:["Perplexity","ChatGPT","LinkedIn + AI"] },
+  s_proposals:{ title:"Winning Proposals & Pitches with AI",
+    points:["First-draft proposals in minutes, not days","Personalising pitches for every client at scale","Stunning decks with AI presentation tools","Case studies and testimonials, polished by AI"],
+    activity:"Create a client-ready pitch deck for a {company} offering — live.",
+    tools:["ChatGPT","Gamma","Canva AI"] },
+  s_comms:{ title:"Client Communication & Follow-ups",
+    points:["Cold and warm outreach that gets replies","5-touch follow-up sequences written in minutes","Objection handling — AI as your sparring partner","WhatsApp & LinkedIn messaging with the right tone"],
+    activity:"Write a full 5-touch follow-up sequence for a stalled deal.",
+    tools:["ChatGPT","Claude","Copilot"] },
+  s_intel:{ title:"Market & Competitor Intelligence",
+    points:["Tracking competitors, pricing and launches with AI","Turning research into battle-cards the team actually uses","Market sizing and trend analysis in {industry}","Building a living research pack with NotebookLM"],
+    activity:"Build a competitor battle-card from live research — in the room.",
+    tools:["Perplexity","NotebookLM","Gemini Deep Research"] },
+
+  i_coding:{ title:"AI-Assisted Coding & Development",
+    points:["Code generation, completion and refactoring with AI","Debugging: pasting stack traces and getting answers","Code review and documentation with AI","Prompting patterns specifically for developers"],
+    activity:"Pair-program a small feature with an AI copilot — from spec to working code.",
+    tools:["GitHub Copilot","Claude","ChatGPT"] },
+  i_testing:{ title:"AI for Testing & QA",
+    points:["Generating test cases straight from requirements","Test data creation and edge-case discovery","Bug triage and reproduction steps with AI","Automating regression checklists"],
+    activity:"Generate a complete test suite from a single user story.",
+    tools:["ChatGPT","Copilot","Claude"] },
+  i_docs:{ title:"Documentation & Project Communication",
+    points:["Technical docs, runbooks and release notes in minutes","Status reports and RCA documents with AI","Turning tickets and threads into clear summaries","A searchable team knowledge base with NotebookLM"],
+    activity:"Turn a raw incident thread into a client-ready RCA document.",
+    tools:["NotebookLM","ChatGPT","Copilot"] },
+  i_agents:{ title:"Automation, APIs & AI Agents",
+    points:["Where scripts end and agents begin","No-code/low-code pipelines with n8n and Zapier","Calling LLM APIs: patterns, cost and guardrails","What's coming: agentic workflows in the SDLC"],
+    activity:"Build a working automation that reads, reasons and replies — live.",
+    tools:["n8n","Zapier","OpenAI/Claude APIs"] },
+
+  h_recruit:{ title:"AI in Recruitment",
+    points:["Job descriptions that attract the right talent","Resume screening and interview question design","Candidate communication at scale","Fair-use guardrails in hiring"],
+    activity:"Design a complete hiring kit — JD, screening rubric and interview plan — with AI.",
+    tools:["ChatGPT","Gemini","Copilot"] },
+  h_ld:{ title:"AI for L&D & Content Creation",
+    points:["Turning SOPs into training modules and quizzes","Slide decks, videos and avatars for internal training","Personalised learning paths with AI","Assessments and feedback loops"],
+    activity:"Convert a plain SOP into a mini e-learning module with slides and a quiz.",
+    tools:["Gamma","Canva AI","HeyGen","NotebookLM"] },
+  h_comms:{ title:"Employee Communication & Engagement",
+    points:["Policy announcements people actually read","Internal newsletters and event comms in minutes","Sensitive communication — getting tone right","Employee survey analysis with AI"],
+    activity:"Draft a sensitive policy-change announcement and A/B test tones with AI.",
+    tools:["ChatGPT","Claude","Canva AI"] },
+  h_analytics:{ title:"People Analytics with AI",
+    points:["Attrition and engagement data — asking questions in plain English","Summarising exit interviews and feedback at scale","Building HR dashboards and one-pagers","Data privacy in people analytics"],
+    activity:"Analyse a sample engagement survey and present three insights to 'leadership'.",
+    tools:["ChatGPT (Data Analysis)","Gemini + Sheets"] },
+
+  mk_content:{ title:"The AI Content Engine",
+    points:["A month of social content in one sitting","Blogs, captions, scripts and campaign copy with AI","Repurposing: one idea → ten formats","Building a brand voice the AI can follow"],
+    activity:"Produce a week of on-brand content for {company} across three channels.",
+    tools:["ChatGPT","Claude","Canva AI"] },
+  mk_visual:{ title:"AI for Images, Video & Design",
+    points:["Image generation for campaigns and creatives","AI video: avatars, voiceovers and short-form edits","Design workflows with Canva AI and beyond","Brand consistency when using generative tools"],
+    activity:"Create a complete ad creative — image, copy and video teaser — with AI.",
+    tools:["Midjourney/DALL·E","Canva AI","HeyGen","Runway"] },
+  mk_seo:{ title:"AI-Powered Research & SEO",
+    points:["Keyword and intent research with AI","Content briefs and outlines that rank","Competitor content analysis","AI search (SGE/answer engines) — what changes"],
+    activity:"Build a data-backed content brief for a target keyword, live.",
+    tools:["Perplexity","ChatGPT","Gemini"] },
+  mk_analytics:{ title:"Campaign Analytics & Optimisation",
+    points:["Reading campaign data by asking questions in plain English","Creative A/B analysis with AI","Marketing reports leadership actually reads","Budget reallocation scenarios"],
+    activity:"Turn a raw campaign export into a one-page performance story.",
+    tools:["ChatGPT (Data Analysis)","Gemini + Sheets"] },
+
+  f_reports:{ title:"Financial Reporting on Autopilot",
+    points:["MIS, variance commentary and board notes with AI","Summarising audit reports and contracts","From trial balance to narrative in minutes","Accuracy guardrails for financial output"],
+    activity:"Draft variance commentary for a sample P&L — then verify every number.",
+    tools:["ChatGPT","Copilot","Claude"] },
+  f_excel:{ title:"AI inside Excel & Sheets",
+    points:["Formulas written for you — describe what you need","Cleaning and structuring messy data with AI","Pivot-style analysis by conversation","Automating recurring workbooks"],
+    activity:"Fix and analyse a deliberately messy workbook using only AI prompts.",
+    tools:["Microsoft Copilot","Gemini + Sheets","ChatGPT"] },
+  f_analysis:{ title:"Analysis, Forecasting & Scenarios",
+    points:["Trend analysis and simple forecasting with AI","Scenario modelling: best/base/worst in minutes","Ratio analysis and benchmarking in {industry}","Presenting numbers as a story"],
+    activity:"Build a three-scenario forecast brief from historical data.",
+    tools:["ChatGPT (Data Analysis)","Claude"] },
+  f_risk:{ title:"Compliance, Risk & Controls",
+    points:["Contract review and clause extraction with AI","Policy and regulation summarisation","Fraud-pattern brainstorming and control design","Confidentiality: what finance data must stay internal"],
+    activity:"Extract obligations and red flags from a sample vendor contract.",
+    tools:["Claude","NotebookLM","Perplexity"] },
+
+  o_sops:{ title:"SOPs & Process Documentation with AI",
+    points:["Turning tribal knowledge into written SOPs","Process maps and checklists generated from descriptions","Keeping documents current with AI","Multilingual SOPs for ground teams"],
+    activity:"Document a real {company} process into a full SOP — in 20 minutes.",
+    tools:["ChatGPT","Napkin AI","NotebookLM"] },
+  o_automation:{ title:"Workflow Automation",
+    points:["Spotting automation opportunities in daily operations","No-code automation: forms, sheets, email and chat","Escalation and approval flows with AI in the loop","Calculating hours saved"],
+    activity:"Map one manual workflow and build its automated version live.",
+    tools:["Zapier","n8n","Copilot"] },
+  o_vendor:{ title:"Vendor & Stakeholder Communication",
+    points:["RFQs, comparisons and negotiation prep with AI","Escalation emails with the right firmness","Meeting notes and action trackers on autopilot","Templates the whole team can reuse"],
+    activity:"Run a mock vendor negotiation prepped entirely by AI.",
+    tools:["ChatGPT","Claude"] },
+  o_dash:{ title:"Operational Dashboards & Reviews",
+    points:["Daily/weekly review packs generated from raw data","Exception reporting: let AI flag what needs attention","Root-cause analysis with AI","One-page ops reviews for leadership"],
+    activity:"Turn a raw operations log into an exception report with recommendations.",
+    tools:["ChatGPT (Data Analysis)","Gemini + Sheets"] },
+
+  l_strategy:{ title:"AI Strategy for the Enterprise",
+    points:["The AI value map: where {industry} leaders are winning","Build vs buy vs partner — a practical framework","Prioritising use cases by value and feasibility","What to pilot in the next 90 days"],
+    activity:"Draft a one-page AI opportunity map for {company}.",
+    tools:["Claude","Perplexity"] },
+  l_org:{ title:"Leading an AI-Ready Organisation",
+    points:["Roles, skills and structures for the AI era","Driving adoption: champions, training and incentives","Managing resistance and fear honestly","Measuring productivity gains"],
+    activity:"Design a 90-day adoption plan for one function of {company}.",
+    tools:["ChatGPT","Gamma"] },
+  l_gov:{ title:"Governance, Risk & Responsible AI",
+    points:["An AI policy your teams will actually follow","Data protection, vendor risk and model risk basics","Regulatory direction: what leaders must watch","Board-level AI reporting"],
+    activity:"Stress-test a draft AI policy against five real scenarios.",
+    tools:["Claude","NotebookLM"] },
+  l_hands:{ title:"Hands-On: AI for the Leader's Own Desk",
+    points:["Board notes, town halls and investor updates with AI","A private AI chief-of-staff: setup in 30 minutes","Decision briefs and scenario thinking","The leader's daily AI routine"],
+    activity:"Each leader builds a personal AI chief-of-staff before leaving the room.",
+    tools:["ChatGPT","Custom GPTs","NotebookLM"] },
+
+  g_writing:{ title:"Everyday Writing & Communication with AI",
+    points:["Emails, notes and reports in a fraction of the time","Tone control: formal, friendly, firm","Summarising anything: PDFs, threads, meetings","Translation and simplification"],
+    activity:"The 10-minute inbox: clear a sample inbox using only AI.",
+    tools:["ChatGPT","Gemini","Copilot"] },
+  g_research:{ title:"Research & Learning with AI",
+    points:["Getting trustworthy answers fast — and verifying them","Deep research reports with AI","Learning any new skill with an AI tutor","Building a personal knowledge base"],
+    activity:"Research an unfamiliar topic and present it confidently — in 20 minutes.",
+    tools:["Perplexity","NotebookLM","Gemini Deep Research"] },
+  g_creative:{ title:"Creative & Visual AI",
+    points:["Images, posters and slides without a designer","Idea generation and brainstorming with AI","Audio & video: voiceovers, avatars and quick edits","Bringing it together: a mini-project"],
+    activity:"Create a poster + slide + short script for an internal campaign.",
+    tools:["Canva AI","Gamma","HeyGen","Suno"] },
+  g_daily:{ title:"AI in Your Daily Workflow",
+    points:["Excel/Sheets tasks by conversation","Meeting notes, MoMs and action items on autopilot","Personal productivity systems with AI","Your role-specific AI playbook"],
+    activity:"Each participant automates one real task from their own week.",
+    tools:["Copilot","Gemini + Sheets","ChatGPT"] }
+};
+
+const SPECIALTY = {
+  managers:  ["m_productivity","m_data","m_reports","m_people"],
+  sales:     ["s_leads","s_proposals","s_comms","s_intel"],
+  it:        ["i_coding","i_testing","i_docs","i_agents"],
+  hr:        ["h_recruit","h_ld","h_comms","h_analytics"],
+  marketing: ["mk_content","mk_visual","mk_seo","mk_analytics"],
+  finance:   ["f_reports","f_excel","f_analysis","f_risk"],
+  operations:["o_sops","o_automation","o_vendor","o_dash"],
+  leadership:["l_strategy","l_hands","l_org","l_gov"],
+  general:   ["g_writing","g_daily","g_research","g_creative"]
+};
+
+const TITLES = {
+  managers:"AI for Managers", sales:"Gen AI for Business Development", it:"AI for IT & Engineering Teams",
+  hr:"AI for HR & People Teams", marketing:"Gen AI for Marketing", finance:"AI for Finance Teams",
+  operations:"AI for Operations Excellence", leadership:"AI for Leaders", general:"AI at Work"
+};
+
+const OUTCOME_BANK = {
+  common:[
+    "Use ChatGPT, Gemini, Copilot & Claude confidently for daily work",
+    "Write powerful prompts that get professional-grade output every time",
+    "Know exactly what data can and cannot be shared with AI tools"
+  ],
+  managers:["Cut reporting and email time by 50% or more","Analyse data and make decisions faster with AI","Lead teams through AI adoption with confidence"],
+  sales:["Research any prospect or account in minutes","Produce client-ready proposals and pitch decks with AI","Run smarter follow-ups that move deals forward"],
+  it:["Code, debug and review faster with AI copilots","Generate test cases and documentation automatically","Build practical automations and understand AI agents"],
+  hr:["Automate JD writing, screening and candidate comms","Turn SOPs into engaging training content","Analyse people data without waiting for analysts"],
+  marketing:["Build an always-on AI content engine","Create images, video and design assets in-house","Turn campaign data into clear performance stories"],
+  finance:["Automate MIS commentary and recurring reports","Master AI inside Excel and Sheets","Review contracts and policies in a fraction of the time"],
+  operations:["Document any process into an SOP in minutes","Automate repetitive workflows without code","Run sharper reviews with AI-generated exception reports"],
+  leadership:["Build a practical AI strategy and 90-day pilot plan","Govern AI use with a policy that actually works","Use AI personally as a daily thinking partner"],
+  general:["Save 5+ hours a week on writing, research and admin","Create documents, slides and visuals independently","Leave with a personal AI playbook for your role"]
+};
+
+/* =====================================================================
+   2. FORMATS — how modules are laid out across the day(s)
+   Each slot: {key} module, or {break:label,mins}, starting 09:30 / 10:00.
+===================================================================== */
+
+const FORMATS = {
+  masterclass:{
+    label:"2-Hour Power Masterclass", duration:"2 Hours", start:600, // 10:00
+    days:[[ {k:"landscape",mins:30},{k:"prompting",mins:40},{k:"SPEC1",mins:35},{k:"action",mins:15} ]]
+  },
+  half:{
+    label:"Half-Day Workshop", duration:"Half Day (4 Hours)", start:570, // 09:30
+    days:[[ {k:"landscape",mins:40},{k:"prompting",mins:55},{brk:"Tea & Networking Break",mins:15},
+            {k:"SPEC1",mins:55},{k:"SPEC2",mins:50},{k:"action",mins:25} ]]
+  },
+  full:{
+    label:"Full-Day Immersive Workshop", duration:"1 Full Day", start:570,
+    days:[[ {k:"landscape",mins:45},{k:"prompting",mins:60},{brk:"Tea Break",mins:15},
+            {k:"SPEC1",mins:60},{brk:"Lunch",mins:45},{k:"SPEC2",mins:60},{k:"SPEC3",mins:60},
+            {brk:"Tea Break",mins:15},{k:"responsible",mins:40},{k:"action",mins:30} ]]
+  },
+  twoday:{
+    label:"2-Day Deep-Dive Bootcamp", duration:"2 Days", start:570,
+    days:[
+      [ {k:"landscape",mins:50},{k:"prompting",mins:70},{brk:"Tea Break",mins:15},
+        {k:"SPEC1",mins:70},{brk:"Lunch",mins:45},{k:"SPEC2",mins:70},{brk:"Tea Break",mins:15},
+        {k:"SPEC3",mins:70},{k:"recap",mins:20} ],
+      [ {k:"SPEC4",mins:70},{k:"assistant",mins:75},{brk:"Tea Break",mins:15},
+        {k:"responsible",mins:50},{brk:"Lunch",mins:45},{k:"capstone",mins:80},{k:"action",mins:40} ]
+    ]
+  }
+};
+
+M.recap = { title:"Day 1 Wrap & Overnight Challenge",
+  points:["Key takeaways from Day 1","The overnight AI challenge: apply one skill to real work tonight"],
+  activity:"Participants pick their overnight challenge and pair up as accountability partners.", tools:[] };
+M.capstone = { title:"Capstone: Solve a Real {company} Problem",
+  points:["Teams pick a real workflow from their own desks","Design and build an AI-powered solution using the day's tools","Present to the room — feedback from the trainer and peers"],
+  activity:"Team presentations — every group demos a working AI solution built in the room.", tools:["All tools covered"] };
+
+/* =====================================================================
+   3. DEMO ENGINE — assembles the curriculum object
+===================================================================== */
+
+function fill(str, ctx){
+  return str.replaceAll("{company}", ctx.company)
+            .replaceAll("{industry}", ctx.industry || "your industry")
+            .replaceAll("{audienceShort}", ctx.audienceShort);
+}
+
+function toClock(mins){
+  const h = Math.floor(mins/60), m = mins%60;
+  const ampm = h>=12 ? "PM":"AM";
+  const hh = ((h+11)%12)+1;
+  return `${String(hh).padStart(2,"0")}:${String(m).padStart(2,"0")} ${ampm}`;
+}
+
+function demoEngine(input){
+  const aud = AUDIENCES[input.audience];
+  const fmt = FORMATS[input.format];
+  const spec = SPECIALTY[input.audience];
+  const ctx = { company:input.company, industry:input.industry, audienceShort:aud.short };
+
+  const days = fmt.days.map((slots)=>{
+    let t = fmt.start;
+    return slots.map(slot=>{
+      const row = { start:toClock(t), end:toClock(t+slot.mins) };
+      t += slot.mins;
+      if(slot.brk){ row.break = slot.brk; return row; }
+      const key = slot.k.startsWith("SPEC") ? spec[Number(slot.k.slice(4))-1] : slot.k;
+      const m = M[key];
+      row.title = fill(m.title, ctx);
+      row.points = m.points.map(p=>fill(p, ctx));
+      row.activity = fill(m.activity, ctx);
+      row.tools = m.tools;
+      return row;
+    });
+  });
+
+  const tools = [...new Set(days.flat().flatMap(r=>r.tools||[]))].filter(t=>t!=="All tools covered");
+
+  const focusLine = input.focus
+    ? ` Special emphasis has been placed on the areas highlighted by your team: ${input.focus.trim().replace(/\.$/,"")}.`
+    : "";
+
+  const title = TITLES[input.audience];
+
+  return {
+    title,
+    subtitle:`A ${fmt.duration.toLowerCase()} hands-on program for ${aud.name}`,
+    overview:`This ${fmt.label.toLowerCase()} is designed exclusively for ${input.company}'s ${aud.name.toLowerCase()} to move from AI-curious to AI-confident. Built around real ${input.industry ? input.industry.toLowerCase() : "business"} scenarios rather than theory, every module combines a live demonstration with hands-on practice — participants work on their own laptops, on their own real tasks, and leave with skills they can apply the very next morning.${focusLine} The program follows Skillopedia's Learn → Try → Apply methodology, refined across hundreds of corporate workshops.`,
+    outcomes:[...OUTCOME_BANK.common, ...OUTCOME_BANK[input.audience]],
+    days,
+    tools,
+    takeaways:[
+      "A personal prompt library customised to your role",
+      "Lifetime access to the Skillopedia resource vault (templates, prompts & tool guides)",
+      "Digital certificate of completion for every participant",
+      "30 days of post-workshop WhatsApp/email support from the trainer",
+      "A 30-day action plan reviewed in an optional follow-up call"
+    ]
+  };
+}
+
+/* =====================================================================
+   4. LIVE LLM ENGINES (Groq / Gemini / OpenAI / Claude)
+   The same JSON shape is requested, then rendered by the same template.
+===================================================================== */
+
+const ENGINE_DEFAULTS = {
+  groq:  { model:"llama-3.3-70b-versatile", label:"Groq" },
+  gemini:{ model:"gemini-2.0-flash",        label:"Google Gemini" },
+  openai:{ model:"gpt-4o-mini",             label:"OpenAI" },
+  claude:{ model:"claude-sonnet-5",         label:"Anthropic Claude" }
+};
+
+function buildLLMPrompt(input){
+  const aud = AUDIENCES[input.audience];
+  const fmt = FORMATS[input.format];
+  return `You are the curriculum designer for Skillopedia, a corporate AI training company led by trainer Hitesh Motwani. Design a training curriculum with these inputs:
+- Client company: ${input.company}
+- Industry: ${input.industry || "not specified"}
+- Target audience: ${aud.name}
+- Format: ${fmt.label} (${fmt.duration})
+- Special focus from client: ${input.focus || "none"}
+
+Style: practical, hands-on, demo-heavy, zero fluff. Every module needs a hands-on activity. Use current AI tools (ChatGPT, Gemini, Claude, Copilot, Perplexity, NotebookLM, Gamma, Canva AI, Zapier, n8n, HeyGen etc.).
+
+Return ONLY valid JSON (no markdown fences) with this exact shape:
+{
+ "title": "program title, e.g. 'Gen AI for Business Development'",
+ "subtitle": "one line",
+ "overview": "120-160 word paragraph addressed to the client",
+ "outcomes": ["6 learning outcomes"],
+ "days": [ [ {"start":"09:30 AM","end":"10:15 AM","title":"...","points":["3-4 bullets"],"activity":"...","tools":["..."]}, {"start":"11:15 AM","end":"11:30 AM","break":"Tea Break"} ] ],
+ "tools": ["deduplicated list of all tools"],
+ "takeaways": ["5 things participants take away"]
+}
+"days" must contain ${fmt.days.length} array(s) (one per training day) with realistic timings from 09:30 AM, including tea/lunch breaks as break rows.`;
+}
+
+async function callLLM(cfg, prompt){
+  let url, opts;
+  if(cfg.provider==="gemini"){
+    url = `https://generativelanguage.googleapis.com/v1beta/models/${cfg.model}:generateContent?key=${encodeURIComponent(cfg.key)}`;
+    opts = { method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ contents:[{ parts:[{ text:prompt }] }] }) };
+  } else if(cfg.provider==="claude"){
+    url = "https://api.anthropic.com/v1/messages";
+    opts = { method:"POST", headers:{
+        "Content-Type":"application/json", "x-api-key":cfg.key,
+        "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+      body: JSON.stringify({ model:cfg.model, max_tokens:4000, messages:[{role:"user",content:prompt}] }) };
+  } else { // groq & openai share the OpenAI chat format
+    url = cfg.provider==="groq"
+      ? "https://api.groq.com/openai/v1/chat/completions"
+      : "https://api.openai.com/v1/chat/completions";
+    opts = { method:"POST", headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${cfg.key}` },
+      body: JSON.stringify({ model:cfg.model, messages:[{role:"user",content:prompt}] }) };
+  }
+  const res = await fetch(url, opts);
+  if(!res.ok){
+    const body = await res.text().catch(()=> "");
+    throw new Error(`${ENGINE_DEFAULTS[cfg.provider].label} returned ${res.status}. ${body.slice(0,180)}`);
+  }
+  const data = await res.json();
+  const text = cfg.provider==="gemini" ? data.candidates?.[0]?.content?.parts?.[0]?.text
+             : cfg.provider==="claude" ? data.content?.[0]?.text
+             : data.choices?.[0]?.message?.content;
+  if(!text) throw new Error("The model returned an empty response.");
+  const jsonStr = text.replace(/^```(json)?/m,"").replace(/```\s*$/m,"").trim();
+  const first = jsonStr.indexOf("{"), last = jsonStr.lastIndexOf("}");
+  return JSON.parse(jsonStr.slice(first, last+1));
+}
+
+/* =====================================================================
+   5. RENDERER — one branded template for every engine
+===================================================================== */
+
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+
+function render(cur, input){
+  const aud = AUDIENCES[input.audience];
+  const fmt = FORMATS[input.format];
+  const multiDay = cur.days.length > 1;
+
+  const agendaRows = cur.days.map((day, di)=>{
+    const dayHead = multiDay ? `<tr class="day-row"><td colspan="2">Day ${di+1}</td></tr>` : "";
+    const rows = day.map(r=>{
+      if(r.break) return `<tr class="break-row"><td>${esc(r.start)} – ${esc(r.end)}</td><td>☕ ${esc(r.break)}</td></tr>`;
+      return `<tr>
+        <td class="t">${esc(r.start)}<br>– ${esc(r.end)}</td>
+        <td class="m">
+          <b>${esc(r.title)}</b>
+          <ul>${(r.points||[]).map(p=>`<li>${esc(p)}</li>`).join("")}</ul>
+          ${r.activity ? `<div class="act"><b>Hands-on:</b> ${esc(r.activity)}</div>` : ""}
+        </td>
+      </tr>`;
+    }).join("");
+    return dayHead + rows;
+  }).join("");
+
+  const today = new Date().toLocaleDateString("en-IN", { day:"numeric", month:"long", year:"numeric" });
+
+  document.getElementById("doc").innerHTML = `
+    <header class="doc-head">
+      <div class="doc-brandrow">
+        <div style="display:flex;align-items:center;gap:11px">
+          <svg width="34" height="34" viewBox="0 0 38 38" aria-hidden="true">
+            <rect width="38" height="38" rx="9" fill="#F58220"/>
+            <path d="M9 14.5 L19 9 L29 14.5 L19 20 Z" fill="#0B1530"/>
+            <path d="M13.5 18.5 V24 C13.5 24 15.5 26.5 19 26.5 C22.5 26.5 24.5 24 24.5 24 V18.5 L19 21.5 Z" fill="#0B1530" opacity=".82"/>
+            <rect x="27.6" y="14.5" width="1.8" height="8" rx="0.9" fill="#0B1530"/>
+          </svg>
+          <div>
+            <div style="font-weight:800;font-size:16px">Skillopedia</div>
+            <div style="font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#9AA6C4">AI Training &amp; Corporate Workshops</div>
+          </div>
+        </div>
+        <div class="doc-eyebrow">Training Curriculum</div>
+      </div>
+      <h1 class="doc-title" contenteditable="true">${esc(cur.title)}</h1>
+      <p class="doc-client" contenteditable="true">Prepared exclusively for <b>${esc(input.company)}</b>${input.industry ? ` · ${esc(input.industry)}` : ""}</p>
+      <div class="doc-meta">
+        <span class="meta-chip"><b>Audience</b> &nbsp;${esc(aud.name)}</span>
+        <span class="meta-chip"><b>Format</b> &nbsp;${esc(fmt.duration)}</span>
+        <span class="meta-chip"><b>Mode</b> &nbsp;${esc(input.mode)}</span>
+        <span class="meta-chip"><b>Date</b> &nbsp;${esc(today)}</span>
+      </div>
+    </header>
+
+    <div class="doc-body" contenteditable="true">
+      <h3 class="sec">Program Overview</h3>
+      <p class="overview">${esc(cur.overview)}</p>
+
+      <h3 class="sec">Learning Outcomes</h3>
+      <ul class="outcomes">${cur.outcomes.map(o=>`<li>${esc(o)}</li>`).join("")}</ul>
+
+      <h3 class="sec">Session Plan</h3>
+      <table class="agenda"><tbody>${agendaRows}</tbody></table>
+
+      <h3 class="sec">AI Tools Covered</h3>
+      <div class="tools">${cur.tools.map(t=>`<span class="tool">${esc(t)}</span>`).join("")}</div>
+
+      <h3 class="sec">Every Participant Walks Away With</h3>
+      <ul class="takeaways">${cur.takeaways.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
+
+      <h3 class="sec">Your Trainer &amp; Skillopedia</h3>
+      <div class="duo">
+        <div class="bio">
+          <div class="who">Hitesh Motwani</div>
+          <div class="role">Global AI Speaker &amp; Corporate Trainer</div>
+          A leading voice in practical AI adoption, Hitesh has trained thousands of professionals — from CXOs to frontline teams — across industries, helping organisations turn AI curiosity into measurable productivity. His sessions are known for being live, hands-on and demo-driven: no slides-only lectures, only real tools applied to real work.
+        </div>
+        <div class="bio">
+          <div class="who">About Skillopedia</div>
+          <div class="role">Learn · Try · Apply</div>
+          Skillopedia designs and delivers AI upskilling programs for forward-thinking organisations. Every curriculum is customised to the client's industry, audience and workflows, and delivered through our Learn → Try → Apply methodology — so training converts into daily habits, not just inspiration.
+        </div>
+      </div>
+    </div>
+
+    <footer class="doc-foot">
+      <span class="fbrand">
+        <svg width="20" height="20" viewBox="0 0 38 38" aria-hidden="true">
+          <rect width="38" height="38" rx="9" fill="#F58220"/>
+          <path d="M9 14.5 L19 9 L29 14.5 L19 20 Z" fill="#0B1530"/>
+          <path d="M13.5 18.5 V24 C13.5 24 15.5 26.5 19 26.5 C22.5 26.5 24.5 24 24.5 24 V18.5 L19 21.5 Z" fill="#0B1530" opacity=".82"/>
+        </svg>
+        Skillopedia
+      </span>
+      <span contenteditable="true"><b>hitesh@skillopedia.in</b> · www.skillopedia.in · @skillopedia</span>
+      <span>© Skillopedia. Curriculum prepared for ${esc(input.company)}.</span>
+    </footer>`;
+
+  document.getElementById("emptyState").style.display = "none";
+  document.getElementById("doc").style.display = "block";
+  document.getElementById("toolbar").style.display = "flex";
+  document.getElementById("doc").scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+/* =====================================================================
+   6. APP WIRING
+===================================================================== */
+
+const $ = id => document.getElementById(id);
+
+function engineCfg(){
+  try{ return JSON.parse(localStorage.getItem("sk_engine")) || { provider:"demo" }; }
+  catch{ return { provider:"demo" }; }
+}
+function saveEngineCfg(cfg){ localStorage.setItem("sk_engine", JSON.stringify(cfg)); }
+
+function refreshEngineLabels(){
+  const cfg = engineCfg();
+  const label = cfg.provider==="demo" ? "Built-in demo" : ENGINE_DEFAULTS[cfg.provider].label;
+  $("engineLabel").textContent = `Engine: ${label}`;
+  $("engineNote").textContent = cfg.provider==="demo" ? "built-in demo engine" : `${label} (live AI)`;
+}
+
+$("curForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const errBox = $("errBox"); errBox.style.display = "none";
+  const input = {
+    company: $("fCompany").value.trim() || "Your Company",
+    industry: $("fIndustry").value.trim(),
+    audience: $("fAudience").value,
+    format: document.querySelector('input[name=fFormat]:checked').value,
+    mode: document.querySelector('input[name=fMode]:checked').value,
+    focus: $("fFocus").value.trim()
+  };
+  const cfg = engineCfg();
+  const btn = $("btnGen");
+  btn.disabled = true;
+  btn.innerHTML = cfg.provider==="demo" ? "Generating…" : `<span class="spin"></span>Asking ${ENGINE_DEFAULTS[cfg.provider].label}…`;
+  try{
+    let cur;
+    if(cfg.provider==="demo"){
+      await new Promise(r=>setTimeout(r, 500)); // brief pause so generation feels deliberate
+      cur = demoEngine(input);
+    } else {
+      cur = await callLLM(cfg, buildLLMPrompt(input));
+      if(!cur.days || !cur.title) throw new Error("The model's response was missing required fields — try again.");
+    }
+    render(cur, input);
+  } catch(ex){
+    errBox.textContent = `Couldn't generate: ${ex.message}`;
+    errBox.style.display = "block";
+  } finally{
+    btn.disabled = false;
+    btn.textContent = "Generate curriculum";
+  }
+});
+
+$("btnPrint").addEventListener("click", ()=> window.print());
+$("btnReset").addEventListener("click", ()=>{
+  $("doc").style.display = "none";
+  $("toolbar").style.display = "none";
+  $("emptyState").style.display = "block";
+  window.scrollTo({ top:0, behavior:"smooth" });
+});
+
+/* engine modal */
+const modal = $("engineModal");
+$("engineChip").addEventListener("click", ()=>{
+  const cfg = engineCfg();
+  $("sProvider").value = cfg.provider;
+  $("sKey").value = cfg.key || "";
+  $("sModel").value = cfg.model || (cfg.provider!=="demo" ? ENGINE_DEFAULTS[cfg.provider].model : "");
+  toggleKeyRows();
+  modal.showModal();
+});
+function toggleKeyRows(){
+  const p = $("sProvider").value;
+  $("rowKey").style.display = p==="demo" ? "none":"block";
+  $("rowModel").style.display = p==="demo" ? "none":"block";
+  if(p!=="demo" && !$("sModel").value) $("sModel").value = ENGINE_DEFAULTS[p].model;
+}
+$("sProvider").addEventListener("change", ()=>{ $("sModel").value=""; toggleKeyRows(); });
+$("btnCancelEngine").addEventListener("click", ()=> modal.close());
+$("btnSaveEngine").addEventListener("click", ()=>{
+  const p = $("sProvider").value;
+  saveEngineCfg(p==="demo" ? { provider:"demo" }
+    : { provider:p, key:$("sKey").value.trim(), model:$("sModel").value.trim() || ENGINE_DEFAULTS[p].model });
+  refreshEngineLabels();
+  modal.close();
+});
+
+refreshEngineLabels();
+</script>
+</body>
+</html>
