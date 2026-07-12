@@ -35,6 +35,8 @@ A QR code appears in your terminal. On your phone: **WhatsApp → Settings → L
 
 For development: `npm run dev` (runs from source with tsx).
 
+**Going live?** See [DEPLOY.md](DEPLOY.md) — Docker on a VPS (recommended, `docker compose up -d` and scan the QR from the logs), bare Node + pm2, Railway/Fly worker, and how to present the product from a WordPress site (`wordpress-landing.html`).
+
 ## Talking to Talon
 
 Just message yourself in plain language:

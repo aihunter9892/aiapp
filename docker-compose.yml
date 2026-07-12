@@ -1,0 +1,12 @@
+services:
+  talon:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      TALON_DATA_DIR: /data
+    volumes:
+      - talon-data:/data
+
+volumes:
+  talon-data:
