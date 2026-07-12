@@ -1,4 +1,8 @@
-name: Deploy to GitHub Pages
+name: Publish to GitHub Pages
+
+# GitHub Pages serves this repo from the gh-pages branch (auto-enabled when
+# that branch first appeared). This workflow keeps gh-pages in sync with the
+# development branch on every push.
 
 on:
   push:
@@ -6,27 +10,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: pages-sync
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Mirror branch to gh-pages
+        run: git push --force origin HEAD:gh-pages
