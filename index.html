@@ -5,344 +5,302 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Skillopedia Curriculum Builder</title>
 <style>
-  /* ---------- Design tokens ---------- */
+  /* ---------- Skillopedia brand tokens (from logo + proposal deck) ---------- */
   :root{
-    --navy-900:#0B1530;
-    --navy-800:#122048;
-    --navy-700:#1B2C5E;
-    --navy-100:#E7EAF3;
-    --amber:#F58220;
-    --amber-deep:#D96A0B;
-    --amber-soft:#FDEFE0;
+    --purple-950:#241A42;
+    --purple-900:#2C2153;
+    --purple:#3B2A66;          /* wordmark / deck primary */
+    --purple-700:#4C3A80;
+    --lav-50:#F8F5FB;
+    --lav-100:#EEEAF2;
+    --lav-400:#9A95A8;
+    --orange:#F7A600;          /* logo swoosh */
+    --orange-deep:#D98A00;
+    --orange-soft:#FDF3DE;
+    --cream:#FAF6EE;
     --paper:#FFFFFF;
-    --app-bg:#F3F1EC;
-    --panel-bg:#122048;
-    --panel-ink:#F4F6FB;
-    --panel-muted:#9AA6C4;
-    --ink:#1A2237;
-    --ink-soft:#4C5670;
-    --line:#DAD5CA;
-    --doc-line:#E3E0D8;
-    --good:#1E9E6A;
-    --radius:10px;
+    --app-bg:#F2EFF5;
+    --ink:#3A3A4A;
+    --ink-soft:#5C566B;
+    --line:#DDD6E6;
+    --good:#2E8B62;
     --sans:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
-  :root[data-theme="dark"], :root[data-theme="dark"] body{ color-scheme: dark; }
   @media (prefers-color-scheme: dark){
-    :root{ --app-bg:#0D1426; --line:#26314F; }
+    :root{ --app-bg:#161027; --line:#3A2F58; }
   }
-  :root[data-theme="dark"]{ --app-bg:#0D1426; --line:#26314F; }
-  :root[data-theme="light"]{ --app-bg:#F3F1EC; --line:#DAD5CA; }
+  :root[data-theme="dark"]{ --app-bg:#161027; --line:#3A2F58; }
+  :root[data-theme="light"]{ --app-bg:#F2EFF5; --line:#DDD6E6; }
 
   *{ box-sizing:border-box; margin:0; padding:0; }
   html, body{ height:100%; }
-  body{
-    font-family:var(--sans);
-    background:var(--app-bg);
-    color:var(--ink);
-    -webkit-font-smoothing:antialiased;
-  }
+  body{ font-family:var(--sans); background:var(--app-bg); color:var(--ink); -webkit-font-smoothing:antialiased; }
   button{ font-family:inherit; cursor:pointer; }
   input, select, textarea{ font-family:inherit; font-size:14px; }
 
   /* ---------- App shell ---------- */
   .topbar{
-    background:var(--navy-900);
-    color:#fff;
+    background:var(--purple-950); color:#fff;
     display:flex; align-items:center; justify-content:space-between;
-    padding:14px 22px;
-    gap:16px;
+    padding:12px 22px; gap:16px;
   }
-  .brand{ display:flex; align-items:center; gap:12px; }
-  .brand svg{ display:block; }
-  .brand-name{ font-size:19px; font-weight:800; letter-spacing:.01em; line-height:1.1; }
-  .brand-sub{ font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--panel-muted); margin-top:3px; }
-  .topbar-actions{ display:flex; gap:10px; align-items:center; }
+  .brand{ display:flex; align-items:center; gap:13px; }
+  .brand .logo-chip{
+    background:#fff; border-radius:8px; padding:4px 10px; display:flex; align-items:center;
+  }
+  .brand .logo-chip img{ height:34px; display:block; }
+  .brand-sub{ font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:#B9AFD3; }
+  .brand-sub b{ display:block; color:#fff; font-size:13px; letter-spacing:.02em; text-transform:none; margin-bottom:2px; }
   .chip-engine{
-    font-size:12px; color:var(--panel-muted);
-    border:1px solid var(--navy-700); border-radius:999px;
-    padding:6px 12px; background:transparent; color:#C9D2E8;
+    font-size:12px; border:1px solid var(--purple-700); border-radius:999px;
+    padding:6px 12px; background:transparent; color:#D7CFE8;
     display:flex; align-items:center; gap:7px;
   }
   .chip-engine .dot{ width:7px; height:7px; border-radius:50%; background:var(--good); }
-  .chip-engine:hover{ border-color:var(--amber); }
+  .chip-engine:hover{ border-color:var(--orange); }
 
-  .layout{
-    display:grid;
-    grid-template-columns:390px 1fr;
-    min-height:calc(100vh - 63px);
-  }
-  @media (max-width: 940px){
-    .layout{ grid-template-columns:1fr; }
-  }
+  .layout{ display:grid; grid-template-columns:390px 1fr; min-height:calc(100vh - 60px); }
+  @media (max-width: 940px){ .layout{ grid-template-columns:1fr; } }
 
   /* ---------- Form panel ---------- */
-  .panel{
-    background:var(--panel-bg);
-    color:var(--panel-ink);
-    padding:28px 26px 40px;
-  }
-  .panel h2{ font-size:16px; font-weight:700; letter-spacing:.01em; }
-  .panel .lede{ font-size:13px; color:var(--panel-muted); margin-top:6px; line-height:1.55; max-width:34ch; }
+  .panel{ background:var(--purple-900); color:#F2EFF8; padding:28px 26px 40px; }
+  .panel h2{ font-size:16px; font-weight:700; }
+  .panel .lede{ font-size:13px; color:#B9AFD3; margin-top:6px; line-height:1.55; max-width:34ch; }
   .field{ margin-top:20px; }
   .field label{
-    display:block; font-size:11px; font-weight:700;
-    letter-spacing:.12em; text-transform:uppercase;
-    color:var(--panel-muted); margin-bottom:8px;
+    display:block; font-size:11px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:#B9AFD3; margin-bottom:8px;
   }
   .field input[type=text], .field select, .field textarea{
-    width:100%;
-    background:var(--navy-800);
-    border:1px solid var(--navy-700);
-    color:var(--panel-ink);
-    border-radius:8px;
-    padding:11px 12px;
-    outline:none;
+    width:100%; background:var(--purple-950); border:1px solid var(--purple-700);
+    color:#F2EFF8; border-radius:8px; padding:11px 12px; outline:none;
   }
   .field input:focus, .field select:focus, .field textarea:focus{
-    border-color:var(--amber);
-    box-shadow:0 0 0 3px rgba(245,130,32,.18);
+    border-color:var(--orange); box-shadow:0 0 0 3px rgba(247,166,0,.18);
   }
   .field textarea{ resize:vertical; min-height:64px; }
-  .hint{ font-size:11.5px; color:var(--panel-muted); margin-top:6px; line-height:1.5; }
+  .hint{ font-size:11.5px; color:#B9AFD3; margin-top:6px; line-height:1.5; }
 
   .format-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .format-grid input{ position:absolute; opacity:0; pointer-events:none; }
+  .format-grid input, .mode-row input{ position:absolute; opacity:0; pointer-events:none; }
   .format-card{
-    border:1px solid var(--navy-700);
-    background:var(--navy-800);
-    border-radius:8px;
-    padding:10px 12px;
-    display:block;
-    cursor:pointer;
+    border:1px solid var(--purple-700); background:var(--purple-950);
+    border-radius:8px; padding:10px 12px; display:block; cursor:pointer;
   }
-  .format-card b{ display:block; font-size:13px; font-weight:700; }
-  .format-card span{ display:block; font-size:11px; color:var(--panel-muted); margin-top:3px; }
+  .format-card b{ display:block; font-size:13px; }
+  .format-card span{ display:block; font-size:11px; color:#B9AFD3; margin-top:3px; }
   .format-grid input:checked + .format-card{
-    border-color:var(--amber);
-    background:linear-gradient(0deg, rgba(245,130,32,.13), rgba(245,130,32,.13)) var(--navy-800);
+    border-color:var(--orange);
+    background:linear-gradient(0deg, rgba(247,166,0,.13), rgba(247,166,0,.13)) var(--purple-950);
   }
-  .format-grid input:focus-visible + .format-card{ outline:2px solid var(--amber); outline-offset:2px; }
-
+  .format-grid input:focus-visible + .format-card{ outline:2px solid var(--orange); outline-offset:2px; }
   .mode-row{ display:flex; gap:8px; }
-  .mode-row input{ position:absolute; opacity:0; pointer-events:none; }
   .mode-pill{
-    border:1px solid var(--navy-700); background:var(--navy-800);
-    border-radius:999px; padding:7px 14px; font-size:12.5px; cursor:pointer;
-    color:var(--panel-ink);
+    border:1px solid var(--purple-700); background:var(--purple-950);
+    border-radius:999px; padding:7px 14px; font-size:12.5px; cursor:pointer; color:#F2EFF8;
   }
-  .mode-row input:checked + .mode-pill{ border-color:var(--amber); color:#fff; background:rgba(245,130,32,.16); }
-  .mode-row input:focus-visible + .mode-pill{ outline:2px solid var(--amber); outline-offset:2px; }
+  .mode-row input:checked + .mode-pill{ border-color:var(--orange); background:rgba(247,166,0,.16); }
+  .mode-row input:focus-visible + .mode-pill{ outline:2px solid var(--orange); outline-offset:2px; }
 
   .btn-generate{
-    margin-top:26px;
-    width:100%;
-    background:var(--amber);
-    color:#221100;
-    font-weight:800;
-    font-size:15px;
-    border:none;
-    border-radius:9px;
-    padding:14px;
-    letter-spacing:.01em;
+    margin-top:26px; width:100%; background:var(--orange); color:#241A42;
+    font-weight:800; font-size:15px; border:none; border-radius:9px; padding:14px;
   }
-  .btn-generate:hover{ background:#FF9435; }
+  .btn-generate:hover{ background:#FFB525; }
   .btn-generate:disabled{ opacity:.6; cursor:wait; }
-  .gen-note{ font-size:11.5px; color:var(--panel-muted); text-align:center; margin-top:10px; }
-  .gen-note b{ color:#C9D2E8; }
+  .gen-note{ font-size:11.5px; color:#B9AFD3; text-align:center; margin-top:10px; }
+  .gen-note b{ color:#E5DEF2; }
   .err{
     margin-top:14px; font-size:12.5px; line-height:1.5;
     background:rgba(214,69,69,.14); border:1px solid rgba(214,69,69,.5);
     color:#FFC9C9; border-radius:8px; padding:10px 12px; display:none;
   }
 
-  /* ---------- Preview area ---------- */
-  .stage{
-    padding:30px clamp(16px, 4vw, 48px) 80px;
-    overflow-x:auto;
-  }
+  /* ---------- Preview stage ---------- */
+  .stage{ padding:30px clamp(16px, 4vw, 48px) 80px; overflow-x:auto; }
   .stage-toolbar{
-    max-width:840px; margin:0 auto 16px;
-    display:none;
+    max-width:840px; margin:0 auto 16px; display:none;
     align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
   }
   .stage-toolbar .tip{ font-size:12.5px; color:var(--ink-soft); }
-  :root[data-theme="dark"] .stage-toolbar .tip{ color:#9AA6C4; }
-  @media (prefers-color-scheme: dark){ .stage-toolbar .tip{ color:#9AA6C4; } }
-  .toolbar-btns{ display:flex; gap:8px; }
-  .btn-ghost, .btn-solid{
-    border-radius:8px; font-size:13px; font-weight:700; padding:9px 16px;
-  }
-  .btn-solid{ background:var(--navy-800); color:#fff; border:1px solid var(--navy-800); }
-  .btn-solid:hover{ background:var(--navy-700); }
+  :root[data-theme="dark"] .stage-toolbar .tip{ color:#B9AFD3; }
+  @media (prefers-color-scheme: dark){ .stage-toolbar .tip{ color:#B9AFD3; } }
+  .toolbar-btns{ display:flex; gap:8px; flex-wrap:wrap; }
+  .btn-ghost, .btn-solid, .btn-accent{ border-radius:8px; font-size:13px; font-weight:700; padding:9px 16px; }
+  .btn-solid{ background:var(--purple); color:#fff; border:1px solid var(--purple); }
+  .btn-solid:hover{ background:var(--purple-700); }
+  .btn-accent{ background:var(--orange); color:#241A42; border:1px solid var(--orange); }
+  .btn-accent:hover{ background:#FFB525; }
   .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
-  :root[data-theme="dark"] .btn-ghost{ color:#E7EAF3; }
-  @media (prefers-color-scheme: dark){ .btn-ghost{ color:#E7EAF3; } }
+  :root[data-theme="dark"] .btn-ghost{ color:#E5DEF2; }
+  @media (prefers-color-scheme: dark){ .btn-ghost{ color:#E5DEF2; } }
 
-  .empty{
-    max-width:840px; margin:60px auto; text-align:center; color:var(--ink-soft);
+  .dl-note{
+    max-width:840px; margin:0 auto 16px; display:none;
+    background:var(--orange-soft); border:1px solid var(--orange); border-left:4px solid var(--orange);
+    border-radius:8px; padding:12px 16px; font-size:13px; line-height:1.6; color:#3A3A4A;
   }
-  :root[data-theme="dark"] .empty{ color:#9AA6C4; }
-  @media (prefers-color-scheme: dark){ .empty{ color:#9AA6C4; } }
-  .empty .big{ font-size:20px; font-weight:800; color:inherit; margin-top:18px; }
+  .dl-note b{ color:var(--purple); }
+  .dl-note a{ color:var(--purple); font-weight:700; }
+  .dl-note .url{
+    user-select:all; background:#fff; border:1px solid var(--line); border-radius:5px;
+    padding:2px 8px; font-family:ui-monospace, Menlo, Consolas, monospace; font-size:12px;
+  }
+
+  .empty{ max-width:840px; margin:60px auto; text-align:center; color:var(--ink-soft); }
+  :root[data-theme="dark"] .empty{ color:#B9AFD3; }
+  @media (prefers-color-scheme: dark){ .empty{ color:#B9AFD3; } }
+  .empty .logo-card{
+    display:inline-block; background:#fff; border-radius:14px; padding:14px 22px;
+    box-shadow:0 4px 18px rgba(36,26,66,.14);
+  }
+  .empty .logo-card img{ height:52px; display:block; }
+  .empty .big{ font-size:20px; font-weight:800; margin-top:20px; }
   .empty p{ font-size:14px; margin-top:8px; line-height:1.6; }
 
-  /* ---------- The curriculum document (always light — it's a print piece) ---------- */
+  /* ---------- The curriculum document (print-first, always light) ---------- */
   .doc{
-    max-width:840px;
-    margin:0 auto;
-    background:var(--paper);
-    color:var(--ink);
-    border-radius:6px;
-    box-shadow:0 2px 6px rgba(11,21,48,.10), 0 14px 40px rgba(11,21,48,.12);
-    overflow:hidden;
-    display:none;
+    max-width:840px; margin:0 auto; background:var(--paper); color:var(--ink);
+    border-radius:6px; overflow:hidden; display:none;
+    box-shadow:0 2px 6px rgba(36,26,66,.10), 0 14px 40px rgba(36,26,66,.14);
   }
-  .doc-head{
-    background:var(--navy-900);
-    color:#fff;
-    padding:34px 44px 30px;
-    position:relative;
+  .doc-white{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:20px 44px; background:#fff;
   }
-  .doc-head::after{
-    content:"";
-    position:absolute; left:0; right:0; bottom:0;
-    height:5px;
-    background:linear-gradient(90deg, var(--amber) 0 34%, #FBB040 34% 60%, #2E4A9E 60% 100%);
+  .doc-white img{ height:44px; }
+  .doc-white .eyebrow{
+    font-size:10px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--lav-400); font-weight:700; text-align:right;
   }
-  .doc-brandrow{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
-  .doc-eyebrow{
-    font-size:10.5px; letter-spacing:.22em; text-transform:uppercase;
-    color:#FBB040; font-weight:700;
+  .doc-purple{ background:var(--purple); color:#fff; padding:30px 44px 26px; position:relative; }
+  .doc-purple::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:5px;
+    background:linear-gradient(90deg, var(--orange) 0 38%, #FFC94D 38% 58%, var(--purple-700) 58% 100%);
   }
   .doc-title{
-    font-size:31px; font-weight:800; line-height:1.15;
-    margin-top:10px; letter-spacing:-.01em; text-wrap:balance; max-width:22ch;
+    font-size:29px; font-weight:800; letter-spacing:.02em; line-height:1.18;
+    text-transform:uppercase; text-wrap:balance; max-width:24ch;
   }
-  .doc-client{ font-size:14.5px; color:#C9D2E8; margin-top:10px; }
-  .doc-client b{ color:#fff; }
-  .doc-meta{
-    display:flex; flex-wrap:wrap; gap:10px; margin-top:22px;
+  .doc-aud{ font-size:15px; color:#E5DEF2; margin-top:9px; }
+  .doc-aud b{ color:#FFC94D; }
+  .doc-deliv{ font-size:12.5px; color:#B9AFD3; margin-top:7px; letter-spacing:.03em; }
+  .doc-stats{
+    margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,.18);
+    font-size:12px; letter-spacing:.08em; color:#E5DEF2; font-weight:600;
   }
-  .meta-chip{
-    border:1px solid rgba(255,255,255,.22);
-    border-radius:999px;
-    font-size:12px; padding:6px 13px; color:#E7EAF3;
-  }
-  .meta-chip b{ color:#FBB040; font-weight:700; }
-
-  .doc-body{ padding:36px 44px 10px; }
+  .doc-body{ padding:34px 44px 10px; }
   .doc h3.sec{
-    font-size:12px; font-weight:800; letter-spacing:.18em; text-transform:uppercase;
-    color:var(--amber-deep);
-    display:flex; align-items:center; gap:12px;
-    margin:34px 0 14px;
+    font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--purple); display:flex; align-items:center; gap:12px; margin:32px 0 14px;
   }
-  .doc h3.sec::after{ content:""; flex:1; height:1px; background:var(--doc-line); }
+  .doc h3.sec::before{ content:""; width:22px; height:4px; background:var(--orange); border-radius:2px; }
+  .doc h3.sec::after{ content:""; flex:1; height:1px; background:var(--lav-100); }
   .doc h3.sec:first-child{ margin-top:0; }
-  .doc .overview{ font-size:14.5px; line-height:1.7; color:var(--ink); max-width:70ch; }
 
-  .outcomes{ list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:10px 22px; }
-  @media (max-width:640px){ .outcomes{ grid-template-columns:1fr; } }
-  .outcomes li{
-    font-size:13.5px; line-height:1.55; padding-left:24px; position:relative;
-  }
-  .outcomes li::before{
-    content:"✓"; position:absolute; left:0; top:0;
-    color:var(--good); font-weight:800;
-  }
+  .glance{ display:grid; grid-template-columns:150px 1fr; gap:0; border:1px solid var(--lav-100); border-radius:8px; overflow:hidden; }
+  .glance > div{ padding:9px 14px; font-size:13px; line-height:1.5; border-bottom:1px solid var(--lav-100); }
+  .glance > div:nth-last-child(-n+2){ border-bottom:none; }
+  .glance .k{ background:var(--lav-50); font-weight:700; color:var(--purple); font-size:12px; letter-spacing:.04em; }
 
-  .agenda{ width:100%; border-collapse:collapse; }
-  .agenda .day-row td{
-    background:var(--navy-800); color:#fff; font-weight:800; font-size:13px;
-    padding:9px 14px; letter-spacing:.06em; text-transform:uppercase;
-  }
-  .agenda td{ vertical-align:top; border-bottom:1px solid var(--doc-line); padding:15px 14px 15px 0; }
-  .agenda .t{
-    white-space:nowrap; font-size:12px; font-weight:700; color:var(--ink-soft);
-    font-variant-numeric:tabular-nums;
-    padding-left:14px; width:112px;
-  }
-  .agenda .m b{ font-size:14.5px; display:block; color:var(--navy-800); }
-  .agenda .m ul{ margin:8px 0 0; padding-left:17px; }
-  .agenda .m li{ font-size:13px; line-height:1.55; margin-top:3px; }
-  .agenda .m .act{
-    margin-top:10px; font-size:12.5px; line-height:1.5;
-    background:var(--amber-soft); border-left:3px solid var(--amber);
-    padding:8px 12px; border-radius:0 6px 6px 0;
-  }
-  .agenda .m .act b{ display:inline; font-size:12.5px; color:var(--amber-deep); text-transform:uppercase; letter-spacing:.06em; }
-  .agenda .break-row td{
-    padding:9px 14px; font-size:12px; font-weight:700; letter-spacing:.1em;
-    text-transform:uppercase; color:var(--ink-soft); background:#F6F4EF;
-    border-bottom:1px solid var(--doc-line);
+  .objectives{ list-style:none; display:grid; gap:9px; }
+  .objectives li{ font-size:13.5px; line-height:1.55; padding-left:26px; position:relative; }
+  .objectives li::before{
+    content:""; position:absolute; left:2px; top:5px; width:9px; height:9px;
+    background:var(--orange); border-radius:2px;
   }
 
-  .tools{ display:flex; flex-wrap:wrap; gap:8px; }
-  .tool{
-    font-size:12.5px; font-weight:600;
-    border:1px solid var(--doc-line); border-radius:999px;
-    padding:6px 13px; background:#FBFAF7; color:var(--navy-800);
+  table.sched{ width:100%; border-collapse:collapse; font-size:13px; }
+  table.sched th{
+    background:var(--purple); color:#fff; text-align:left; font-size:11px;
+    letter-spacing:.1em; text-transform:uppercase; padding:9px 12px;
   }
-
-  .takeaways{ list-style:none; display:grid; gap:9px; }
-  .takeaways li{ font-size:13.5px; line-height:1.55; padding-left:26px; position:relative; }
-  .takeaways li::before{
-    content:""; position:absolute; left:2px; top:5px;
-    width:9px; height:9px; background:var(--amber); border-radius:2px;
+  table.sched td{ padding:8px 12px; border-bottom:1px solid var(--lav-100); vertical-align:top; }
+  table.sched .time{ white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--ink-soft); width:110px; }
+  table.sched .dur{ white-space:nowrap; color:var(--ink-soft); width:70px; }
+  table.sched .brk td{ background:var(--lav-50); color:var(--lav-400); font-style:italic; }
+  table.sched .dayhead td{
+    background:var(--orange-soft); color:var(--orange-deep); font-weight:800;
+    letter-spacing:.1em; text-transform:uppercase; font-size:11px;
   }
+  table.sched td b{ color:var(--purple); }
 
-  .duo{ display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:6px; }
-  @media (max-width:640px){ .duo{ grid-template-columns:1fr; } }
-  .bio{ font-size:13px; line-height:1.65; color:var(--ink); }
-  .bio .who{ font-size:15px; font-weight:800; color:var(--navy-800); }
-  .bio .role{ font-size:12px; color:var(--amber-deep); font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin:2px 0 8px; }
+  .mod{ margin:22px 0; break-inside:avoid; }
+  .mod-head{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .mod-tag{
+    font-size:10.5px; font-weight:800; letter-spacing:.14em; color:#fff;
+    background:var(--purple); border-radius:4px; padding:3px 9px; text-transform:uppercase;
+  }
+  .mod-head h4{ font-size:16px; font-weight:800; color:var(--purple); }
+  .mod-time{ font-size:12px; color:var(--lav-400); font-weight:600; font-variant-numeric:tabular-nums; }
+  .mod .wc-label{
+    font-size:10.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--orange-deep); margin:12px 0 6px;
+  }
+  .mod ul{ padding-left:19px; }
+  .mod li{ font-size:13.5px; line-height:1.6; margin-top:3px; }
+  .mod .act{
+    margin-top:12px; font-size:13px; line-height:1.55;
+    background:var(--orange-soft); border-left:3px solid var(--orange);
+    padding:9px 13px; border-radius:0 6px 6px 0;
+  }
+  .mod .act b{ color:var(--orange-deep); text-transform:uppercase; letter-spacing:.06em; font-size:11.5px; }
+  .mod .tools-line{ margin-top:8px; font-size:12px; color:var(--ink-soft); }
+  .mod .tools-line b{ color:var(--purple); }
+
+  .plain-list{ list-style:none; display:grid; gap:8px; }
+  .plain-list li{ font-size:13.5px; line-height:1.55; padding-left:22px; position:relative; }
+  .plain-list li::before{ content:"—"; position:absolute; left:0; color:var(--orange); font-weight:700; }
+
+  .facil{ display:grid; grid-template-columns:1fr 1fr; gap:26px; }
+  @media (max-width:640px){ .facil{ grid-template-columns:1fr; } }
+  .facil .who{ font-size:16px; font-weight:800; color:var(--purple); }
+  .facil .role{
+    font-size:11px; color:var(--orange-deep); font-weight:800; letter-spacing:.08em;
+    text-transform:uppercase; margin:3px 0 10px;
+  }
+  .facil ul{ list-style:none; display:grid; gap:7px; }
+  .facil li{ font-size:13px; line-height:1.5; padding-left:20px; position:relative; }
+  .facil li::before{ content:"✓"; position:absolute; left:0; color:var(--good); font-weight:800; }
 
   .doc-foot{
-    margin-top:38px;
-    background:var(--navy-900); color:#C9D2E8;
-    padding:18px 44px;
+    margin-top:36px; background:var(--purple-950); color:#D7CFE8;
+    padding:18px 44px; font-size:12px; line-height:1.7;
     display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
-    font-size:12px;
   }
   .doc-foot b{ color:#fff; }
-  .doc-foot .fbrand{ display:flex; align-items:center; gap:9px; font-weight:800; color:#fff; font-size:13px; }
+  .doc-foot .tag{ color:var(--orange); font-weight:700; }
 
-  [contenteditable]:focus{ outline:2px dashed rgba(245,130,32,.55); outline-offset:3px; border-radius:2px; }
+  [contenteditable]:focus{ outline:2px dashed rgba(247,166,0,.6); outline-offset:3px; border-radius:2px; }
 
   /* ---------- Settings modal ---------- */
-  dialog{
-    border:none; border-radius:12px; padding:0;
-    width:min(480px, calc(100vw - 32px));
-    box-shadow:0 24px 80px rgba(0,0,0,.35);
-  }
-  dialog::backdrop{ background:rgba(11,21,48,.55); }
+  dialog{ border:none; border-radius:12px; padding:0; width:min(480px, calc(100vw - 32px)); box-shadow:0 24px 80px rgba(0,0,0,.35); }
+  dialog::backdrop{ background:rgba(36,26,66,.6); }
   .modal-inner{ padding:26px 26px 24px; background:var(--paper); color:var(--ink); }
-  .modal-inner h3{ font-size:17px; font-weight:800; }
+  .modal-inner h3{ font-size:17px; font-weight:800; color:var(--purple); }
   .modal-inner .sub{ font-size:13px; color:var(--ink-soft); margin-top:6px; line-height:1.55; }
   .modal-inner .field label{ color:var(--ink-soft); }
-  .modal-inner .field input, .modal-inner .field select{
-    background:#F7F5F0; border:1px solid var(--line); color:var(--ink);
-  }
+  .modal-inner .field input, .modal-inner .field select{ background:var(--lav-50); border:1px solid var(--line); color:var(--ink); }
+  .modal-inner .hint{ color:var(--ink-soft); }
   .modal-btns{ display:flex; justify-content:flex-end; gap:10px; margin-top:24px; }
 
   .spin{
     display:inline-block; width:14px; height:14px; border-radius:50%;
-    border:2px solid rgba(34,17,0,.35); border-top-color:#221100;
+    border:2px solid rgba(36,26,66,.35); border-top-color:#241A42;
     animation:spin .7s linear infinite; vertical-align:-2px; margin-right:8px;
   }
   @keyframes spin{ to{ transform:rotate(360deg); } }
   @media (prefers-reduced-motion: reduce){ .spin{ animation-duration:1.6s; } }
 
-  /* ---------- Print: the document only ---------- */
+  /* ---------- Print ---------- */
   @media print{
     body{ background:#fff; }
     .topbar, .panel, .stage-toolbar, .empty{ display:none !important; }
     .layout{ display:block; }
     .stage{ padding:0; overflow:visible; }
     .doc{ box-shadow:none; border-radius:0; max-width:none; }
-    .doc-head, .doc-foot, .agenda .day-row td{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    .agenda tr, .doc h3.sec{ break-inside:avoid; }
+    .doc-purple, .doc-foot, table.sched th, .mod-tag{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    .mod, table.sched tr, .doc h3.sec{ break-inside:avoid; }
   }
 </style>
 </head>
@@ -350,22 +308,12 @@
 
 <header class="topbar">
   <div class="brand">
-    <svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true">
-      <rect width="38" height="38" rx="9" fill="#F58220"/>
-      <path d="M9 14.5 L19 9 L29 14.5 L19 20 Z" fill="#0B1530"/>
-      <path d="M13.5 18.5 V24 C13.5 24 15.5 26.5 19 26.5 C22.5 26.5 24.5 24 24.5 24 V18.5 L19 21.5 Z" fill="#0B1530" opacity=".82"/>
-      <rect x="27.6" y="14.5" width="1.8" height="8" rx="0.9" fill="#0B1530"/>
-    </svg>
-    <div>
-      <div class="brand-name">Skillopedia</div>
-      <div class="brand-sub">Curriculum Builder</div>
-    </div>
+    <span class="logo-chip"><img id="logoTop" alt="Skillopedia — Learn. Innovate. Lead."></span>
+    <div class="brand-sub"><b>Curriculum Builder</b>Learn · Innovate · Lead</div>
   </div>
-  <div class="topbar-actions">
-    <button class="chip-engine" id="engineChip" title="AI engine settings">
-      <span class="dot"></span><span id="engineLabel">Engine: Built-in demo</span>
-    </button>
-  </div>
+  <button class="chip-engine" id="engineChip" title="AI engine settings">
+    <span class="dot"></span><span id="engineLabel">Engine: Built-in demo</span>
+  </button>
 </header>
 
 <div class="layout">
@@ -373,12 +321,12 @@
   <!-- ============ FORM ============ -->
   <aside class="panel">
     <h2>Design a client-ready curriculum</h2>
-    <p class="lede">Fill in the client's details and get a fully branded Skillopedia training curriculum in seconds.</p>
+    <p class="lede">Fill in the client's details and get a fully branded Skillopedia curriculum — on screen, as PPT, or as a Word document.</p>
 
     <form id="curForm">
       <div class="field">
         <label for="fCompany">Company name</label>
-        <input type="text" id="fCompany" placeholder="e.g. Birla Estates" required>
+        <input type="text" id="fCompany" placeholder="e.g. Tribeca Developers" required>
       </div>
 
       <div class="field">
@@ -415,7 +363,7 @@
           <span><input type="radio" name="fFormat" id="fmt-half" value="half">
           <label class="format-card" for="fmt-half"><b>Half Day</b><span>4-hour workshop</span></label></span>
           <span><input type="radio" name="fFormat" id="fmt-full" value="full" checked>
-          <label class="format-card" for="fmt-full"><b>Full Day</b><span>One-day immersive</span></label></span>
+          <label class="format-card" for="fmt-full"><b>Full Day</b><span>9:00 – 17:00 immersive</span></label></span>
           <span><input type="radio" name="fFormat" id="fmt-two" value="twoday">
           <label class="format-card" for="fmt-two"><b>2 Days</b><span>Deep-dive bootcamp</span></label></span>
         </div>
@@ -435,11 +383,11 @@
 
       <div class="field">
         <label for="fFocus">Special focus <span style="text-transform:none;letter-spacing:0;font-weight:400">(optional)</span></label>
-        <textarea id="fFocus" placeholder="e.g. Heavy on proposal writing and client follow-ups; team already uses ChatGPT casually"></textarea>
-        <p class="hint">Used to tailor the overview — and sent to the AI engine when one is connected.</p>
+        <textarea id="fFocus" placeholder="e.g. Heavy on proposal writing and client follow-ups; no confidential data in exercises"></textarea>
+        <p class="hint">Shown as the programme's Emphasis — and sent to the AI engine when one is connected.</p>
       </div>
 
-      <button type="submit" class="btn-generate" id="btnGen">Generate curriculum</button>
+      <button type="button" class="btn-generate" id="btnGen">Generate curriculum</button>
       <p class="gen-note">Runs on the <b id="engineNote">built-in demo engine</b> — no API key needed for the prototype.</p>
       <div class="err" id="errBox"></div>
     </form>
@@ -447,23 +395,26 @@
 
   <!-- ============ PREVIEW ============ -->
   <main class="stage">
+    <div class="dl-note" id="dlNote">
+      <b>Heads-up: this preview window blocks file downloads.</b><br>
+      Use the full app instead — everything is identical there and PPT, Word and PDF downloads all work:
+      <a href="https://aihunter9892.github.io/aiapp/" target="_blank" rel="noopener">open the full app</a>
+      &nbsp;·&nbsp; or copy the address: <span class="url">https://aihunter9892.github.io/aiapp/</span>
+    </div>
     <div class="stage-toolbar" id="toolbar">
-      <span class="tip">✎ Click any text in the document to edit it before downloading.</span>
+      <span class="tip">✎ Click any text to tweak it — edits apply to the on-screen &amp; PDF version.</span>
       <span class="toolbar-btns">
         <button class="btn-ghost" id="btnReset">Start over</button>
-        <button class="btn-solid" id="btnPrint">Download PDF / Print</button>
+        <button class="btn-solid" id="btnWord">⬇ Word (.doc)</button>
+        <button class="btn-solid" id="btnPpt">⬇ PowerPoint (.pptx)</button>
+        <button class="btn-accent" id="btnPrint">Print / Save PDF</button>
       </span>
     </div>
 
     <div class="empty" id="emptyState">
-      <svg width="72" height="72" viewBox="0 0 38 38" aria-hidden="true" style="opacity:.9">
-        <rect width="38" height="38" rx="9" fill="#F58220"/>
-        <path d="M9 14.5 L19 9 L29 14.5 L19 20 Z" fill="#0B1530"/>
-        <path d="M13.5 18.5 V24 C13.5 24 15.5 26.5 19 26.5 C22.5 26.5 24.5 24 24.5 24 V18.5 L19 21.5 Z" fill="#0B1530" opacity=".82"/>
-        <rect x="27.6" y="14.5" width="1.8" height="8" rx="0.9" fill="#0B1530"/>
-      </svg>
+      <span class="logo-card"><img id="logoEmpty" alt="Skillopedia — Learn. Innovate. Lead."></span>
       <div class="big">Your branded curriculum will appear here</div>
-      <p>Enter the client's company, audience and format on the left.<br>Every curriculum carries the Skillopedia format, branding and trainer profile.</p>
+      <p>Enter the client's company, audience and format on the left.<br>Download it as a PowerPoint deck, a Word document, or a print-ready PDF.</p>
     </div>
 
     <article class="doc" id="doc" aria-live="polite"></article>
@@ -488,7 +439,7 @@
     <div class="field" id="rowKey" style="display:none">
       <label for="sKey">API key</label>
       <input type="password" id="sKey" placeholder="Paste your API key" autocomplete="off">
-      <p class="hint" style="color:var(--ink-soft)">Stored only in this browser (localStorage). For production, move the call to a small server/WordPress plugin so the key is never exposed.</p>
+      <p class="hint">Stored only in this browser (localStorage). For production, move the call to a small server/WordPress plugin so the key is never exposed.</p>
     </div>
     <div class="field" id="rowModel" style="display:none">
       <label for="sModel">Model</label>
@@ -501,13 +452,47 @@
   </div>
 </dialog>
 
+<script src="pptxgen.bundle.js"></script>
 <script>
 "use strict";
 
 /* =====================================================================
+   0. BRAND ASSETS & FACTS  (real Skillopedia identity)
+===================================================================== */
+
+const LOGO_B64 = "data:image/jpeg;base64,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";
+const HITESH_B64 = "data:image/png;base64,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";
+
+const BRAND = {
+  purple:"3B2A66", purple950:"241A42", purple700:"4C3A80",
+  orange:"F7A600", orangeDeep:"D98A00", orangeSoft:"FDF3DE",
+  lav50:"F8F5FB", lav100:"EEEAF2", lav400:"9A95A8",
+  cream:"FAF6EE", ink:"3A3A4A", inkSoft:"5C566B", white:"FFFFFF", good:"2E8B62"
+};
+
+const SK = {
+  tagline:"Learn. Innovate. Lead.",
+  statsLine:"200,000+ Trained   ·   500+ Corporates   ·   20+ Countries",
+  facilitatorName:"Hitesh Motwani",
+  facilitatorRole:"Founder & Lead Trainer, Skillopedia",
+  facilitatorPoints:[
+    "Trained 200,000+ professionals across 20+ countries.",
+    "Visiting Faculty: 9 IIMs & University of London.",
+    "Author of Generative AI 360°.",
+    "200+ corporate Gen AI workshops · 4.8/5 average rating."
+  ],
+  contactLine:"Hitesh Motwani   |   hitesh@skillopediagroup.com   |   +91 98924 14313",
+  footerLine:"Skillopedia — Learn. Innovate. Lead.  ·  www.skillopediagroup.com",
+  email:"hitesh@skillopediagroup.com",
+  phone:"+91 98924 14313",
+  web:"www.skillopediagroup.com"
+};
+
+document.getElementById("logoTop").src = LOGO_B64;
+document.getElementById("logoEmpty").src = LOGO_B64;
+
+/* =====================================================================
    1. CONTENT LIBRARY  (the built-in demo engine)
-   Curriculum modules follow the Skillopedia session format:
-   title → what we cover → hands-on activity → tools used.
 ===================================================================== */
 
 const AUDIENCES = {
@@ -523,213 +508,241 @@ const AUDIENCES = {
 };
 
 const M = {
-  landscape: {
-    title:"Generative AI: The Landscape Today",
+  welcome: {
+    kind:"welcome", title:"Welcome & AI Setup",
     points:[
-      "What Generative AI can (and can't) do — beyond the hype",
-      "ChatGPT vs Gemini vs Claude vs Copilot: which tool for which job",
-      "Where AI is already creating value in {industry}",
-      "Live tour: the AI toolkit every professional needs in 2026"
+      "Welcome and introductions.",
+      "AI tool access set up for every participant.",
+      "Quick orientation to the tools we'll use all day.",
+      "Ground rules: what data stays out of public AI tools."
     ],
-    activity:"10 tasks in 10 minutes — a rapid-fire live demo of AI doing a full morning's work.",
-    tools:["ChatGPT","Google Gemini","Microsoft Copilot","Claude"]
+    activity:"", tools:[]
+  },
+  landscape: {
+    title:"AI Landscape & GenAI Foundations",
+    points:[
+      "What Generative AI is. How it works. What it is not.",
+      "ChatGPT vs Claude vs Gemini vs Copilot — which tool for which job.",
+      "AI myths vs reality. Where AI adds real value in {industry}.",
+      "How to read and verify AI answers before you use them."
+    ],
+    activity:"Each person asks AI one real work question. We review the answers together.",
+    tools:["ChatGPT","Google Gemini","Claude","Microsoft Copilot"]
   },
   prompting: {
     title:"Prompt Engineering Masterclass",
     points:[
-      "The anatomy of a great prompt: Role → Context → Task → Format",
-      "Iterating and refining outputs like a pro",
-      "Building a reusable prompt library for {audienceShort}",
-      "Advanced: chained prompts, personas and structured outputs"
+      "The PCTF framework: Persona, Context, Task, Format.",
+      "Why details matter. Why vague prompts fail.",
+      "Chain & iterative prompting. Zero-shot and few-shot.",
+      "Building a reusable prompt library for {audienceShort}."
     ],
-    activity:"Prompt Battle — teams compete to produce the best output for a real {company} scenario.",
-    tools:["ChatGPT","Google Gemini"]
+    activity:"Each person writes 3 prompts for their own role. We refine them together, live.",
+    tools:["ChatGPT","Claude","Google Gemini"]
   },
   responsible: {
     title:"Responsible AI at Work",
     points:[
-      "Data privacy and confidentiality: what never goes into a public AI tool",
-      "Hallucinations — how to fact-check and verify AI output",
-      "Copyright, bias and disclosure basics",
-      "A simple AI usage policy for {company}"
+      "Data privacy and confidentiality: what never goes into a public AI tool.",
+      "Hallucinations — how to fact-check and verify AI output.",
+      "Copyright, bias and disclosure basics.",
+      "A simple AI usage policy for {company}."
     ],
     activity:"Spot the Risk — audit real AI outputs for errors, leaks and hallucinations.",
     tools:["Perplexity"]
   },
-  action: {
-    title:"Your 30-Day AI Action Plan",
+  closing: {
+    kind:"closing", title:"Recap & Next Steps",
     points:[
-      "Choosing your personal AI toolkit",
-      "Identifying 3 workflows to transform in the next 30 days",
-      "Team adoption roadmap and habit-building",
-      "Measuring the hours saved"
+      "Quick share: one thing each person will use this week.",
+      "Prompt library handed over.",
+      "Open questions answered.",
+      "Simple 30-day plan agreed."
     ],
-    activity:"Every participant writes and shares a personal 30-day AI action plan.",
-    tools:[]
+    activity:"", tools:[]
+  },
+  recap: {
+    kind:"closing", title:"Day 1 Wrap & Overnight Challenge",
+    points:[
+      "Key takeaways from Day 1.",
+      "The overnight AI challenge: apply one skill to real work tonight.",
+      "Accountability pairs agreed for Day 2."
+    ],
+    activity:"", tools:[]
   },
   assistant: {
     title:"Build Your Own AI Assistant",
     points:[
-      "Custom GPTs & Gemini Gems: your knowledge, your rules",
-      "Feeding SOPs and documents into a private assistant",
-      "No-code automation: connecting AI to email, sheets and chat",
-      "When to graduate to agents and APIs"
+      "Custom GPTs & Claude Projects: your knowledge, your rules.",
+      "Feeding SOPs and documents into a private assistant.",
+      "No-code automation: connecting AI to email, sheets and chat.",
+      "When to graduate to agents and APIs."
     ],
     activity:"Build a working custom AI assistant for a real {company} use case — live.",
-    tools:["Custom GPTs","Gemini Gems","Zapier","NotebookLM"]
+    tools:["Custom GPTs","Claude Projects","Zapier","NotebookLM"]
+  },
+  capstone: {
+    title:"Capstone — Solve a Real {company} Problem",
+    points:[
+      "Teams pick a real workflow from their own desks.",
+      "Design and build an AI-powered solution using the tools covered.",
+      "Present to the room — feedback from the trainer and peers."
+    ],
+    activity:"Team presentations — every group demos a working AI solution built in the room.",
+    tools:["All tools covered"]
   },
 
   /* ---- audience-specific ---- */
   m_productivity:{ title:"AI-Powered Manager Productivity",
-    points:["Emails, minutes of meeting and status reports in minutes","Summarising long documents, threads and decks instantly","Meeting preparation and follow-ups with AI","Personal knowledge management with NotebookLM"],
+    points:["Emails, minutes of meeting and status reports in minutes.","Summarising long documents, threads and decks instantly.","Meeting preparation and follow-ups with AI.","Personal knowledge management with NotebookLM."],
     activity:"Turn a messy email thread into a crisp, client-ready status update.",
     tools:["ChatGPT","Microsoft Copilot","NotebookLM"] },
   m_data:{ title:"Data Analysis & Decision-Making with AI",
-    points:["Analysing Excel/Sheets data by simply asking questions","From raw data to charts, insights and recommendations","Scenario thinking and pros/cons analysis with AI","Building a one-page decision brief"],
+    points:["Analysing Excel/Sheets data by simply asking questions.","From raw data to charts, insights and recommendations.","Scenario thinking and pros/cons analysis with AI.","Building a one-page decision brief."],
     activity:"Upload a real dataset and extract insights, charts and an executive summary live.",
     tools:["ChatGPT (Data Analysis)","Gemini + Sheets","Claude"] },
   m_people:{ title:"AI for People Leadership",
-    points:["Drafting performance feedback that is fair and specific","1:1 agendas, delegation notes and development plans","Handling difficult conversations — AI as a rehearsal partner","Team communication that lands"],
+    points:["Drafting performance feedback that is fair and specific.","1:1 agendas, delegation notes and development plans.","Handling difficult conversations — AI as a rehearsal partner.","Team communication that lands."],
     activity:"Draft a growth plan for a (fictional) team member and stress-test it with AI.",
     tools:["ChatGPT","Claude"] },
   m_reports:{ title:"Presentations & Reports on Autopilot",
-    points:["From bullet points to a full deck in minutes","Visualising ideas: diagrams, infographics and one-pagers","Executive summaries that get read","Formatting and polishing with AI"],
+    points:["From bullet points to a full deck in minutes.","Visualising ideas: diagrams, infographics and one-pagers.","Executive summaries that get read.","Formatting and polishing with AI."],
     activity:"Create a management-ready presentation from rough notes in 15 minutes.",
     tools:["Gamma","Canva AI","Napkin AI"] },
 
   s_leads:{ title:"AI for Lead Generation & Prospect Research",
-    points:["Deep prospect and account research in minutes","Building ideal customer profiles with AI","Signals and triggers: knowing when to reach out","Territory and pipeline planning"],
+    points:["Deep prospect and account research in minutes.","Building ideal customer profiles with AI.","Signals and triggers: knowing when to reach out.","Territory and pipeline planning."],
     activity:"Build a complete target-account brief for a live prospect in 15 minutes.",
     tools:["Perplexity","ChatGPT","LinkedIn + AI"] },
   s_proposals:{ title:"Winning Proposals & Pitches with AI",
-    points:["First-draft proposals in minutes, not days","Personalising pitches for every client at scale","Stunning decks with AI presentation tools","Case studies and testimonials, polished by AI"],
+    points:["First-draft proposals in minutes, not days.","Personalising pitches for every client at scale.","Stunning decks with AI presentation tools.","Case studies and testimonials, polished by AI."],
     activity:"Create a client-ready pitch deck for a {company} offering — live.",
     tools:["ChatGPT","Gamma","Canva AI"] },
   s_comms:{ title:"Client Communication & Follow-ups",
-    points:["Cold and warm outreach that gets replies","5-touch follow-up sequences written in minutes","Objection handling — AI as your sparring partner","WhatsApp & LinkedIn messaging with the right tone"],
+    points:["Cold and warm outreach that gets replies.","5-touch follow-up sequences written in minutes.","Objection handling — AI as your sparring partner.","WhatsApp & LinkedIn messaging with the right tone."],
     activity:"Write a full 5-touch follow-up sequence for a stalled deal.",
     tools:["ChatGPT","Claude","Copilot"] },
   s_intel:{ title:"Market & Competitor Intelligence",
-    points:["Tracking competitors, pricing and launches with AI","Turning research into battle-cards the team actually uses","Market sizing and trend analysis in {industry}","Building a living research pack with NotebookLM"],
+    points:["Tracking competitors, pricing and launches with AI.","Turning research into battle-cards the team actually uses.","Market sizing and trend analysis in {industry}.","Building a living research pack with NotebookLM."],
     activity:"Build a competitor battle-card from live research — in the room.",
     tools:["Perplexity","NotebookLM","Gemini Deep Research"] },
 
   i_coding:{ title:"AI-Assisted Coding & Development",
-    points:["Code generation, completion and refactoring with AI","Debugging: pasting stack traces and getting answers","Code review and documentation with AI","Prompting patterns specifically for developers"],
+    points:["Code generation, completion and refactoring with AI.","Debugging: pasting stack traces and getting answers.","Code review and documentation with AI.","Prompting patterns specifically for developers."],
     activity:"Pair-program a small feature with an AI copilot — from spec to working code.",
-    tools:["GitHub Copilot","Claude","ChatGPT"] },
+    tools:["GitHub Copilot","Claude Code","ChatGPT"] },
   i_testing:{ title:"AI for Testing & QA",
-    points:["Generating test cases straight from requirements","Test data creation and edge-case discovery","Bug triage and reproduction steps with AI","Automating regression checklists"],
+    points:["Generating test cases straight from requirements.","Test data creation and edge-case discovery.","Bug triage and reproduction steps with AI.","Automating regression checklists."],
     activity:"Generate a complete test suite from a single user story.",
     tools:["ChatGPT","Copilot","Claude"] },
   i_docs:{ title:"Documentation & Project Communication",
-    points:["Technical docs, runbooks and release notes in minutes","Status reports and RCA documents with AI","Turning tickets and threads into clear summaries","A searchable team knowledge base with NotebookLM"],
+    points:["Technical docs, runbooks and release notes in minutes.","Status reports and RCA documents with AI.","Turning tickets and threads into clear summaries.","A searchable team knowledge base with NotebookLM."],
     activity:"Turn a raw incident thread into a client-ready RCA document.",
     tools:["NotebookLM","ChatGPT","Copilot"] },
   i_agents:{ title:"Automation, APIs & AI Agents",
-    points:["Where scripts end and agents begin","No-code/low-code pipelines with n8n and Zapier","Calling LLM APIs: patterns, cost and guardrails","What's coming: agentic workflows in the SDLC"],
+    points:["Where scripts end and agents begin.","No-code/low-code pipelines with n8n and Zapier.","Calling LLM APIs: patterns, cost and guardrails.","What's coming: agentic workflows in the SDLC."],
     activity:"Build a working automation that reads, reasons and replies — live.",
-    tools:["n8n","Zapier","OpenAI/Claude APIs"] },
+    tools:["n8n","Zapier","Claude/OpenAI APIs"] },
 
   h_recruit:{ title:"AI in Recruitment",
-    points:["Job descriptions that attract the right talent","Resume screening and interview question design","Candidate communication at scale","Fair-use guardrails in hiring"],
+    points:["Job descriptions that attract the right talent.","Resume screening and interview question design.","Candidate communication at scale.","Fair-use guardrails in hiring."],
     activity:"Design a complete hiring kit — JD, screening rubric and interview plan — with AI.",
     tools:["ChatGPT","Gemini","Copilot"] },
   h_ld:{ title:"AI for L&D & Content Creation",
-    points:["Turning SOPs into training modules and quizzes","Slide decks, videos and avatars for internal training","Personalised learning paths with AI","Assessments and feedback loops"],
+    points:["Turning SOPs into training modules and quizzes.","Slide decks, videos and avatars for internal training.","Personalised learning paths with AI.","Assessments and feedback loops."],
     activity:"Convert a plain SOP into a mini e-learning module with slides and a quiz.",
     tools:["Gamma","Canva AI","HeyGen","NotebookLM"] },
   h_comms:{ title:"Employee Communication & Engagement",
-    points:["Policy announcements people actually read","Internal newsletters and event comms in minutes","Sensitive communication — getting tone right","Employee survey analysis with AI"],
+    points:["Policy announcements people actually read.","Internal newsletters and event comms in minutes.","Sensitive communication — getting tone right.","Employee survey analysis with AI."],
     activity:"Draft a sensitive policy-change announcement and A/B test tones with AI.",
     tools:["ChatGPT","Claude","Canva AI"] },
   h_analytics:{ title:"People Analytics with AI",
-    points:["Attrition and engagement data — asking questions in plain English","Summarising exit interviews and feedback at scale","Building HR dashboards and one-pagers","Data privacy in people analytics"],
+    points:["Attrition and engagement data — asking questions in plain English.","Summarising exit interviews and feedback at scale.","Building HR dashboards and one-pagers.","Data privacy in people analytics."],
     activity:"Analyse a sample engagement survey and present three insights to 'leadership'.",
     tools:["ChatGPT (Data Analysis)","Gemini + Sheets"] },
 
   mk_content:{ title:"The AI Content Engine",
-    points:["A month of social content in one sitting","Blogs, captions, scripts and campaign copy with AI","Repurposing: one idea → ten formats","Building a brand voice the AI can follow"],
+    points:["A month of social content in one sitting.","Blogs, captions, scripts and campaign copy with AI.","Repurposing: one idea → ten formats.","Building a brand voice the AI can follow."],
     activity:"Produce a week of on-brand content for {company} across three channels.",
     tools:["ChatGPT","Claude","Canva AI"] },
   mk_visual:{ title:"AI for Images, Video & Design",
-    points:["Image generation for campaigns and creatives","AI video: avatars, voiceovers and short-form edits","Design workflows with Canva AI and beyond","Brand consistency when using generative tools"],
+    points:["Image generation for campaigns and creatives.","AI video: avatars, voiceovers and short-form edits.","Design workflows with Canva AI and beyond.","Brand consistency when using generative tools."],
     activity:"Create a complete ad creative — image, copy and video teaser — with AI.",
     tools:["Midjourney/DALL·E","Canva AI","HeyGen","Runway"] },
   mk_seo:{ title:"AI-Powered Research & SEO",
-    points:["Keyword and intent research with AI","Content briefs and outlines that rank","Competitor content analysis","AI search (SGE/answer engines) — what changes"],
+    points:["Keyword and intent research with AI.","Content briefs and outlines that rank.","Competitor content analysis.","AI search (answer engines) — what changes."],
     activity:"Build a data-backed content brief for a target keyword, live.",
     tools:["Perplexity","ChatGPT","Gemini"] },
   mk_analytics:{ title:"Campaign Analytics & Optimisation",
-    points:["Reading campaign data by asking questions in plain English","Creative A/B analysis with AI","Marketing reports leadership actually reads","Budget reallocation scenarios"],
+    points:["Reading campaign data by asking questions in plain English.","Creative A/B analysis with AI.","Marketing reports leadership actually reads.","Budget reallocation scenarios."],
     activity:"Turn a raw campaign export into a one-page performance story.",
     tools:["ChatGPT (Data Analysis)","Gemini + Sheets"] },
 
   f_reports:{ title:"Financial Reporting on Autopilot",
-    points:["MIS, variance commentary and board notes with AI","Summarising audit reports and contracts","From trial balance to narrative in minutes","Accuracy guardrails for financial output"],
+    points:["MIS, variance commentary and board notes with AI.","Summarising audit reports and contracts.","From trial balance to narrative in minutes.","Accuracy guardrails for financial output."],
     activity:"Draft variance commentary for a sample P&L — then verify every number.",
     tools:["ChatGPT","Copilot","Claude"] },
   f_excel:{ title:"AI inside Excel & Sheets",
-    points:["Formulas written for you — describe what you need","Cleaning and structuring messy data with AI","Pivot-style analysis by conversation","Automating recurring workbooks"],
+    points:["Formulas written for you — describe what you need.","Cleaning and structuring messy data with AI.","Pivot-style analysis by conversation.","Automating recurring workbooks."],
     activity:"Fix and analyse a deliberately messy workbook using only AI prompts.",
     tools:["Microsoft Copilot","Gemini + Sheets","ChatGPT"] },
   f_analysis:{ title:"Analysis, Forecasting & Scenarios",
-    points:["Trend analysis and simple forecasting with AI","Scenario modelling: best/base/worst in minutes","Ratio analysis and benchmarking in {industry}","Presenting numbers as a story"],
+    points:["Trend analysis and simple forecasting with AI.","Scenario modelling: best/base/worst in minutes.","Ratio analysis and benchmarking in {industry}.","Presenting numbers as a story."],
     activity:"Build a three-scenario forecast brief from historical data.",
     tools:["ChatGPT (Data Analysis)","Claude"] },
   f_risk:{ title:"Compliance, Risk & Controls",
-    points:["Contract review and clause extraction with AI","Policy and regulation summarisation","Fraud-pattern brainstorming and control design","Confidentiality: what finance data must stay internal"],
+    points:["Contract review and clause extraction with AI.","Policy and regulation summarisation.","Fraud-pattern brainstorming and control design.","Confidentiality: what finance data must stay internal."],
     activity:"Extract obligations and red flags from a sample vendor contract.",
     tools:["Claude","NotebookLM","Perplexity"] },
 
   o_sops:{ title:"SOPs & Process Documentation with AI",
-    points:["Turning tribal knowledge into written SOPs","Process maps and checklists generated from descriptions","Keeping documents current with AI","Multilingual SOPs for ground teams"],
+    points:["Turning tribal knowledge into written SOPs.","Process maps and checklists generated from descriptions.","Keeping documents current with AI.","Multilingual SOPs for ground teams."],
     activity:"Document a real {company} process into a full SOP — in 20 minutes.",
     tools:["ChatGPT","Napkin AI","NotebookLM"] },
   o_automation:{ title:"Workflow Automation",
-    points:["Spotting automation opportunities in daily operations","No-code automation: forms, sheets, email and chat","Escalation and approval flows with AI in the loop","Calculating hours saved"],
+    points:["Spotting automation opportunities in daily operations.","No-code automation: forms, sheets, email and chat.","Escalation and approval flows with AI in the loop.","Calculating hours saved."],
     activity:"Map one manual workflow and build its automated version live.",
     tools:["Zapier","n8n","Copilot"] },
   o_vendor:{ title:"Vendor & Stakeholder Communication",
-    points:["RFQs, comparisons and negotiation prep with AI","Escalation emails with the right firmness","Meeting notes and action trackers on autopilot","Templates the whole team can reuse"],
+    points:["Vendor evaluation. Structuring a comparison with AI.","RFQs, comparisons and negotiation prep.","Escalation emails with the right firmness.","Templates the whole team can reuse."],
     activity:"Run a mock vendor negotiation prepped entirely by AI.",
     tools:["ChatGPT","Claude"] },
   o_dash:{ title:"Operational Dashboards & Reviews",
-    points:["Daily/weekly review packs generated from raw data","Exception reporting: let AI flag what needs attention","Root-cause analysis with AI","One-page ops reviews for leadership"],
+    points:["Daily/weekly review packs generated from raw data.","Exception reporting: let AI flag what needs attention.","Root-cause analysis with AI.","One-page ops reviews for leadership."],
     activity:"Turn a raw operations log into an exception report with recommendations.",
     tools:["ChatGPT (Data Analysis)","Gemini + Sheets"] },
 
   l_strategy:{ title:"AI Strategy for the Enterprise",
-    points:["The AI value map: where {industry} leaders are winning","Build vs buy vs partner — a practical framework","Prioritising use cases by value and feasibility","What to pilot in the next 90 days"],
+    points:["The AI value map: where {industry} leaders are winning.","Build vs buy vs partner — a practical framework.","Prioritising use cases by value and feasibility.","What to pilot in the next 90 days."],
     activity:"Draft a one-page AI opportunity map for {company}.",
     tools:["Claude","Perplexity"] },
   l_org:{ title:"Leading an AI-Ready Organisation",
-    points:["Roles, skills and structures for the AI era","Driving adoption: champions, training and incentives","Managing resistance and fear honestly","Measuring productivity gains"],
+    points:["Roles, skills and structures for the AI era.","Driving adoption: champions, training and incentives.","Managing resistance and fear honestly.","Measuring productivity gains."],
     activity:"Design a 90-day adoption plan for one function of {company}.",
     tools:["ChatGPT","Gamma"] },
   l_gov:{ title:"Governance, Risk & Responsible AI",
-    points:["An AI policy your teams will actually follow","Data protection, vendor risk and model risk basics","Regulatory direction: what leaders must watch","Board-level AI reporting"],
+    points:["An AI policy your teams will actually follow.","Data protection, vendor risk and model risk basics.","Regulatory direction: what leaders must watch.","Board-level AI reporting."],
     activity:"Stress-test a draft AI policy against five real scenarios.",
     tools:["Claude","NotebookLM"] },
   l_hands:{ title:"Hands-On: AI for the Leader's Own Desk",
-    points:["Board notes, town halls and investor updates with AI","A private AI chief-of-staff: setup in 30 minutes","Decision briefs and scenario thinking","The leader's daily AI routine"],
+    points:["Board notes, town halls and investor updates with AI.","A private AI chief-of-staff: setup in 30 minutes.","Decision briefs and scenario thinking.","The leader's daily AI routine."],
     activity:"Each leader builds a personal AI chief-of-staff before leaving the room.",
     tools:["ChatGPT","Custom GPTs","NotebookLM"] },
 
   g_writing:{ title:"Everyday Writing & Communication with AI",
-    points:["Emails, notes and reports in a fraction of the time","Tone control: formal, friendly, firm","Summarising anything: PDFs, threads, meetings","Translation and simplification"],
+    points:["Emails, notes and reports in a fraction of the time.","Tone control: formal, friendly, firm.","Summarising anything: PDFs, threads, meetings.","Translation and simplification."],
     activity:"The 10-minute inbox: clear a sample inbox using only AI.",
     tools:["ChatGPT","Gemini","Copilot"] },
   g_research:{ title:"Research & Learning with AI",
-    points:["Getting trustworthy answers fast — and verifying them","Deep research reports with AI","Learning any new skill with an AI tutor","Building a personal knowledge base"],
+    points:["Getting trustworthy answers fast — and verifying them.","Deep research reports with AI.","Learning any new skill with an AI tutor.","Building a personal knowledge base."],
     activity:"Research an unfamiliar topic and present it confidently — in 20 minutes.",
     tools:["Perplexity","NotebookLM","Gemini Deep Research"] },
   g_creative:{ title:"Creative & Visual AI",
-    points:["Images, posters and slides without a designer","Idea generation and brainstorming with AI","Audio & video: voiceovers, avatars and quick edits","Bringing it together: a mini-project"],
+    points:["Images, posters and slides without a designer.","Idea generation and brainstorming with AI.","Audio & video: voiceovers, avatars and quick edits.","Bringing it together: a mini-project."],
     activity:"Create a poster + slide + short script for an internal campaign.",
     tools:["Canva AI","Gamma","HeyGen","Suno"] },
   g_daily:{ title:"AI in Your Daily Workflow",
-    points:["Excel/Sheets tasks by conversation","Meeting notes, MoMs and action items on autopilot","Personal productivity systems with AI","Your role-specific AI playbook"],
+    points:["Excel/Sheets tasks by conversation.","Meeting notes, MoMs and action items on autopilot.","Personal productivity systems with AI.","Your role-specific AI playbook."],
     activity:"Each participant automates one real task from their own week.",
     tools:["Copilot","Gemini + Sheets","ChatGPT"] }
 };
@@ -749,68 +762,80 @@ const SPECIALTY = {
 const TITLES = {
   managers:"AI for Managers", sales:"Gen AI for Business Development", it:"AI for IT & Engineering Teams",
   hr:"AI for HR & People Teams", marketing:"Gen AI for Marketing", finance:"AI for Finance Teams",
-  operations:"AI for Operations Excellence", leadership:"AI for Leaders", general:"AI at Work"
+  operations:"AI for Operations Excellence", leadership:"AI for Leaders", general:"Gen AI for Productivity"
 };
 
 const OUTCOME_BANK = {
   common:[
-    "Use ChatGPT, Gemini, Copilot & Claude confidently for daily work",
-    "Write powerful prompts that get professional-grade output every time",
-    "Know exactly what data can and cannot be shared with AI tools"
+    "Use ChatGPT, Gemini, Copilot & Claude confidently for daily work.",
+    "Write powerful prompts that get professional-grade output every time.",
+    "Know exactly what data can and cannot be shared with AI tools."
   ],
-  managers:["Cut reporting and email time by 50% or more","Analyse data and make decisions faster with AI","Lead teams through AI adoption with confidence"],
-  sales:["Research any prospect or account in minutes","Produce client-ready proposals and pitch decks with AI","Run smarter follow-ups that move deals forward"],
-  it:["Code, debug and review faster with AI copilots","Generate test cases and documentation automatically","Build practical automations and understand AI agents"],
-  hr:["Automate JD writing, screening and candidate comms","Turn SOPs into engaging training content","Analyse people data without waiting for analysts"],
-  marketing:["Build an always-on AI content engine","Create images, video and design assets in-house","Turn campaign data into clear performance stories"],
-  finance:["Automate MIS commentary and recurring reports","Master AI inside Excel and Sheets","Review contracts and policies in a fraction of the time"],
-  operations:["Document any process into an SOP in minutes","Automate repetitive workflows without code","Run sharper reviews with AI-generated exception reports"],
-  leadership:["Build a practical AI strategy and 90-day pilot plan","Govern AI use with a policy that actually works","Use AI personally as a daily thinking partner"],
-  general:["Save 5+ hours a week on writing, research and admin","Create documents, slides and visuals independently","Leave with a personal AI playbook for your role"]
+  managers:["Cut reporting and email time by 50% or more.","Analyse data and make decisions faster with AI.","Lead teams through AI adoption with confidence."],
+  sales:["Research any prospect or account in minutes.","Produce client-ready proposals and pitch decks with AI.","Run smarter follow-ups that move deals forward."],
+  it:["Code, debug and review faster with AI copilots.","Generate test cases and documentation automatically.","Build practical automations and understand AI agents."],
+  hr:["Automate JD writing, screening and candidate comms.","Turn SOPs into engaging training content.","Analyse people data without waiting for analysts."],
+  marketing:["Build an always-on AI content engine.","Create images, video and design assets in-house.","Turn campaign data into clear performance stories."],
+  finance:["Automate MIS commentary and recurring reports.","Master AI inside Excel and Sheets.","Review contracts and policies in a fraction of the time."],
+  operations:["Document any process into an SOP in minutes.","Automate repetitive workflows without code.","Run sharper reviews with AI-generated exception reports."],
+  leadership:["Build a practical AI strategy and 90-day pilot plan.","Govern AI use with a policy that actually works.","Use AI personally as a daily thinking partner."],
+  general:["Save 5+ hours a week on writing, research and admin.","Create documents, slides and visuals independently.","Leave with a personal AI playbook for your role."]
 };
 
+const TAKEAWAYS = [
+  "A working AI toolkit, set up and ready.",
+  "A personal prompt library for their own role.",
+  "One live AI project built from their own work.",
+  "The Skillopedia resource vault — templates, prompts & tool guides.",
+  "A simple 30-day plan to keep the momentum going."
+];
+
+const OPS_NOTES = [
+  "No prior AI experience assumed. Pace suits all levels.",
+  "Each participant brings a laptop. Strong Wi-Fi (50+ Mbps) and power outlets required.",
+  "All sample data used in exercises is non-sensitive or anonymised.",
+  "AI tool access is provided and set up on the day."
+];
+
+const NEXT_STEPS = [
+  "Confirm the workshop date and venue.",
+  "Share the final participant list (names, roles, departments).",
+  "Share any sample (non-confidential) documents or data to customise exercises."
+];
+
 /* =====================================================================
-   2. FORMATS — how modules are laid out across the day(s)
-   Each slot: {key} module, or {break:label,mins}, starting 09:30 / 10:00.
+   2. FORMATS — schedule layouts (mins per slot, 9:00 starts)
 ===================================================================== */
 
 const FORMATS = {
   masterclass:{
-    label:"2-Hour Power Masterclass", duration:"2 Hours", start:600, // 10:00
-    days:[[ {k:"landscape",mins:30},{k:"prompting",mins:40},{k:"SPEC1",mins:35},{k:"action",mins:15} ]]
+    label:"2-Hour Power Masterclass", duration:"2 Hours", start:600,
+    days:[[ {k:"landscape",mins:30},{k:"prompting",mins:40},{k:"SPEC1",mins:35},{k:"closing",mins:15} ]]
   },
   half:{
-    label:"Half-Day Workshop", duration:"Half Day (4 Hours)", start:570, // 09:30
-    days:[[ {k:"landscape",mins:40},{k:"prompting",mins:55},{brk:"Tea & Networking Break",mins:15},
-            {k:"SPEC1",mins:55},{k:"SPEC2",mins:50},{k:"action",mins:25} ]]
+    label:"Half-Day Workshop", duration:"Half Day (4 Hours)", start:540,
+    days:[[ {k:"welcome",mins:15},{k:"landscape",mins:40},{k:"prompting",mins:50},{brk:"Tea Break",mins:15},
+            {k:"SPEC1",mins:55},{k:"SPEC2",mins:45},{k:"closing",mins:20} ]]
   },
   full:{
-    label:"Full-Day Immersive Workshop", duration:"1 Full Day", start:570,
-    days:[[ {k:"landscape",mins:45},{k:"prompting",mins:60},{brk:"Tea Break",mins:15},
-            {k:"SPEC1",mins:60},{brk:"Lunch",mins:45},{k:"SPEC2",mins:60},{k:"SPEC3",mins:60},
-            {brk:"Tea Break",mins:15},{k:"responsible",mins:40},{k:"action",mins:30} ]]
+    label:"1-Day Foundational Workshop", duration:"1 Full Day (9:00 – 17:00)", start:540,
+    days:[[ {k:"welcome",mins:30},{k:"landscape",mins:60},{brk:"Tea Break",mins:15},{k:"prompting",mins:75},
+            {brk:"Lunch",mins:60},{k:"SPEC1",mins:75},{k:"SPEC2",mins:60},{brk:"Tea Break",mins:15},
+            {k:"SPEC3",mins:60},{k:"closing",mins:30} ]]
   },
   twoday:{
-    label:"2-Day Deep-Dive Bootcamp", duration:"2 Days", start:570,
+    label:"2-Day Deep-Dive Bootcamp", duration:"2 Days (9:00 – 17:00)", start:540,
     days:[
-      [ {k:"landscape",mins:50},{k:"prompting",mins:70},{brk:"Tea Break",mins:15},
-        {k:"SPEC1",mins:70},{brk:"Lunch",mins:45},{k:"SPEC2",mins:70},{brk:"Tea Break",mins:15},
-        {k:"SPEC3",mins:70},{k:"recap",mins:20} ],
-      [ {k:"SPEC4",mins:70},{k:"assistant",mins:75},{brk:"Tea Break",mins:15},
-        {k:"responsible",mins:50},{brk:"Lunch",mins:45},{k:"capstone",mins:80},{k:"action",mins:40} ]
+      [ {k:"welcome",mins:30},{k:"landscape",mins:60},{brk:"Tea Break",mins:15},{k:"prompting",mins:75},
+        {brk:"Lunch",mins:60},{k:"SPEC1",mins:75},{brk:"Tea Break",mins:15},{k:"SPEC2",mins:75},{k:"recap",mins:20} ],
+      [ {k:"SPEC3",mins:75},{brk:"Tea Break",mins:15},{k:"SPEC4",mins:75},{brk:"Lunch",mins:60},
+        {k:"assistant",mins:75},{k:"responsible",mins:45},{brk:"Tea Break",mins:15},{k:"capstone",mins:75},{k:"closing",mins:30} ]
     ]
   }
 };
 
-M.recap = { title:"Day 1 Wrap & Overnight Challenge",
-  points:["Key takeaways from Day 1","The overnight AI challenge: apply one skill to real work tonight"],
-  activity:"Participants pick their overnight challenge and pair up as accountability partners.", tools:[] };
-M.capstone = { title:"Capstone: Solve a Real {company} Problem",
-  points:["Teams pick a real workflow from their own desks","Design and build an AI-powered solution using the day's tools","Present to the room — feedback from the trainer and peers"],
-  activity:"Team presentations — every group demos a working AI solution built in the room.", tools:["All tools covered"] };
-
 /* =====================================================================
-   3. DEMO ENGINE — assembles the curriculum object
+   3. DEMO ENGINE
 ===================================================================== */
 
 function fill(str, ctx){
@@ -821,9 +846,8 @@ function fill(str, ctx){
 
 function toClock(mins){
   const h = Math.floor(mins/60), m = mins%60;
-  const ampm = h>=12 ? "PM":"AM";
   const hh = ((h+11)%12)+1;
-  return `${String(hh).padStart(2,"0")}:${String(m).padStart(2,"0")} ${ampm}`;
+  return `${hh}:${String(m).padStart(2,"0")}`;
 }
 
 function demoEngine(input){
@@ -832,14 +856,17 @@ function demoEngine(input){
   const spec = SPECIALTY[input.audience];
   const ctx = { company:input.company, industry:input.industry, audienceShort:aud.short };
 
+  let modNum = 0;
   const days = fmt.days.map((slots)=>{
     let t = fmt.start;
     return slots.map(slot=>{
-      const row = { start:toClock(t), end:toClock(t+slot.mins) };
+      const row = { start:toClock(t), end:toClock(t+slot.mins), mins:slot.mins };
       t += slot.mins;
-      if(slot.brk){ row.break = slot.brk; return row; }
+      if(slot.brk){ row.kind = "break"; row.title = slot.brk; return row; }
       const key = slot.k.startsWith("SPEC") ? spec[Number(slot.k.slice(4))-1] : slot.k;
       const m = M[key];
+      row.kind = m.kind || "module";
+      if(row.kind === "module") row.num = ++modNum;
       row.title = fill(m.title, ctx);
       row.points = m.points.map(p=>fill(p, ctx));
       row.activity = fill(m.activity, ctx);
@@ -850,32 +877,19 @@ function demoEngine(input){
 
   const tools = [...new Set(days.flat().flatMap(r=>r.tools||[]))].filter(t=>t!=="All tools covered");
 
-  const focusLine = input.focus
-    ? ` Special emphasis has been placed on the areas highlighted by your team: ${input.focus.trim().replace(/\.$/,"")}.`
-    : "";
-
-  const title = TITLES[input.audience];
-
   return {
-    title,
-    subtitle:`A ${fmt.duration.toLowerCase()} hands-on program for ${aud.name}`,
-    overview:`This ${fmt.label.toLowerCase()} is designed exclusively for ${input.company}'s ${aud.name.toLowerCase()} to move from AI-curious to AI-confident. Built around real ${input.industry ? input.industry.toLowerCase() : "business"} scenarios rather than theory, every module combines a live demonstration with hands-on practice — participants work on their own laptops, on their own real tasks, and leave with skills they can apply the very next morning.${focusLine} The program follows Skillopedia's Learn → Try → Apply methodology, refined across hundreds of corporate workshops.`,
-    outcomes:[...OUTCOME_BANK.common, ...OUTCOME_BANK[input.audience]],
-    days,
-    tools,
-    takeaways:[
-      "A personal prompt library customised to your role",
-      "Lifetime access to the Skillopedia resource vault (templates, prompts & tool guides)",
-      "Digital certificate of completion for every participant",
-      "30 days of post-workshop WhatsApp/email support from the trainer",
-      "A 30-day action plan reviewed in an optional follow-up call"
-    ]
+    title: TITLES[input.audience],
+    subtitle:`${fmt.label} · Hands-On Throughout`,
+    objectives:[...OUTCOME_BANK.common, ...OUTCOME_BANK[input.audience]],
+    days, tools,
+    takeaways: TAKEAWAYS,
+    opsNotes: OPS_NOTES,
+    nextSteps: NEXT_STEPS
   };
 }
 
 /* =====================================================================
    4. LIVE LLM ENGINES (Groq / Gemini / OpenAI / Claude)
-   The same JSON shape is requested, then rendered by the same template.
 ===================================================================== */
 
 const ENGINE_DEFAULTS = {
@@ -888,26 +902,32 @@ const ENGINE_DEFAULTS = {
 function buildLLMPrompt(input){
   const aud = AUDIENCES[input.audience];
   const fmt = FORMATS[input.format];
-  return `You are the curriculum designer for Skillopedia, a corporate AI training company led by trainer Hitesh Motwani. Design a training curriculum with these inputs:
+  return `You are the curriculum designer for Skillopedia, a corporate AI training company led by trainer Hitesh Motwani. Design a training curriculum outline with these inputs:
 - Client company: ${input.company}
 - Industry: ${input.industry || "not specified"}
 - Target audience: ${aud.name}
 - Format: ${fmt.label} (${fmt.duration})
 - Special focus from client: ${input.focus || "none"}
 
-Style: practical, hands-on, demo-heavy, zero fluff. Every module needs a hands-on activity. Use current AI tools (ChatGPT, Gemini, Claude, Copilot, Perplexity, NotebookLM, Gamma, Canva AI, Zapier, n8n, HeyGen etc.).
+Style: short, punchy sentences. Practical, hands-on, demo-heavy, zero fluff. Every module needs a hands-on exercise. Use current AI tools (ChatGPT, Claude, Gemini, Copilot, Perplexity, NotebookLM, Gamma, Canva AI, Zapier, n8n, HeyGen etc.).
 
 Return ONLY valid JSON (no markdown fences) with this exact shape:
 {
- "title": "program title, e.g. 'Gen AI for Business Development'",
+ "title": "programme title, e.g. 'Gen AI for Business Development'",
  "subtitle": "one line",
- "overview": "120-160 word paragraph addressed to the client",
- "outcomes": ["6 learning outcomes"],
- "days": [ [ {"start":"09:30 AM","end":"10:15 AM","title":"...","points":["3-4 bullets"],"activity":"...","tools":["..."]}, {"start":"11:15 AM","end":"11:30 AM","break":"Tea Break"} ] ],
+ "objectives": ["6 short learning objectives"],
+ "days": [ [
+   {"kind":"welcome","start":"9:00","end":"9:30","mins":30,"title":"Welcome & AI Setup","points":["3-4 short bullets"]},
+   {"kind":"module","num":1,"start":"9:30","end":"10:30","mins":60,"title":"...","points":["4-5 short bullets"],"activity":"one-line hands-on exercise","tools":["..."]},
+   {"kind":"break","start":"10:30","end":"10:45","mins":15,"title":"Tea Break"},
+   {"kind":"closing","start":"16:30","end":"17:00","mins":30,"title":"Recap & Next Steps","points":["3-4 bullets"]}
+ ] ],
  "tools": ["deduplicated list of all tools"],
- "takeaways": ["5 things participants take away"]
+ "takeaways": ["5 things every participant walks away with"],
+ "opsNotes": ["4 operational notes"],
+ "nextSteps": ["3 next steps for the client"]
 }
-"days" must contain ${fmt.days.length} array(s) (one per training day) with realistic timings from 09:30 AM, including tea/lunch breaks as break rows.`;
+"days" must contain ${fmt.days.length} array(s) (one per training day) with realistic timings starting 9:00, including tea/lunch breaks as break rows. Number modules sequentially across the whole programme.`;
 }
 
 async function callLLM(cfg, prompt){
@@ -922,7 +942,7 @@ async function callLLM(cfg, prompt){
         "Content-Type":"application/json", "x-api-key":cfg.key,
         "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
       body: JSON.stringify({ model:cfg.model, max_tokens:4000, messages:[{role:"user",content:prompt}] }) };
-  } else { // groq & openai share the OpenAI chat format
+  } else {
     url = cfg.provider==="groq"
       ? "https://api.groq.com/openai/v1/chat/completions"
       : "https://api.openai.com/v1/chat/completions";
@@ -945,122 +965,455 @@ async function callLLM(cfg, prompt){
 }
 
 /* =====================================================================
-   5. RENDERER — one branded template for every engine
+   5. SHARED HELPERS
 ===================================================================== */
 
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 
-function render(cur, input){
+function sectionLabel(r){
+  if(r.kind==="welcome") return "WELCOME";
+  if(r.kind==="closing") return "CLOSING";
+  return `MODULE ${r.num}`;
+}
+
+function glanceRows(cur, input){
   const aud = AUDIENCES[input.audience];
   const fmt = FORMATS[input.format];
+  const rows = [
+    ["Participants", `${aud.name} — ${input.company}`],
+    ["Experience",   "No prior AI experience assumed. Mixed levels welcome."],
+    ["Format",       `${fmt.label}. Hands-on throughout.`],
+    ["Mode",         input.mode + (input.industry ? `  ·  Industry: ${input.industry}` : "")],
+    ["Data rule",    "No confidential data used in any example or exercise."],
+    ["Facilitator",  `${SK.facilitatorName}, Skillopedia`]
+  ];
+  if(input.focus) rows.splice(4, 0, ["Emphasis", input.focus]);
+  return rows;
+}
+
+let LAST = null; // {cur, input}
+
+/* =====================================================================
+   6. ON-SCREEN RENDERER (matches the Skillopedia Word outline format)
+===================================================================== */
+
+function render(cur, input){
   const multiDay = cur.days.length > 1;
 
-  const agendaRows = cur.days.map((day, di)=>{
-    const dayHead = multiDay ? `<tr class="day-row"><td colspan="2">Day ${di+1}</td></tr>` : "";
+  const schedTables = cur.days.map((day, di)=>{
+    const head = multiDay ? `<tr class="dayhead"><td colspan="3">Day ${di+1}</td></tr>` : "";
     const rows = day.map(r=>{
-      if(r.break) return `<tr class="break-row"><td>${esc(r.start)} – ${esc(r.end)}</td><td>☕ ${esc(r.break)}</td></tr>`;
-      return `<tr>
-        <td class="t">${esc(r.start)}<br>– ${esc(r.end)}</td>
-        <td class="m">
-          <b>${esc(r.title)}</b>
-          <ul>${(r.points||[]).map(p=>`<li>${esc(p)}</li>`).join("")}</ul>
-          ${r.activity ? `<div class="act"><b>Hands-on:</b> ${esc(r.activity)}</div>` : ""}
-        </td>
-      </tr>`;
+      if(r.kind==="break") return `<tr class="brk"><td class="time">${esc(r.start)} – ${esc(r.end)}</td><td>${esc(r.title)}</td><td class="dur">${r.mins} min</td></tr>`;
+      return `<tr><td class="time">${esc(r.start)} – ${esc(r.end)}</td><td><b>${esc(sectionLabel(r))}</b> — ${esc(r.title)}</td><td class="dur">${r.mins} min</td></tr>`;
     }).join("");
-    return dayHead + rows;
+    return head + rows;
   }).join("");
 
-  const today = new Date().toLocaleDateString("en-IN", { day:"numeric", month:"long", year:"numeric" });
+  const moduleSections = cur.days.map((day, di)=>{
+    const dayHead = multiDay ? `<h3 class="sec">Day ${di+1} — Module Detail</h3>` : `<h3 class="sec">Module Detail</h3>`;
+    const mods = day.filter(r=>r.kind!=="break").map(r=>`
+      <section class="mod">
+        <div class="mod-head">
+          <span class="mod-tag">${esc(sectionLabel(r))}</span>
+          <h4>${esc(r.title)}</h4>
+          <span class="mod-time">${r.mins} min · ${esc(r.start)} – ${esc(r.end)}</span>
+        </div>
+        ${r.points?.length ? `<div class="wc-label">What We Cover</div><ul>${r.points.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>` : ""}
+        ${r.activity ? `<div class="act"><b>Hands-on:</b> ${esc(r.activity)}</div>` : ""}
+        ${r.tools?.length ? `<div class="tools-line"><b>Tools:</b> ${esc(r.tools.join(" · "))}</div>` : ""}
+      </section>`).join("");
+    return dayHead + mods;
+  }).join("");
+
+  const glance = glanceRows(cur, input)
+    .map(([k,v])=>`<div class="k">${esc(k)}</div><div>${esc(v)}</div>`).join("");
 
   document.getElementById("doc").innerHTML = `
-    <header class="doc-head">
-      <div class="doc-brandrow">
-        <div style="display:flex;align-items:center;gap:11px">
-          <svg width="34" height="34" viewBox="0 0 38 38" aria-hidden="true">
-            <rect width="38" height="38" rx="9" fill="#F58220"/>
-            <path d="M9 14.5 L19 9 L29 14.5 L19 20 Z" fill="#0B1530"/>
-            <path d="M13.5 18.5 V24 C13.5 24 15.5 26.5 19 26.5 C22.5 26.5 24.5 24 24.5 24 V18.5 L19 21.5 Z" fill="#0B1530" opacity=".82"/>
-            <rect x="27.6" y="14.5" width="1.8" height="8" rx="0.9" fill="#0B1530"/>
-          </svg>
-          <div>
-            <div style="font-weight:800;font-size:16px">Skillopedia</div>
-            <div style="font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#9AA6C4">AI Training &amp; Corporate Workshops</div>
-          </div>
-        </div>
-        <div class="doc-eyebrow">Training Curriculum</div>
-      </div>
-      <h1 class="doc-title" contenteditable="true">${esc(cur.title)}</h1>
-      <p class="doc-client" contenteditable="true">Prepared exclusively for <b>${esc(input.company)}</b>${input.industry ? ` · ${esc(input.industry)}` : ""}</p>
-      <div class="doc-meta">
-        <span class="meta-chip"><b>Audience</b> &nbsp;${esc(aud.name)}</span>
-        <span class="meta-chip"><b>Format</b> &nbsp;${esc(fmt.duration)}</span>
-        <span class="meta-chip"><b>Mode</b> &nbsp;${esc(input.mode)}</span>
-        <span class="meta-chip"><b>Date</b> &nbsp;${esc(today)}</span>
-      </div>
+    <div class="doc-white">
+      <img src="${LOGO_B64}" alt="Skillopedia — Learn. Innovate. Lead.">
+      <div class="eyebrow">Training Curriculum<br>Confidential · Client Copy</div>
+    </div>
+    <header class="doc-purple" contenteditable="true">
+      <h1 class="doc-title">${esc(cur.title)}</h1>
+      <p class="doc-aud">Prepared exclusively for <b>${esc(input.company)}</b> — ${esc(AUDIENCES[input.audience].name)}</p>
+      <p class="doc-deliv">${esc(cur.subtitle)}  ·  Delivered by ${esc(SK.facilitatorName)}  ·  Skillopedia</p>
+      <div class="doc-stats">${esc(SK.statsLine)}</div>
     </header>
 
     <div class="doc-body" contenteditable="true">
-      <h3 class="sec">Program Overview</h3>
-      <p class="overview">${esc(cur.overview)}</p>
+      <h3 class="sec">Programme at a Glance</h3>
+      <div class="glance">${glance}</div>
 
-      <h3 class="sec">Learning Outcomes</h3>
-      <ul class="outcomes">${cur.outcomes.map(o=>`<li>${esc(o)}</li>`).join("")}</ul>
+      <h3 class="sec">Objectives</h3>
+      <ul class="objectives">${cur.objectives.map(o=>`<li>${esc(o)}</li>`).join("")}</ul>
 
-      <h3 class="sec">Session Plan</h3>
-      <table class="agenda"><tbody>${agendaRows}</tbody></table>
+      <h3 class="sec">Day Schedule at a Glance</h3>
+      <table class="sched">
+        <thead><tr><th>Time</th><th>Module</th><th>Duration</th></tr></thead>
+        <tbody>${schedTables}</tbody>
+      </table>
+
+      ${moduleSections}
+
+      <h3 class="sec">What Every Participant Walks Away With</h3>
+      <ul class="plain-list">${cur.takeaways.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
 
       <h3 class="sec">AI Tools Covered</h3>
-      <div class="tools">${cur.tools.map(t=>`<span class="tool">${esc(t)}</span>`).join("")}</div>
+      <p style="font-size:13.5px;line-height:1.7">${esc(cur.tools.join("  ·  "))}</p>
 
-      <h3 class="sec">Every Participant Walks Away With</h3>
-      <ul class="takeaways">${cur.takeaways.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
+      <h3 class="sec">Operational Notes</h3>
+      <ul class="plain-list">${cur.opsNotes.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
 
-      <h3 class="sec">Your Trainer &amp; Skillopedia</h3>
-      <div class="duo">
-        <div class="bio">
-          <div class="who">Hitesh Motwani</div>
-          <div class="role">Global AI Speaker &amp; Corporate Trainer</div>
-          A leading voice in practical AI adoption, Hitesh has trained thousands of professionals — from CXOs to frontline teams — across industries, helping organisations turn AI curiosity into measurable productivity. His sessions are known for being live, hands-on and demo-driven: no slides-only lectures, only real tools applied to real work.
+      <h3 class="sec">About the Facilitator</h3>
+      <div class="facil">
+        <div>
+          <div class="who">${esc(SK.facilitatorName)}</div>
+          <div class="role">${esc(SK.facilitatorRole)}</div>
+          <ul>${SK.facilitatorPoints.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>
         </div>
-        <div class="bio">
+        <div>
           <div class="who">About Skillopedia</div>
-          <div class="role">Learn · Try · Apply</div>
-          Skillopedia designs and delivers AI upskilling programs for forward-thinking organisations. Every curriculum is customised to the client's industry, audience and workflows, and delivered through our Learn → Try → Apply methodology — so training converts into daily habits, not just inspiration.
+          <div class="role">${esc(SK.tagline)}</div>
+          <ul>
+            <li>India's #1 Generative AI training partner.</li>
+            <li>Every curriculum customised to the client's industry and workflows.</li>
+            <li>Real problem statements solved live in the room — never generic training.</li>
+          </ul>
         </div>
       </div>
+
+      <h3 class="sec">Next Steps</h3>
+      <ul class="plain-list">${cur.nextSteps.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
     </div>
 
-    <footer class="doc-foot">
-      <span class="fbrand">
-        <svg width="20" height="20" viewBox="0 0 38 38" aria-hidden="true">
-          <rect width="38" height="38" rx="9" fill="#F58220"/>
-          <path d="M9 14.5 L19 9 L29 14.5 L19 20 Z" fill="#0B1530"/>
-          <path d="M13.5 18.5 V24 C13.5 24 15.5 26.5 19 26.5 C22.5 26.5 24.5 24 24.5 24 V18.5 L19 21.5 Z" fill="#0B1530" opacity=".82"/>
-        </svg>
-        Skillopedia
-      </span>
-      <span contenteditable="true"><b>hitesh@skillopedia.in</b> · www.skillopedia.in · @skillopedia</span>
-      <span>© Skillopedia. Curriculum prepared for ${esc(input.company)}.</span>
+    <footer class="doc-foot" contenteditable="true">
+      <span><b>Contact:</b>  ${esc(SK.contactLine)}</span>
+      <span><span class="tag">Skillopedia</span> — ${esc(SK.tagline)}  ·  ${esc(SK.web)}</span>
     </footer>`;
 
   document.getElementById("emptyState").style.display = "none";
   document.getElementById("doc").style.display = "block";
   document.getElementById("toolbar").style.display = "flex";
+  sandboxNotice();
   document.getElementById("doc").scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
 /* =====================================================================
-   6. APP WIRING
+   7. WORD EXPORT (.doc — Word-compatible HTML, same outline format)
+===================================================================== */
+
+function wordHTML(cur, input){
+  const P = "#3B2A66", O = "#F7A600", OD = "#D98A00", INK = "#3A3A4A", LAV = "#EEEAF2";
+  const multiDay = cur.days.length > 1;
+
+  const glance = glanceRows(cur, input).map(([k,v])=>
+    `<tr><td style="background:#F8F5FB;border:1px solid ${LAV};padding:6px 10px;font-weight:bold;color:${P};width:140px">${esc(k)}</td>
+     <td style="border:1px solid ${LAV};padding:6px 10px">${esc(v)}</td></tr>`).join("");
+
+  const sched = cur.days.map((day, di)=>{
+    const head = multiDay ? `<tr><td colspan="3" style="background:#FDF3DE;color:${OD};font-weight:bold;padding:6px 10px;border:1px solid ${LAV}">DAY ${di+1}</td></tr>` : "";
+    return head + day.map(r=>{
+      const label = r.kind==="break" ? `<i style="color:#9A95A8">${esc(r.title)}</i>` : `<b>${esc(sectionLabel(r))}</b> — ${esc(r.title)}`;
+      return `<tr>
+        <td style="border:1px solid ${LAV};padding:6px 10px;white-space:nowrap">${esc(r.start)} – ${esc(r.end)}</td>
+        <td style="border:1px solid ${LAV};padding:6px 10px">${label}</td>
+        <td style="border:1px solid ${LAV};padding:6px 10px;white-space:nowrap">${r.mins} min</td>
+      </tr>`;
+    }).join("");
+  }).join("");
+
+  const mods = cur.days.map((day, di)=>{
+    const dh = multiDay ? `<h2 style="color:${P};font-size:15pt;margin:24pt 0 6pt">Day ${di+1} — Module Detail</h2>` : "";
+    return dh + day.filter(r=>r.kind!=="break").map(r=>`
+      <h3 style="color:${P};font-size:13pt;margin:18pt 0 2pt">${esc(sectionLabel(r))}  —  ${esc(r.title)}</h3>
+      <p style="color:#9A95A8;font-size:9pt;margin:0 0 6pt"><b>${r.mins} min  ·  ${esc(r.start)} – ${esc(r.end)}</b></p>
+      ${r.points?.length ? `<p style="color:${OD};font-size:9pt;margin:6pt 0 2pt"><b>WHAT WE COVER</b></p>
+      <ul style="margin:0 0 6pt 18pt">${r.points.map(p=>`<li style="margin:2pt 0">${esc(p)}</li>`).join("")}</ul>` : ""}
+      ${r.activity ? `<p style="background:#FDF3DE;border-left:3px solid ${O};padding:6pt 10pt;margin:6pt 0"><b style="color:${OD}">Hands-on:</b>  ${esc(r.activity)}</p>` : ""}
+      ${r.tools?.length ? `<p style="font-size:9pt;color:#5C566B;margin:2pt 0"><b style="color:${P}">Tools:</b> ${esc(r.tools.join(" · "))}</p>` : ""}
+    `).join("");
+  }).join("");
+
+  const list = arr => `<ul style="margin:0 0 6pt 18pt">${arr.map(t=>`<li style="margin:2pt 0">${esc(t)}</li>`).join("")}</ul>`;
+  const secH = t => `<h2 style="color:${P};font-size:13pt;border-bottom:1pt solid ${LAV};padding-bottom:3pt;margin:22pt 0 8pt;text-transform:uppercase;letter-spacing:1pt">${t}</h2>`;
+
+  return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${esc(cur.title)} — ${esc(input.company)}</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>@page{size:A4;margin:2cm} body{font-family:Calibri,Arial,sans-serif;color:${INK};font-size:10.5pt;line-height:1.45}</style>
+</head><body>
+
+<table width="100%" cellpadding="0" cellspacing="0"><tr>
+  <td><img src="${LOGO_B64}" height="46" alt="Skillopedia"></td>
+  <td align="right" style="font-size:8pt;color:#9A95A8;letter-spacing:2pt">TRAINING CURRICULUM · CONFIDENTIAL</td>
+</tr></table>
+
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:10pt"><tr>
+<td style="background:${P};padding:18pt 22pt">
+  <p style="color:#FFFFFF;font-size:21pt;font-weight:bold;margin:0;text-transform:uppercase;letter-spacing:1pt">${esc(cur.title)}</p>
+  <p style="color:#E5DEF2;font-size:11pt;margin:6pt 0 0">Prepared exclusively for <b style="color:#FFC94D">${esc(input.company)}</b> — ${esc(AUDIENCES[input.audience].name)}</p>
+  <p style="color:#B9AFD3;font-size:9pt;margin:4pt 0 0">${esc(cur.subtitle)}  ·  Delivered by ${esc(SK.facilitatorName)}  ·  Skillopedia</p>
+  <p style="color:#E5DEF2;font-size:8.5pt;margin:10pt 0 0;border-top:1pt solid #5C4E85;padding-top:8pt">${esc(SK.statsLine)}</p>
+</td></tr>
+<tr><td style="background:${O};font-size:3pt;line-height:3pt">&nbsp;</td></tr></table>
+
+${secH("Programme at a Glance")}
+<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">${glance}</table>
+
+${secH("Objectives")}
+${list(cur.objectives)}
+
+${secH("Day Schedule at a Glance")}
+<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+<tr><td style="background:${P};color:#fff;padding:6px 10px;border:1px solid ${P}"><b>Time</b></td>
+    <td style="background:${P};color:#fff;padding:6px 10px;border:1px solid ${P}"><b>Module</b></td>
+    <td style="background:${P};color:#fff;padding:6px 10px;border:1px solid ${P}"><b>Duration</b></td></tr>
+${sched}
+</table>
+
+${mods}
+
+${secH("What Every Participant Walks Away With")}
+${list(cur.takeaways)}
+
+${secH("AI Tools Covered")}
+<p>${esc(cur.tools.join("  ·  "))}</p>
+
+${secH("Operational Notes")}
+${list(cur.opsNotes)}
+
+${secH("About the Facilitator")}
+<p style="margin:0"><b style="font-size:12pt;color:${P}">${esc(SK.facilitatorName)}</b><br>
+<span style="color:${OD};font-size:9pt;letter-spacing:1pt"><b>${esc(SK.facilitatorRole).toUpperCase()}</b></span></p>
+${list(SK.facilitatorPoints)}
+
+${secH("Next Steps")}
+${list(cur.nextSteps)}
+
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-top:16pt"><tr>
+<td style="background:${P};padding:10pt 14pt;color:#E5DEF2;font-size:9pt">
+<b style="color:#fff">Contact:</b>  ${esc(SK.contactLine)}<br>
+<b style="color:${O}">Skillopedia</b> — ${esc(SK.tagline)}  ·  ${esc(SK.web)}
+</td></tr></table>
+
+</body></html>`;
+}
+
+function downloadWord(){
+  if(!LAST) return;
+  sandboxNotice(); // still attempt the download below, in case the host allows it
+  const html = wordHTML(LAST.cur, LAST.input);
+  const blob = new Blob(["﻿", html], { type:"application/msword" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `Skillopedia_${LAST.input.company.replace(/[^\w]+/g,"_")}_Curriculum.doc`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* =====================================================================
+   8. POWERPOINT EXPORT (.pptx — styled like the Skillopedia proposal deck)
+===================================================================== */
+
+function downloadPpt(){
+  if(!LAST) return;
+  sandboxNotice(); // still attempt the download below, in case the host allows it
+  if(typeof PptxGenJS === "undefined"){
+    alert("PowerPoint export needs pptxgen.bundle.js next to index.html (included in the repo).");
+    return;
+  }
+  const { cur, input } = LAST;
+  const aud = AUDIENCES[input.audience];
+  const fmt = FORMATS[input.format];
+  const pptx = new PptxGenJS();
+  pptx.layout = "LAYOUT_16x9"; // 10 x 5.625 in
+  pptx.author = "Skillopedia";
+  pptx.company = "Skillopedia";
+  pptx.title = `${cur.title} — ${input.company}`;
+
+  const W = 10, H = 5.625;
+  const FONT = "Calibri";
+
+  const headerBand = (s, eyebrow, title, sub)=>{
+    s.background = { color: BRAND.white };
+    s.addText(eyebrow.toUpperCase(), { x:0.5, y:0.28, w:6.5, h:0.3, fontFace:FONT, fontSize:10, bold:true, color:BRAND.orangeDeep, charSpacing:3 });
+    s.addText(title, { x:0.5, y:0.55, w:9, h:0.55, fontFace:FONT, fontSize:24, bold:true, color:BRAND.purple });
+    if(sub) s.addText(sub, { x:0.5, y:1.08, w:9, h:0.3, fontFace:FONT, fontSize:11.5, color:BRAND.inkSoft });
+    s.addShape(pptx.ShapeType.rect, { x:0.5, y:1.45, w:1.1, h:0.045, fill:{ color:BRAND.orange }, line:{ color:BRAND.orange, width:0 } });
+    s.addImage({ data:LOGO_B64, x:8.55, y:0.28, w:1.05, h:0.36 });
+    s.addText(`${input.company.toUpperCase()}  ·  SKILLOPEDIA TRAINING CURRICULUM`, { x:0.5, y:H-0.4, w:7, h:0.3, fontFace:FONT, fontSize:8, color:BRAND.lav400, charSpacing:2 });
+  };
+
+  /* --- Slide 1 : Cover --- */
+  {
+    const s = pptx.addSlide();
+    s.background = { color: BRAND.purple };
+    s.addShape(pptx.ShapeType.rect, { x:0, y:H-0.14, w:W, h:0.14, fill:{ color:BRAND.orange }, line:{ color:BRAND.orange, width:0 } });
+    s.addShape(pptx.ShapeType.roundRect, { x:0.55, y:0.5, w:2.35, h:0.85, rectRadius:0.08, fill:{ color:BRAND.white }, line:{ color:BRAND.white, width:0 } });
+    s.addImage({ data:LOGO_B64, x:0.75, y:0.68, w:1.95, h:0.5 });
+    s.addText("CONFIDENTIAL  ·  TRAINING CURRICULUM", { x:0.55, y:1.75, w:8, h:0.3, fontFace:FONT, fontSize:11, bold:true, color:BRAND.orange, charSpacing:4 });
+    s.addText(cur.title.toUpperCase(), { x:0.52, y:2.05, w:9, h:1.05, fontFace:FONT, fontSize:36, bold:true, color:BRAND.white });
+    s.addText([
+      { text:"Prepared exclusively for  ", options:{ color:"D7CFE8" } },
+      { text:input.company, options:{ color:"FFC94D", bold:true } }
+    ], { x:0.55, y:3.15, w:9, h:0.4, fontFace:FONT, fontSize:16 });
+    s.addText(`${aud.name}  ·  ${fmt.duration}  ·  ${input.mode}  ·  Delivered by ${SK.facilitatorName}`, { x:0.55, y:3.6, w:9, h:0.35, fontFace:FONT, fontSize:12, color:"B9AFD3" });
+    s.addText(SK.statsLine, { x:0.55, y:H-0.75, w:9, h:0.35, fontFace:FONT, fontSize:11, bold:true, color:"E5DEF2", charSpacing:1 });
+  }
+
+  /* --- Slide 2 : Programme at a Glance --- */
+  {
+    const s = pptx.addSlide();
+    headerBand(s, "At a Glance", "Programme at a Glance", cur.subtitle);
+    const rows = glanceRows(cur, input).map(([k,v])=>[
+      { text:k, options:{ bold:true, color:BRAND.purple, fill:{ color:BRAND.lav50 } } },
+      { text:v, options:{ color:BRAND.ink } }
+    ]);
+    s.addTable(rows, { x:0.5, y:1.75, w:9, colW:[2.1,6.9], fontFace:FONT, fontSize:12,
+      border:{ type:"solid", color:BRAND.lav100, pt:1 }, rowH:0.42, valign:"middle", margin:[0.06,0.1,0.06,0.1] });
+  }
+
+  /* --- Slide 3 : Objectives --- */
+  {
+    const s = pptx.addSlide();
+    headerBand(s, "Objectives", "What This Programme Achieves", `Six commitments for ${input.company}`);
+    cur.objectives.slice(0,6).forEach((o,i)=>{
+      const col = i%2, row = Math.floor(i/2);
+      const x = 0.5 + col*4.65, y = 1.8 + row*1.15;
+      s.addText(String(i+1).padStart(2,"0"), { x, y, w:0.55, h:0.5, fontFace:FONT, fontSize:20, bold:true, color:BRAND.orange });
+      s.addText(o, { x:x+0.55, y, w:3.9, h:1.05, fontFace:FONT, fontSize:12.5, color:BRAND.ink, valign:"top" });
+    });
+  }
+
+  /* --- Schedule slides (one per day) --- */
+  cur.days.forEach((day, di)=>{
+    const s = pptx.addSlide();
+    const dayLabel = cur.days.length>1 ? ` — Day ${di+1}` : "";
+    headerBand(s, "Schedule", `Day Schedule at a Glance${dayLabel}`, "Every module hands-on · timings indicative");
+    const rows = [[
+      { text:"Time", options:{ bold:true, color:BRAND.white, fill:{ color:BRAND.purple } } },
+      { text:"Module", options:{ bold:true, color:BRAND.white, fill:{ color:BRAND.purple } } },
+      { text:"Duration", options:{ bold:true, color:BRAND.white, fill:{ color:BRAND.purple } } }
+    ]];
+    day.forEach(r=>{
+      if(r.kind==="break"){
+        rows.push([
+          { text:`${r.start} – ${r.end}`, options:{ color:BRAND.lav400, fill:{ color:BRAND.lav50 } } },
+          { text:r.title, options:{ italic:true, color:BRAND.lav400, fill:{ color:BRAND.lav50 } } },
+          { text:`${r.mins} min`, options:{ color:BRAND.lav400, fill:{ color:BRAND.lav50 } } }
+        ]);
+      } else {
+        rows.push([
+          { text:`${r.start} – ${r.end}`, options:{ color:BRAND.inkSoft } },
+          { text:[{ text:`${sectionLabel(r)}  `, options:{ bold:true, color:BRAND.purple } }, { text:`—  ${r.title}`, options:{ color:BRAND.ink } }] },
+          { text:`${r.mins} min`, options:{ color:BRAND.inkSoft } }
+        ]);
+      }
+    });
+    s.addTable(rows, { x:0.5, y:1.7, w:9, colW:[1.6,6.2,1.2], fontFace:FONT, fontSize:10.5,
+      border:{ type:"solid", color:BRAND.lav100, pt:1 }, rowH:0.3, valign:"middle", margin:[0.04,0.08,0.04,0.08] });
+  });
+
+  /* --- Module slides --- */
+  cur.days.forEach((day, di)=>{
+    day.filter(r=>r.kind!=="break").forEach(r=>{
+      const s = pptx.addSlide();
+      s.background = { color: BRAND.white };
+      // left rail
+      s.addShape(pptx.ShapeType.rect, { x:0, y:0, w:0.14, h:H, fill:{ color:BRAND.orange }, line:{ color:BRAND.orange, width:0 } });
+      s.addText(sectionLabel(r), { x:0.45, y:0.35, w:2.2, h:0.34, fontFace:FONT, fontSize:12, bold:true, color:BRAND.white, fill:{ color:BRAND.purple }, align:"center", valign:"middle" });
+      s.addText(`${r.mins} min  ·  ${r.start} – ${r.end}${cur.days.length>1 ? `  ·  Day ${di+1}` : ""}`, { x:2.8, y:0.35, w:4.5, h:0.34, fontFace:FONT, fontSize:11, color:BRAND.lav400, valign:"middle" });
+      s.addImage({ data:LOGO_B64, x:8.55, y:0.32, w:1.05, h:0.36 });
+      s.addText(r.title, { x:0.45, y:0.85, w:9.1, h:0.6, fontFace:FONT, fontSize:24, bold:true, color:BRAND.purple });
+
+      if(r.points?.length){
+        s.addText("WHAT WE COVER", { x:0.5, y:1.6, w:4, h:0.3, fontFace:FONT, fontSize:10, bold:true, color:BRAND.orangeDeep, charSpacing:3 });
+        s.addText(r.points.map(p=>({ text:p, options:{ bullet:{ characterCode:"25AA", indent:14 }, color:BRAND.ink, breakLine:true } })),
+          { x:0.5, y:1.95, w:8.9, h:1.9, fontFace:FONT, fontSize:13.5, lineSpacingMultiple:1.25, valign:"top" });
+      }
+      if(r.activity){
+        s.addText([
+          { text:"HANDS-ON   ", options:{ bold:true, color:BRAND.orangeDeep } },
+          { text:r.activity, options:{ color:BRAND.ink } }
+        ], { x:0.5, y:4.0, w:8.9, h:0.6, fontFace:FONT, fontSize:12.5, fill:{ color:BRAND.orangeSoft }, valign:"middle", margin:8,
+             shape:pptx.ShapeType.roundRect, rectRadius:0.05, line:{ color:BRAND.orange, width:1 } });
+      }
+      if(r.tools?.length){
+        s.addText([{ text:"Tools:  ", options:{ bold:true, color:BRAND.purple } }, { text:r.tools.join("  ·  "), options:{ color:BRAND.inkSoft } }],
+          { x:0.5, y:4.75, w:8.9, h:0.3, fontFace:FONT, fontSize:11 });
+      }
+      s.addText(`${input.company.toUpperCase()}  ·  SKILLOPEDIA TRAINING CURRICULUM`, { x:0.5, y:H-0.4, w:7, h:0.3, fontFace:FONT, fontSize:8, color:BRAND.lav400, charSpacing:2 });
+    });
+  });
+
+  /* --- Takeaways + Operational notes --- */
+  {
+    const s = pptx.addSlide();
+    headerBand(s, "Outcomes", "What Every Participant Walks Away With", "And how we run the day");
+    s.addText("TAKEAWAYS", { x:0.5, y:1.7, w:4, h:0.3, fontFace:FONT, fontSize:10, bold:true, color:BRAND.orangeDeep, charSpacing:3 });
+    s.addText(cur.takeaways.map(t=>({ text:t, options:{ bullet:{ characterCode:"25AA", indent:14 }, breakLine:true } })),
+      { x:0.5, y:2.05, w:4.4, h:2.8, fontFace:FONT, fontSize:12.5, color:BRAND.ink, lineSpacingMultiple:1.3, valign:"top" });
+    s.addText("OPERATIONAL NOTES", { x:5.2, y:1.7, w:4, h:0.3, fontFace:FONT, fontSize:10, bold:true, color:BRAND.orangeDeep, charSpacing:3 });
+    s.addText(cur.opsNotes.map(t=>({ text:t, options:{ bullet:{ characterCode:"25AA", indent:14 }, breakLine:true } })),
+      { x:5.2, y:2.05, w:4.3, h:2.8, fontFace:FONT, fontSize:12.5, color:BRAND.ink, lineSpacingMultiple:1.3, valign:"top" });
+  }
+
+  /* --- Facilitator --- */
+  {
+    const s = pptx.addSlide();
+    headerBand(s, "Your Trainer", "Meet Your Facilitator", "The mind behind India's most impactful Gen AI programmes");
+    s.addImage({ data:HITESH_B64, x:0.6, y:1.85, w:2.1, h:2.55 });
+    s.addText(SK.facilitatorName, { x:3.0, y:1.85, w:6, h:0.4, fontFace:FONT, fontSize:20, bold:true, color:BRAND.purple });
+    s.addText(SK.facilitatorRole.toUpperCase(), { x:3.0, y:2.25, w:6, h:0.3, fontFace:FONT, fontSize:10.5, bold:true, color:BRAND.orangeDeep, charSpacing:2 });
+    s.addText(SK.facilitatorPoints.map(t=>({ text:t, options:{ bullet:{ characterCode:"2713", indent:14 }, breakLine:true } })),
+      { x:3.0, y:2.65, w:6.4, h:1.8, fontFace:FONT, fontSize:12.5, color:BRAND.ink, lineSpacingMultiple:1.35, valign:"top" });
+    s.addText(SK.statsLine, { x:3.0, y:4.5, w:6.4, h:0.3, fontFace:FONT, fontSize:10.5, bold:true, color:BRAND.purple, charSpacing:1 });
+  }
+
+  /* --- Close / Contact --- */
+  {
+    const s = pptx.addSlide();
+    s.background = { color: BRAND.purple };
+    s.addShape(pptx.ShapeType.rect, { x:0, y:H-0.14, w:W, h:0.14, fill:{ color:BRAND.orange }, line:{ color:BRAND.orange, width:0 } });
+    s.addShape(pptx.ShapeType.roundRect, { x:0.55, y:0.5, w:2.35, h:0.85, rectRadius:0.08, fill:{ color:BRAND.white }, line:{ color:BRAND.white, width:0 } });
+    s.addImage({ data:LOGO_B64, x:0.75, y:0.68, w:1.95, h:0.5 });
+    s.addText(`Let's build ${input.company}${input.company.endsWith("s") ? "'" : "'s"}\nAI-first future — together.`, { x:0.55, y:1.9, w:8.9, h:1.3, fontFace:FONT, fontSize:30, bold:true, color:BRAND.white });
+    s.addText(`${fmt.label}  ·  ${aud.name}  ·  Hitesh-led  ·  Fully customised`, { x:0.55, y:3.2, w:8.9, h:0.35, fontFace:FONT, fontSize:12, color:"B9AFD3" });
+    s.addText([
+      { text:"HITESH MOTWANI\n", options:{ bold:true, color:BRAND.orange, fontSize:12 } },
+      { text:`Founder & Lead Trainer, Skillopedia\n${SK.email}\n${SK.phone}`, options:{ color:"E5DEF2", fontSize:11 } }
+    ], { x:0.55, y:3.85, w:4.5, h:1.1, fontFace:FONT, lineSpacingMultiple:1.25 });
+    s.addText(`SKILLOPEDIA  ·  ${SK.web}  ·  India's #1 Generative AI Training Partner`, { x:0.55, y:H-0.55, w:9, h:0.3, fontFace:FONT, fontSize:9.5, color:"D7CFE8", charSpacing:1 });
+  }
+
+  pptx.writeFile({ fileName:`Skillopedia_${input.company.replace(/[^\w]+/g,"_")}_Curriculum.pptx` });
+}
+
+/* =====================================================================
+   9. APP WIRING
 ===================================================================== */
 
 const $ = id => document.getElementById(id);
+
+/* Sandboxed hosting (e.g. the claude.ai preview) silently blocks file
+   downloads. Two tells: an opaque origin over http(s) (file:// also has an
+   opaque origin but downloads fine), or being iframed by the claude.ai
+   artifact viewer (detectable only via document.referrer, since the parent
+   is cross-origin). */
+const inIframe = (()=>{ try{ return window.self !== window.top; }catch{ return true; } })();
+const SANDBOXED = (window.origin === "null" && location.protocol !== "file:")
+  || (inIframe && /claude\.ai|claudeusercontent\.com|anthropic\.com/i.test(document.referrer));
+function sandboxNotice(){
+  if(!SANDBOXED) return;
+  $("dlNote").style.display = "block";
+  $("dlNote").scrollIntoView({ behavior:"smooth", block:"nearest" });
+}
 
 function engineCfg(){
   try{ return JSON.parse(localStorage.getItem("sk_engine")) || { provider:"demo" }; }
   catch{ return { provider:"demo" }; }
 }
-function saveEngineCfg(cfg){ localStorage.setItem("sk_engine", JSON.stringify(cfg)); }
+function saveEngineCfg(cfg){ try{ localStorage.setItem("sk_engine", JSON.stringify(cfg)); }catch{} }
 
 function refreshEngineLabels(){
   const cfg = engineCfg();
@@ -1069,8 +1422,7 @@ function refreshEngineLabels(){
   $("engineNote").textContent = cfg.provider==="demo" ? "built-in demo engine" : `${label} (live AI)`;
 }
 
-$("curForm").addEventListener("submit", async (e)=>{
-  e.preventDefault();
+async function generate(){
   const errBox = $("errBox"); errBox.style.display = "none";
   const input = {
     company: $("fCompany").value.trim() || "Your Company",
@@ -1087,12 +1439,17 @@ $("curForm").addEventListener("submit", async (e)=>{
   try{
     let cur;
     if(cfg.provider==="demo"){
-      await new Promise(r=>setTimeout(r, 500)); // brief pause so generation feels deliberate
+      await new Promise(r=>setTimeout(r, 500));
       cur = demoEngine(input);
     } else {
       cur = await callLLM(cfg, buildLLMPrompt(input));
       if(!cur.days || !cur.title) throw new Error("The model's response was missing required fields — try again.");
+      cur.takeaways = cur.takeaways?.length ? cur.takeaways : TAKEAWAYS;
+      cur.opsNotes  = cur.opsNotes?.length  ? cur.opsNotes  : OPS_NOTES;
+      cur.nextSteps = cur.nextSteps?.length ? cur.nextSteps : NEXT_STEPS;
+      cur.subtitle  = cur.subtitle || `${FORMATS[input.format].label} · Hands-On Throughout`;
     }
+    LAST = { cur, input };
     render(cur, input);
   } catch(ex){
     errBox.textContent = `Couldn't generate: ${ex.message}`;
@@ -1101,9 +1458,13 @@ $("curForm").addEventListener("submit", async (e)=>{
     btn.disabled = false;
     btn.textContent = "Generate curriculum";
   }
-});
+}
+$("btnGen").addEventListener("click", generate);
+$("curForm").addEventListener("submit", (e)=>{ e.preventDefault(); generate(); });
 
 $("btnPrint").addEventListener("click", ()=> window.print());
+$("btnWord").addEventListener("click", downloadWord);
+$("btnPpt").addEventListener("click", downloadPpt);
 $("btnReset").addEventListener("click", ()=>{
   $("doc").style.display = "none";
   $("toolbar").style.display = "none";

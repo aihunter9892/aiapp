@@ -101,3 +101,9 @@ WhatsApp (your number, multi-device Web protocol via Baileys)
 ## License
 
 MIT
+
+---
+
+## Also in this repository
+
+`index.html` + `pptxgen.bundle.js` are a separate mini-app: the **Skillopedia Curriculum Builder** (live at https://aihunter9892.github.io/aiapp/), an AI-powered, brand-styled curriculum generator with PPT/Word/PDF export. It shares this repo but is unrelated to Talon.

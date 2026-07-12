@@ -1,0 +1,25 @@
+name: Publish to GitHub Pages
+
+# GitHub Pages serves this repo from the gh-pages branch (auto-enabled when
+# that branch first appeared). This workflow keeps gh-pages in sync with the
+# development branch on every push.
+
+on:
+  push:
+    branches: [claude/curriculum-builder-prototype-kkusbt]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mirror branch to gh-pages
+        run: git push --force origin HEAD:gh-pages
