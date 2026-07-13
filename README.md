@@ -14,6 +14,9 @@ Files: `index.html` (the whole app, logo embedded) + `pptxgen.bundle.js`
 (vendored [PptxGenJS](https://github.com/gitbrent/PptxGenJS) for the PPT export).
 No build step, no server.
 
+Also included: `snake.html` — a simple, self-contained Snake game (arrow keys / WASD,
+on-screen d-pad for touch, score + best-score persisted locally). Just open it in a browser.
+
 ## Try it
 
 **Live app:** https://aihunter9892.github.io/aiapp/ (auto-deployed by GitHub Pages on every push).
