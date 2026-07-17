@@ -24,7 +24,11 @@ import html
 
 SITE = "https://claudeaitrainer.com"
 BRAND = "Claude AI Trainer"
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "site")
+# BASE_PATH lets us serve the same build under a sub-path (e.g. GitHub Pages
+# preview at /aiapp/claude-ai-trainer). Canonical/OG URLs always stay absolute
+# to the real domain; only on-page internal links/assets are prefixed.
+BASE_PATH = os.environ.get("BASE_PATH", "").rstrip("/")
+OUT = os.environ.get("OUT_DIR") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "site")
 
 # ---------------------------------------------------------------------------
 # Shared facts (single source of truth -> reused everywhere)
@@ -817,8 +821,18 @@ def build_product(slug):
 # Output plumbing
 # ---------------------------------------------------------------------------
 ALL_URLS = []
+def apply_base(htmlstr):
+    """Prefix root-relative internal links/assets with BASE_PATH (no-op if empty)."""
+    if not BASE_PATH:
+        return htmlstr
+    for attr in ('href', 'src'):
+        htmlstr = htmlstr.replace(f'{attr}="/', f'{attr}="{BASE_PATH}/')
+        htmlstr = htmlstr.replace(f"{attr}='/", f"{attr}='{BASE_PATH}/")
+    return htmlstr
+
 def write(url, htmlstr):
     ALL_URLS.append(url)
+    htmlstr = apply_base(htmlstr)
     path = url.strip("/")
     outdir = os.path.join(OUT, path) if path else OUT
     os.makedirs(outdir, exist_ok=True)
