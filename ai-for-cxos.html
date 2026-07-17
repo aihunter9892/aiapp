@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for CXOs | Executive AI Workshop by Hitesh Motwani</title>
+<meta name="description" content="AI for CXOs — a hands-on executive workshop that turns C-suite leaders into confident AI decision-makers. Frameworks, ROI, governance. 200k+ professionals trained.">
+<link rel="canonical" href="https://hiteshmotwani.com/ai-for-cxos/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI for CXOs | Executive AI Workshop by Hitesh Motwani">
+<meta property="og:description" content="Turn your C-suite from AI-curious to AI-decisive. No code, all strategy — frameworks, ROI and governance leaders use Monday morning.">
+<meta property="og:url" content="https://hiteshmotwani.com/ai-for-cxos/">
+
+<!-- Schema: Course -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": "AI for CXOs — Executive AI Workshop",
+  "description": "A hands-on executive workshop that equips C-suite leaders (CEO, CFO, CIO, COO, CHRO, CMO) to make confident decisions about AI strategy, build-vs-buy, ROI, governance and organisation-wide adoption — without any coding.",
+  "provider": {
+    "@type": "Organization",
+    "name": "Hitesh Motwani",
+    "sameAs": "https://hiteshmotwani.com"
+  },
+  "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": ["Onsite", "Online"],
+    "courseWorkload": "PT4H"
+  }
+}
+</script>
+
+<!-- Schema: Person -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Hitesh Motwani",
+  "jobTitle": "AI Trainer & Speaker",
+  "url": "https://hiteshmotwani.com",
+  "description": "AI trainer who has trained 200,000+ professionals across 250+ organisations in 16+ countries."
+}
+</script>
+
+<!-- Schema: FAQPage -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"What is AI for CXOs?","acceptedAnswer":{"@type":"Answer","text":"AI for CXOs is a hands-on executive workshop that equips C-suite leaders to make confident decisions about AI strategy, build-vs-buy, ROI, governance and adoption — without any coding."}},
+    {"@type":"Question","name":"Do I need a technical background?","acceptedAnswer":{"@type":"Answer","text":"No. The workshop is deliberately code-free and framed entirely in business, strategy and risk terms."}},
+    {"@type":"Question","name":"Who is it for?","acceptedAnswer":{"@type":"Answer","text":"CEOs, CFOs, CIOs/CTOs, COOs, CHROs, CMOs, founders and board members."}},
+    {"@type":"Question","name":"How long is it?","acceptedAnswer":{"@type":"Answer","text":"From a half-day briefing to a multi-session program; most teams start with a full-day intensive."}},
+    {"@type":"Question","name":"Is it in-person or virtual?","acceptedAnswer":{"@type":"Answer","text":"Both. Boardroom in-person sessions and live-virtual formats are available."}},
+    {"@type":"Question","name":"Will we work on our own use cases?","acceptedAnswer":{"@type":"Answer","text":"Yes. Sessions can be tailored to your industry, data and AI maturity."}},
+    {"@type":"Question","name":"What will my leadership team walk away with?","acceptedAnswer":{"@type":"Answer","text":"Four ready-to-use frameworks and a 90-day AI adoption roadmap."}},
+    {"@type":"Question","name":"How is this different from a generic AI course?","acceptedAnswer":{"@type":"Answer","text":"It is executive-only: no code, every module tied to P&L, risk and strategy, taught by a trainer with 200k+ professionals trained."}},
+    {"@type":"Question","name":"Can you run it for our whole leadership team?","acceptedAnswer":{"@type":"Answer","text":"Yes — private leadership cohorts are the most common format."}},
+    {"@type":"Question","name":"How do we get started?","acceptedAnswer":{"@type":"Answer","text":"Request a proposal via the form and you will get a tailored outline and pricing."}}
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --bg:#0b1020; --panel:#111830; --panel2:#0e1428; --ink:#eef2ff; --muted:#a7b0cc;
+    --brand:#6d5cff; --brand2:#00d4b8; --line:rgba(255,255,255,.10); --card:rgba(255,255,255,.04);
+    --radius:16px; --maxw:1120px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  .eyebrow{color:var(--brand2);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:.72rem;margin:0 0 14px}
+  h1,h2,h3{line-height:1.15;margin:0 0 .5em}
+  h1{font-size:clamp(2.4rem,6vw,4rem);letter-spacing:-.02em}
+  h2{font-size:clamp(1.6rem,3.4vw,2.4rem);letter-spacing:-.01em}
+  p{color:var(--muted);margin:0 0 1rem}
+  .lead{font-size:clamp(1.05rem,1.8vw,1.28rem);color:#c9d2f0;max-width:52ch}
+  section{padding:72px 0;border-top:1px solid var(--line)}
+  .btn{display:inline-block;padding:14px 26px;border-radius:999px;font-weight:700;font-size:1rem;transition:.2s}
+  .btn-primary{background:linear-gradient(120deg,var(--brand),#8a7bff);color:#fff;box-shadow:0 10px 30px rgba(109,92,255,.35)}
+  .btn-primary:hover{transform:translateY(-2px)}
+  .btn-ghost{border:1px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--brand2)}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;background:rgba(11,16,32,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .navrow{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{font-weight:800;letter-spacing:-.01em}
+  .brand span{color:var(--brand2)}
+  .navlinks{display:flex;gap:26px;align-items:center;font-size:.92rem;color:var(--muted)}
+  .navlinks a:hover{color:var(--ink)}
+  @media(max-width:820px){.navlinks{display:none}}
+
+  /* hero */
+  .hero{padding:78px 0 20px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:-40% -10% auto auto;width:60vw;height:60vw;
+    background:radial-gradient(circle,rgba(109,92,255,.35),transparent 60%);filter:blur(20px);z-index:-1}
+  .hero .actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+  .callouts{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:56px}
+  .callout{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+  .callout h3{font-size:1.02rem;margin-bottom:.35em}
+  .callout p{font-size:.9rem;margin:0}
+  @media(max-width:880px){.callouts{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.callouts{grid-template-columns:1fr}}
+
+  /* form */
+  .formcard{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);
+    border-radius:22px;padding:34px}
+  .grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr;gap:26px}}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  .field label{font-size:.8rem;color:var(--muted)}
+  .field input,.field select{background:#0a0f1f;border:1px solid var(--line);border-radius:10px;
+    padding:12px 14px;color:var(--ink);font-size:.95rem}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--brand2)}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+  /* logos */
+  .logos{display:flex;flex-wrap:wrap;gap:14px 30px;align-items:center;justify-content:center;opacity:.85}
+  .logos .chip{border:1px solid var(--line);border-radius:999px;padding:9px 20px;font-weight:600;color:#c9d2f0;font-size:.92rem}
+
+  /* generic cards */
+  .cards{display:grid;gap:18px}
+  .c3{grid-template-columns:repeat(3,1fr)}
+  .c2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:880px){.c3{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.c3,.c2{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .card .num{color:var(--brand2);font-weight:800;font-family:ui-monospace,monospace;font-size:.85rem}
+  .card h3{font-size:1.08rem;margin:.4em 0 .3em}
+  .card p{font-size:.92rem;margin:0}
+
+  .persona{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);
+    border-radius:14px;padding:18px}
+  .persona .role{font-weight:800;color:var(--ink);min-width:74px}
+  .persona p{margin:0;font-size:.9rem}
+
+  .definition{background:linear-gradient(120deg,rgba(109,92,255,.14),rgba(0,212,184,.08));
+    border:1px solid var(--line);border-left:4px solid var(--brand2);border-radius:14px;padding:26px;max-width:70ch}
+  .definition p{color:#dbe2ff;font-size:1.08rem;margin:0}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;text-align:center}
+  .stat .big{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;color:#fff}
+  .stat .lbl{color:var(--muted);font-size:.86rem}
+  @media(max-width:640px){.stats{grid-template-columns:1fr 1fr}}
+
+  /* faq */
+  details{border:1px solid var(--line);border-radius:12px;padding:4px 20px;margin-bottom:12px;background:var(--card)}
+  details summary{cursor:pointer;font-weight:700;padding:16px 0;list-style:none;display:flex;justify-content:space-between;gap:14px}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"+";color:var(--brand2);font-weight:800}
+  details[open] summary::after{content:"–"}
+  details p{padding:0 0 16px;margin:0;font-size:.95rem}
+
+  .cta{text-align:center;background:linear-gradient(120deg,rgba(109,92,255,.2),rgba(0,212,184,.12));
+    border:1px solid var(--line);border-radius:24px;padding:56px 26px;margin:20px 0 0}
+  footer{padding:40px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem;text-align:center}
+  .muted-note{font-size:.8rem;color:#7f89a8;margin-top:10px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap navrow">
+    <div class="brand">Hitesh<span>Motwani</span></div>
+    <div class="navlinks">
+      <a href="#curriculum">Curriculum</a>
+      <a href="#frameworks">Frameworks</a>
+      <a href="#formats">Formats</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn btn-primary" style="padding:9px 18px" href="#proposal">Request a proposal</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Executive AI Workshop</p>
+    <h1>AI for CXOs</h1>
+    <p class="lead">The workshop that turns C-suite leaders from AI-curious to AI-decisive — no code, all strategy. Walk out with the frameworks to place the right AI bets, kill the wrong ones, and lead your organisation's AI transformation with confidence.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="#proposal">Book an executive briefing</a>
+      <a class="btn btn-ghost" href="#curriculum">See the curriculum</a>
+    </div>
+
+    <div class="callouts">
+      <div class="callout"><h3>Decide, don't delegate</h3><p>Evaluate AI opportunities and vendors yourself, instead of rubber-stamping.</p></div>
+      <div class="callout"><h3>Protect the P&amp;L</h3><p>Separate real ROI from hype — know what to fund, pilot, or stop.</p></div>
+      <div class="callout"><h3>Govern the risk</h3><p>Data, IP, compliance and board-level AI accountability, made clear.</p></div>
+      <div class="callout"><h3>Move the whole org</h3><p>A 90-day adoption roadmap your leadership team actually executes.</p></div>
+    </div>
+  </div>
+</header>
+
+<!-- LEAD FORM -->
+<section id="proposal">
+  <div class="wrap grid2">
+    <div>
+      <p class="eyebrow">Bring it in-house</p>
+      <h2>Bring <em>AI for CXOs</em> to your leadership team</h2>
+      <p class="lead">Private cohorts, tailored to your industry, data and AI maturity. Tell us about your team and you'll get a tailored outline and pricing.</p>
+      <div class="stats" style="margin-top:26px;text-align:left">
+        <div class="stat"><div class="big">200k+</div><div class="lbl">professionals trained</div></div>
+        <div class="stat"><div class="big">250+</div><div class="lbl">organisations</div></div>
+        <div class="stat"><div class="big">16+</div><div class="lbl">countries</div></div>
+        <div class="stat"><div class="big">0</div><div class="lbl">lines of code</div></div>
+      </div>
+    </div>
+    <div class="formcard">
+      <form onsubmit="event.preventDefault();this.querySelector('.done').style.display='block';">
+        <div class="frow">
+          <div class="field"><label>Full name</label><input required placeholder="Your name"></div>
+          <div class="field"><label>Work email</label><input required type="email" placeholder="you@company.com"></div>
+        </div>
+        <div class="frow">
+          <div class="field"><label>Company</label><input required placeholder="Company"></div>
+          <div class="field"><label>Your role</label>
+            <select><option>CEO / Founder</option><option>CFO</option><option>CIO / CTO</option><option>COO</option><option>CHRO</option><option>CMO</option><option>Board member</option><option>Other</option></select>
+          </div>
+        </div>
+        <div class="field"><label>Leadership team size</label>
+          <select><option>Under 10</option><option>10–25</option><option>25–50</option><option>50+</option></select>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:8px" type="submit">Request a proposal</button>
+        <p class="done" style="display:none;color:var(--brand2);margin-top:14px">Thanks — we'll be in touch within one business day.</p>
+        <p class="muted-note">Wire this form to your CRM / email endpoint before going live.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section>
+  <div class="wrap" style="text-align:center">
+    <p class="eyebrow">Trusted by leaders</p>
+    <p style="margin-bottom:26px">Leaders from these organisations have trained with Hitesh</p>
+    <div class="logos">
+      <span class="chip">Tata Motors</span><span class="chip">Flipkart</span><span class="chip">Hitachi</span>
+      <span class="chip">+ your client logos</span>
+    </div>
+  </div>
+</section>
+
+<!-- THE PROBLEM -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">The real bottleneck</p>
+    <h2>AI doesn't stall in engineering. It stalls in the boardroom.</h2>
+    <p class="lead" style="max-width:64ch">Leaders approve pilots they can't evaluate, buy tools they don't need, and freeze on the decisions only they can make: where to bet, what to govern, and how fast to move. The gap isn't technical skill — it's an executive operating model for AI. This workshop closes that gap.</p>
+  </div>
+</section>
+
+<!-- WHAT IS -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Definition</p>
+    <h2>What is the "AI for CXOs" workshop?</h2>
+    <div class="definition">
+      <p><strong>AI for CXOs</strong> is a hands-on executive workshop that equips C-suite leaders — CEOs, CFOs, CIOs, COOs, CHROs and CMOs — to make confident, high-stakes decisions about artificial intelligence. It covers AI strategy, build-vs-buy, ROI, governance and organisation-wide adoption, without a single line of code — so leaders <em>lead</em> the AI agenda rather than outsource it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHO -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Who should attend</p>
+    <h2>Built for the whole C-suite</h2>
+    <div class="cards c2" style="margin-top:26px">
+      <div class="persona"><div class="role">CEO</div><p>Set the AI vision and allocate capital with conviction.</p></div>
+      <div class="persona"><div class="role">CFO</div><p>Model AI ROI, cost and risk; fund what pays back.</p></div>
+      <div class="persona"><div class="role">CIO/CTO</div><p>Align AI strategy with architecture, data and security.</p></div>
+      <div class="persona"><div class="role">COO</div><p>Re-engineer operations and workflows around AI.</p></div>
+      <div class="persona"><div class="role">CHRO</div><p>Reskilling, workforce planning and change management.</p></div>
+      <div class="persona"><div class="role">CMO</div><p>AI in growth, content, personalisation and brand.</p></div>
+      <div class="persona"><div class="role">Board</div><p>Founders and board members: AI oversight and accountability.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CURRICULUM -->
+<section id="curriculum">
+  <div class="wrap">
+    <p class="eyebrow">The curriculum</p>
+    <h2>Six executive modules — every one tied to strategy, P&amp;L and risk</h2>
+    <div class="cards c3" style="margin-top:26px">
+      <div class="card"><div class="num">MODULE 01</div><h3>The AI landscape for leaders</h3><p>What today's AI can and can't do, in P&amp;L terms — no jargon.</p></div>
+      <div class="card"><div class="num">MODULE 02</div><h3>Finding your AI opportunities</h3><p>Mapping use cases to revenue, cost and risk across the org.</p></div>
+      <div class="card"><div class="num">MODULE 03</div><h3>Build vs. buy vs. partner</h3><p>How to choose — and the questions that separate real vendors from hype.</p></div>
+      <div class="card"><div class="num">MODULE 04</div><h3>The economics of AI</h3><p>ROI modelling, TCO, and the metrics that matter to the board.</p></div>
+      <div class="card"><div class="num">MODULE 05</div><h3>AI governance &amp; risk</h3><p>Data, IP, security, compliance and responsible-AI guardrails.</p></div>
+      <div class="card"><div class="num">MODULE 06</div><h3>Leading the rollout</h3><p>A 90-day adoption roadmap, culture, reskilling and change management.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FRAMEWORKS -->
+<section id="frameworks">
+  <div class="wrap">
+    <p class="eyebrow">Take it home</p>
+    <h2>Four frameworks your team uses Monday morning</h2>
+    <div class="cards c2" style="margin-top:26px">
+      <div class="card"><h3>The AI Opportunity Map</h3><p>Score and prioritise use cases by business value and feasibility.</p></div>
+      <div class="card"><h3>The Build-Buy-Partner Matrix</h3><p>Make the sourcing call in minutes, not months.</p></div>
+      <div class="card"><h3>The AI ROI Model</h3><p>A board-ready way to defend — or reject — any AI investment.</p></div>
+      <div class="card"><h3>The Governance Guardrails</h3><p>A one-page policy skeleton for safe, compliant AI.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- OUTCOMES -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Outcomes</p>
+    <h2>Proof, not promises</h2>
+    <div class="cards c3" style="margin-top:26px">
+      <div class="card"><div class="num">CASE STUDY</div><h3>70 hrs / week saved</h3><p>A global trading firm redesigned executive workflows with AI.</p></div>
+      <div class="card"><div class="num">SCALE</div><h3>250+ organisations</h3><p>Upskilled across 16+ countries, from startups to enterprises.</p></div>
+      <div class="card"><div class="num">REACH</div><h3>200,000+ trained</h3><p>Professionals equipped to put AI to work — without the hype.</p></div>
+    </div>
+    <p class="muted-note">Add 1–2 named CXO testimonials here — the single highest-impact conversion lever.</p>
+  </div>
+</section>
+
+<!-- FORMATS -->
+<section id="formats">
+  <div class="wrap">
+    <p class="eyebrow">Formats</p>
+    <h2>Choose the depth that fits your team</h2>
+    <div class="cards c2" style="margin-top:26px">
+      <div class="card"><h3>Half-day executive briefing</h3><p>3–4 hours — the perfect leadership-offsite kickstarter.</p></div>
+      <div class="card"><h3>Full-day intensive</h3><p>The complete curriculum with hands-on decision labs.</p></div>
+      <div class="card"><h3>Boardroom private session</h3><p>Tailored to your industry, data and AI maturity.</p></div>
+      <div class="card"><h3>Multi-session program</h3><p>Briefing + working sessions + 90-day follow-through.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- AUTHORITY -->
+<section>
+  <div class="wrap grid2">
+    <div>
+      <p class="eyebrow">Your facilitator</p>
+      <h2>Why Hitesh Motwani</h2>
+      <p class="lead" style="max-width:56ch">Hitesh has trained 200,000+ professionals across 250+ organisations in 16+ countries, translating frontier AI into decisions leaders can act on. Practical, India-and-global, and free of hype — every module ties back to strategy, P&amp;L and risk.</p>
+    </div>
+    <div class="cards" style="grid-template-columns:1fr 1fr">
+      <div class="card" style="text-align:center"><div class="stat"><div class="big">200k+</div><div class="lbl">trained</div></div></div>
+      <div class="card" style="text-align:center"><div class="stat"><div class="big">250+</div><div class="lbl">organisations</div></div></div>
+      <div class="card" style="text-align:center"><div class="stat"><div class="big">16+</div><div class="lbl">countries</div></div></div>
+      <div class="card" style="text-align:center"><div class="stat"><div class="big">100%</div><div class="lbl">code-free</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <p class="eyebrow">FAQ</p>
+    <h2>Questions leaders ask</h2>
+    <div style="margin-top:26px;max-width:80ch">
+      <details open><summary>What is AI for CXOs?</summary><p>A hands-on executive workshop that equips C-suite leaders to make confident AI decisions on strategy, build-vs-buy, ROI, governance and adoption — no coding.</p></details>
+      <details><summary>Do I need a technical background?</summary><p>No. The workshop is deliberately code-free and framed entirely in business, strategy and risk terms.</p></details>
+      <details><summary>Who is it for?</summary><p>CEOs, CFOs, CIOs/CTOs, COOs, CHROs, CMOs, founders and board members.</p></details>
+      <details><summary>How long is it?</summary><p>From a half-day briefing to a multi-session program; most teams start with a full-day intensive.</p></details>
+      <details><summary>Is it in-person or virtual?</summary><p>Both. Boardroom in-person sessions and live-virtual formats are available.</p></details>
+      <details><summary>Will we work on our own use cases?</summary><p>Yes. Sessions can be tailored to your industry, data and AI maturity.</p></details>
+      <details><summary>What will my leadership team walk away with?</summary><p>Four ready-to-use frameworks and a 90-day AI adoption roadmap.</p></details>
+      <details><summary>How is this different from a generic AI course?</summary><p>It's executive-only: no code, every module tied to P&amp;L, risk and strategy, taught by a trainer with 200k+ professionals trained.</p></details>
+      <details><summary>Can you run it for our whole leadership team?</summary><p>Yes — private leadership cohorts are the most common format.</p></details>
+      <details><summary>How do we get started?</summary><p>Request a proposal via the form and you'll get a tailored outline and pricing.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING CTA -->
+<section>
+  <div class="wrap">
+    <div class="cta">
+      <h2 style="max-width:22ch;margin:0 auto .4em">Lead your AI agenda — don't outsource it.</h2>
+      <p style="max-width:52ch;margin:0 auto 22px">Bring <em>AI for CXOs</em> to your leadership team and turn AI from a boardroom question mark into a competitive advantage.</p>
+      <a class="btn btn-primary" href="#proposal">Request a proposal</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    © <span id="yr">2026</span> Hitesh Motwani · AI for CXOs — Executive AI Workshop ·
+    <a href="#proposal" style="color:var(--brand2)">Book an executive briefing</a>
+  </div>
+</footer>
+
+</body>
+</html>
