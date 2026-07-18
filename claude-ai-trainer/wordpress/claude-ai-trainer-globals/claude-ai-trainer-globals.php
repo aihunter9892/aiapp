@@ -18,8 +18,8 @@ function cat_defaults() {
         'model_balanced' => 'Claude Sonnet 5',
         'model_fast'     => 'Claude Haiku 4.5',
         'trainers'       => '300+',
-        'email'          => 'hello@claudeaitrainer.com',
-        'phone'          => '+91 00000 00000',
+        'email'          => 'reach@claudeaitrainer.com',
+        'phone'          => '+91 81690 09783',
         'form_to'        => '', // blank = admin email
     );
 }

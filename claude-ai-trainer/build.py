@@ -716,8 +716,8 @@ def cta(heading="Bring Claude into your team's real work"):
     <h2>{esc(heading)}</h2>
     <p>Tell us your team, your tools and your goal. We'll design a Claude AI workshop around the work you actually do — on-site or online.</p>
     <div class="cta-actions">
-      <a class="btn btn-lg" href="mailto:hello@claudeaitrainer.com?subject=Claude%20AI%20workshop%20enquiry">Request a proposal</a>
-      <a class="btn btn-lg btn-ghost" href="tel:+910000000000">Talk to a trainer</a>
+      <a class="btn btn-lg" href="mailto:reach@claudeaitrainer.com?subject=Claude%20AI%20workshop%20enquiry">Request a proposal</a>
+      <a class="btn btn-lg btn-ghost" href="tel:+918169009783">Call +91 81690 09783</a>
     </div>
     <p class="cta-fine">Formats from a 2-hour masterclass to a 2-day bootcamp · Indicative investment ₹50,000–₹3,00,000+ per engagement.</p>
   </div>
@@ -747,7 +747,8 @@ def org_ld():
         "@context": "https://schema.org", "@type": "Organization",
         "@id": f"{SITE}/#org", "name": BRAND, "url": SITE + "/",
         "description": "Corporate Claude AI training for teams and enterprises across India and 40+ countries.",
-        "areaServed": "Worldwide", "email": "hello@claudeaitrainer.com",
+        "areaServed": "Worldwide", "email": "reach@claudeaitrainer.com",
+        "telephone": "+91-8169009783",
         "aggregateRating": {"@type": "AggregateRating", "ratingValue": "4.8", "bestRating": "5", "ratingCount": "1200"},
         "knowsAbout": ["Claude AI", "Anthropic Claude", "Prompt engineering", "Claude Code", "AI agents", "Generative AI training"],
     }
