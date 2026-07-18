@@ -1,12 +1,108 @@
 <?php
 /**
  * Plugin Name: Claude AI Trainer — Globals
- * Description: Global content for claudeaitrainer.com — Claude model names, trainer count, contact details and the enquiry form as shortcodes. Edit once in Settings → Claude AI Trainer; every page updates.
- * Version: 1.0.0
+ * Description: Global content for claudeaitrainer.com — Claude model names, trainer count, contact details and the enquiry form as shortcodes — plus brand fonts/styling and a secure REST endpoint for remote page deployment.
+ * Version: 1.1.0
  * Author: Claude AI Trainer
  */
 
 if (!defined('ABSPATH')) exit;
+
+/* ---------------------------------------------------------------------------
+ * Brand fonts + polish CSS (makes the Elementor template look like the design)
+ * ------------------------------------------------------------------------- */
+add_action('wp_enqueue_scripts', function () {
+    wp_enqueue_style('cat-fonts',
+        'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap',
+        array(), null);
+    wp_register_style('cat-polish', false);
+    wp_enqueue_style('cat-polish');
+    wp_add_inline_style('cat-polish', '
+        .elementor-section, .elementor-widget-text-editor, .elementor-widget-button a,
+        .elementor-widget-icon-list .elementor-icon-list-text, .elementor-accordion,
+        .cat-form { font-family: "Roboto", system-ui, sans-serif; }
+        .elementor-heading-title, .elementor-counter-number-wrapper,
+        .elementor-accordion .elementor-tab-title { font-family: "Space Grotesk", system-ui, sans-serif; letter-spacing: -0.01em; }
+        .elementor-column > .elementor-widget-wrap { transition: transform .3s ease, box-shadow .3s ease; }
+        .elementor-section .elementor-column:hover > .elementor-widget-wrap[style*="border"] { transform: translateY(-3px); }
+        .elementor-widget-button .elementor-button { transition: transform .2s ease, box-shadow .2s ease; }
+        .elementor-widget-button .elementor-button:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(217,119,87,.35); }
+        .elementor-accordion .elementor-tab-title { font-size: 17px; }
+        .elementor-accordion .elementor-tab-content { font-family: "Roboto", sans-serif; }
+        a[href="#enquire"][style*="border-radius:999px"]:hover,
+        a[style*="border-radius:999px"][style*="text-decoration:none"]:hover {
+            border-color:#D97757 !important; color:#BD5D3A !important;
+            transform: translateY(-1px); box-shadow: 0 6px 14px rgba(217,119,87,.18);
+        }
+        .elementor-page h1.entry-title, .elementor-page .page-title { display: none; }
+    ');
+});
+
+/* ---------------------------------------------------------------------------
+ * Remote deployment — secure REST endpoints (Application Password auth)
+ *   GET  /wp-json/cat/v1/ping           -> connectivity + environment info
+ *   POST /wp-json/cat/v1/import-page    -> create/update an Elementor page
+ *        body: { "title": "Home", "slug": "home", "elementor": [...sections...],
+ *                "set_front": true, "template": "elementor_header_footer" }
+ * Both require an authenticated user with manage_options (use an
+ * Application Password: WP Admin -> Users -> Profile -> Application Passwords).
+ * ------------------------------------------------------------------------- */
+add_action('rest_api_init', function () {
+    register_rest_route('cat/v1', '/ping', array(
+        'methods'  => 'GET',
+        'permission_callback' => function () { return current_user_can('manage_options'); },
+        'callback' => function () {
+            return array(
+                'ok'        => true,
+                'site'      => get_bloginfo('name'),
+                'wp'        => get_bloginfo('version'),
+                'elementor' => defined('ELEMENTOR_VERSION') ? ELEMENTOR_VERSION : null,
+                'theme'     => wp_get_theme()->get('Name'),
+                'plugin'    => '1.1.0',
+            );
+        },
+    ));
+    register_rest_route('cat/v1', '/import-page', array(
+        'methods'  => 'POST',
+        'permission_callback' => function () { return current_user_can('manage_options'); },
+        'callback' => 'cat_rest_import_page',
+    ));
+});
+
+function cat_rest_import_page(WP_REST_Request $req) {
+    $title     = sanitize_text_field($req->get_param('title') ?: 'Home');
+    $slug      = sanitize_title($req->get_param('slug') ?: $title);
+    $elementor = $req->get_param('elementor');
+    $template  = $req->get_param('template') ?: 'elementor_header_footer';
+    if (!is_array($elementor)) {
+        return new WP_Error('cat_bad_payload', 'Field "elementor" must be the Elementor content array.', array('status' => 400));
+    }
+    $existing = get_page_by_path($slug, OBJECT, 'page');
+    $postarr = array(
+        'post_title' => $title, 'post_name' => $slug,
+        'post_type' => 'page', 'post_status' => 'publish', 'post_content' => '',
+    );
+    if ($existing) { $postarr['ID'] = $existing->ID; $id = wp_update_post($postarr, true); }
+    else           { $id = wp_insert_post($postarr, true); }
+    if (is_wp_error($id)) return $id;
+
+    update_post_meta($id, '_elementor_data', wp_slash(wp_json_encode($elementor)));
+    update_post_meta($id, '_elementor_edit_mode', 'builder');
+    update_post_meta($id, '_elementor_template_type', 'wp-page');
+    if (defined('ELEMENTOR_VERSION')) update_post_meta($id, '_elementor_version', ELEMENTOR_VERSION);
+    if (in_array($template, array('elementor_canvas', 'elementor_header_footer'), true)) {
+        update_post_meta($id, '_wp_page_template', $template);
+    }
+    delete_post_meta($id, '_elementor_css');
+    if (class_exists('\\Elementor\\Plugin')) {
+        \Elementor\Plugin::$instance->files_manager->clear_cache();
+    }
+    if ($req->get_param('set_front')) {
+        update_option('show_on_front', 'page');
+        update_option('page_on_front', $id);
+    }
+    return array('ok' => true, 'page_id' => $id, 'url' => get_permalink($id));
+}
 
 /* ---------------------------------------------------------------------------
  * Options (the single source of truth)
