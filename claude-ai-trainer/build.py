@@ -33,13 +33,14 @@ OUT = os.environ.get("OUT_DIR") or os.path.join(os.path.dirname(os.path.abspath(
 # ---------------------------------------------------------------------------
 # Shared facts (single source of truth -> reused everywhere)
 # ---------------------------------------------------------------------------
+# (display, label, number, decimals, suffix, locale) — number/decimals drive the count-up animation
 STATS = [
-    ("2,00,000+", "professionals trained"),
-    ("400+", "enterprises & brands"),
-    ("16+", "countries delivered"),
-    ("9", "IIMs (visiting faculty)"),
-    ("4.8/5", "average participant rating"),
-    ("17+", "years of AI & training craft"),
+    ("2,00,000+", "professionals trained", 200000, 0, "+", "en-IN"),
+    ("400+", "enterprises & brands", 400, 0, "+", "en-US"),
+    ("16+", "countries delivered", 16, 0, "+", "en-US"),
+    ("9", "IIMs (visiting faculty)", 9, 0, "", "en-US"),
+    ("4.8/5", "average participant rating", 4.8, 1, "/5", "en-US"),
+    ("17+", "years of AI & training craft", 17, 0, "+", "en-US"),
 ]
 
 CLIENTS = [
@@ -224,8 +225,10 @@ def footer():
 
 def stats_bar():
     cells = "".join(
-        f'<div class="stat"><span class="stat-n">{esc(n)}</span><span class="stat-l">{esc(l)}</span></div>'
-        for n, l in STATS
+        f'<div class="stat"><span class="stat-n" data-num="{num}" data-dec="{dec}" '
+        f'data-suffix="{esc(suf)}" data-locale="{loc}">{esc(disp)}</span>'
+        f'<span class="stat-l">{esc(label)}</span></div>'
+        for disp, label, num, dec, suf, loc in STATS
     )
     return f'<section class="stats" aria-label="Track record"><div class="wrap stat-row">{cells}</div></section>'
 
@@ -233,9 +236,10 @@ def clients_strip():
     chips = "".join(f'<li>{esc(c)}</li>' for c in CLIENTS)
     return f"""
 <section class="clients" aria-label="Selected organisations our trainers have worked with">
-  <div class="wrap">
-    <p class="eyebrow">Trusted by teams at</p>
+  <p class="eyebrow">Trusted by teams at</p>
+  <div class="marquee">
     <ul class="client-logos">{chips}</ul>
+    <ul class="client-logos" aria-hidden="true">{chips}</ul>
   </div>
 </section>"""
 
@@ -341,9 +345,12 @@ def page(url, title, desc, body, ld_blocks, active="", og_type="website"):
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{esc(title)}">
 <meta name="twitter:description" content="{esc(desc)}">
-<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<script src="/assets/app.js" defer></script>
 {ld}
 </head>
 <body>
@@ -421,6 +428,32 @@ def steps_html(steps):
         )
     return f'<ol class="steps">{"".join(out)}</ol>'
 
+def offerings_html():
+    cards = []
+    for name, badge, desc, points, flagship in OFFERINGS:
+        lis = "".join(f"<li>{esc(p)}</li>" for p in points)
+        cls = "offer-card flagship" if flagship else "offer-card"
+        cards.append(
+            f'<article class="{cls}">'
+            f'<span class="offer-badge">{esc(badge)}</span>'
+            f'<h3>{esc(name)}</h3><p>{esc(desc)}</p>'
+            f'<ul class="ticks">{lis}</ul>'
+            f'<a class="offer-link" href="#contact">Enquire →</a>'
+            f'</article>'
+        )
+    return f'<div class="offer-grid">{"".join(cards)}</div>'
+
+def chips_html(names, live_map=None):
+    """Render location chips. live_map: name -> url for chips that have real pages."""
+    live_map = live_map or {}
+    out = []
+    for n in names:
+        if n in live_map:
+            out.append(f'<a class="chip live" href="{esc(live_map[n])}">{esc(n)}</a>')
+        else:
+            out.append(f'<a class="chip" href="#contact" title="Enquire about {esc(n)}">{esc(n)}</a>')
+    return f'<div class="chip-grid">{"".join(out)}</div>'
+
 # ---------------------------------------------------------------------------
 # Educational content — "everything about Claude" (home page)
 # ---------------------------------------------------------------------------
@@ -484,6 +517,45 @@ WHY_TRAIN = [
     ("Change that sticks", "Reusable Projects, prompt libraries and follow-up so the habit outlasts the workshop."),
 ]
 
+# Offerings — the productised programs
+OFFERINGS = [
+    ("Corporate Training", "Flagship",
+     "Fully customised Claude workshops for your teams — on-site or online, built from your real work, tools and industry.",
+     ["Half-day to 2-day formats", "Function-specific playbooks", "Rollout guardrails included"], True),
+    ("Claude Masterclass", "2 hours",
+     "A high-energy, live masterclass that takes a room from curious to confident — the fastest introduction to Claude done right.",
+     ["Live demos on real tasks", "Prompting method that sticks", "Perfect town-hall or offsite session"], False),
+    ("Claude for CXOs", "Executive",
+     "A focused briefing for CEOs, CXOs and boards: where Claude creates leverage, what to govern, and how to lead an AI-first org.",
+     ["Strategy, risk & ROI lens", "Peer examples from 400+ enterprises", "90-minute or half-day"], False),
+    ("Open Batches", "Individuals",
+     "Public cohorts for professionals and small teams — join the next live online batch and learn alongside peers.",
+     ["Live, hands-on sessions", "Certificate of completion", "New batches every month"], False),
+    ("Claude Code Bootcamp", "Engineering",
+     "A deep, practice-heavy immersion for engineering and data teams — from first agentic task to shipping with Claude Code daily.",
+     ["Real repo, real tickets", "Agent workflows & MCP", "1–2 day intensive"], False),
+    ("AI Champions Program", "Train-the-trainer",
+     "We train your internal champions to keep the adoption compounding — curriculum, coaching and certification included.",
+     ["Build in-house expertise", "Ready-made curriculum", "Quarterly refreshers"], False),
+]
+
+# All target countries (chips on home; dedicated pages roll out over time)
+ALL_COUNTRIES = [
+    "India", "UAE", "US", "UK", "Singapore", "Canada", "Germany", "France",
+    "Switzerland", "Japan", "Saudi Arabia", "Hong Kong", "China", "Taiwan",
+    "Indonesia", "Vietnam", "Philippines", "Sri Lanka", "Nepal", "Uzbekistan",
+    "Italy", "Spain", "Sweden", "Denmark", "Finland", "Austria", "Poland",
+    "Romania", "Greece", "Turkey", "Russia", "Egypt", "Morocco", "Tunisia",
+    "Kenya", "Brazil", "Argentina", "Mexico", "Colombia", "Peru", "Ecuador",
+    "Bolivia", "Costa Rica", "New Zealand",
+]
+
+# Major Indian cities (chips on home)
+INDIA_METROS = [
+    "Mumbai", "Delhi NCR", "Bengaluru", "Pune", "Hyderabad",
+    "Chennai", "Kolkata", "Ahmedabad", "Gurgaon", "Noida",
+]
+
 # How we train — methodology
 METHODOLOGY = [
     ("Scope", "A short call to understand your teams, tools, data and goals."),
@@ -544,24 +616,31 @@ def build_home():
     <a href="#models">Models</a>
     <a href="#products">Products</a>
     <a href="#capabilities">What it does</a>
-    <a href="#training">Training</a>
+    <a href="#offerings">Offerings</a>
+    <a href="#training">Why us</a>
     <a href="#programs">By team</a>
     <a href="#locations">Locations</a>
     <a href="#faq">FAQ</a>
   </div>
 </nav>"""
 
+    live_loc = {"India": country_path("india"), "Mumbai": city_path("mumbai")}
+
     body = f"""
 <section class="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span>
+    <span class="hero-grid"></span>
+  </div>
   <div class="wrap hero-inner">
-    <p class="eyebrow">Corporate Claude AI training · India &amp; 40+ countries</p>
-    <h1>Everything your team needs to master Claude AI</h1>
+    <p class="hero-kicker"><span class="pulse-dot"></span>Corporate Claude AI training · India &amp; 40+ countries</p>
+    <h1>Everything your team needs to <span class="grad-text">master Claude AI</span></h1>
     <p class="lead">Claude is the AI assistant from Anthropic that writes, reasons, analyses and codes at a
       professional level. We turn your people into confident Claude power users — hands-on, on real work,
       delivered on-site or online by trainers who have taught <b>2,00,000+ professionals</b> at
       <b>400+ enterprises</b> across <b>16+ countries</b>.</p>
     <div class="hero-actions">
-      <a class="btn btn-lg" href="#contact">Book a workshop</a>
+      <a class="btn btn-lg btn-glow" href="#contact">Book a workshop</a>
       <a class="btn btn-lg btn-ghost" href="#what-is-claude">Learn about Claude</a>
     </div>
   </div>
@@ -608,7 +687,17 @@ def build_home():
   </div>
 </section>
 
-<section class="section" id="training">
+<section class="section" id="offerings">
+  <div class="wrap">
+    <p class="eyebrow">Our offerings</p>
+    <h2>Pick your program</h2>
+    <p class="lead">From a single masterclass to a company-wide capability build — six ways to bring Claude
+      into your organisation.</p>
+    {offerings_html()}
+  </div>
+</section>
+
+<section class="section alt" id="training">
   <div class="wrap">
     <p class="eyebrow">Why train with us</p>
     <h2>Owning Claude is a skill — we teach it</h2>
@@ -621,7 +710,7 @@ def build_home():
   </div>
 </section>
 
-<section class="section alt" id="programs">
+<section class="section" id="programs">
   <div class="wrap">
     <p class="eyebrow">Tailored by team</p>
     <h2>Claude, mapped to every function</h2>
@@ -630,7 +719,7 @@ def build_home():
   </div>
 </section>
 
-<section class="section" id="formats">
+<section class="section alt" id="formats">
   <div class="wrap">
     <p class="eyebrow">How it runs</p>
     <h2>Formats that fit your calendar</h2>
@@ -638,10 +727,16 @@ def build_home():
   </div>
 </section>
 
-<section class="section alt" id="locations">
+<section class="section" id="locations">
   <div class="wrap">
     <p class="eyebrow">Where we deliver</p>
-    {link_grid("Claude AI training near you", loc_pairs, "On-site across India and online worldwide. More locations are added every month.")}
+    <h2>Claude AI training, worldwide</h2>
+    <p class="lead">On-site in 44 countries and online everywhere. Pick your location to enquire —
+      dedicated city and country pages are rolling out.</p>
+    <h3 class="chip-h">India — major cities</h3>
+    {chips_html(INDIA_METROS, live_loc)}
+    <h3 class="chip-h">Countries we serve</h3>
+    {chips_html(ALL_COUNTRIES, live_loc)}
     <div class="spacer"></div>
     {link_grid("Go deeper", deep_pairs, "Sample deep-dive pages — many more locations, models and products are on the way.")}
   </div>
@@ -1037,13 +1132,19 @@ def build_css():
     with open(os.path.join(OUT, "assets", "style.css"), "w", encoding="utf-8") as f:
         f.write(css)
 
+def build_js():
+    os.makedirs(os.path.join(OUT, "assets"), exist_ok=True)
+    with open(os.path.join(OUT, "assets", "app.js"), "w", encoding="utf-8") as f:
+        f.write(APP_JS)
+
 # ---------------------------------------------------------------------------
 CSS = r""":root{
   --paper:#FAF9F5; --cream:#F0EEE6; --card:#FFFFFF;
   --coral:#D97757; --coral-deep:#BD5D3A; --coral-soft:#F3E4DA;
   --ink:#1A1915; --ink-2:#4A4741; --muted:#6B6862; --line:#E4DFD4;
-  --serif:ui-serif,Georgia,"Iowan Old Style","Times New Roman",serif;
-  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --serif:'Space Grotesk',system-ui,-apple-system,"Segoe UI",sans-serif;
+  --sans:'Roboto',system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --grad:linear-gradient(100deg,#E8926B,#D97757 45%,#C25B36);
   --wrap:1120px;
 }
 @media (prefers-color-scheme:dark){:root{
@@ -1056,7 +1157,7 @@ html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:var(--coral-deep);text-decoration:none}
 a:hover{text-decoration:underline}
-h1,h2,h3{font-family:var(--serif);line-height:1.15;letter-spacing:-.01em;color:var(--ink);font-weight:600}
+h1,h2,h3{font-family:var(--serif);line-height:1.12;letter-spacing:-.02em;color:var(--ink);font-weight:600}
 h1{font-size:clamp(2.1rem,5vw,3.4rem)}
 h2{font-size:clamp(1.6rem,3.4vw,2.3rem);margin-bottom:.5em}
 h3{font-size:1.15rem;margin-bottom:.3em}
@@ -1085,13 +1186,79 @@ p{color:var(--ink-2)}
 .btn-ghost{background:transparent;color:var(--coral-deep);border-color:var(--line)}
 .btn-ghost:hover{background:var(--coral-soft);color:var(--coral-deep)}
 
-/* hero */
-.hero{background:linear-gradient(180deg,var(--cream),var(--paper));padding:72px 0 40px;border-bottom:1px solid var(--line)}
-.hero-inner{max-width:820px}
-.hero h1{margin:.1em 0 .35em}
-.hero-actions,.cta-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+/* hero — dark, animated */
+.hero{position:relative;overflow:hidden;background:#171512;color:#fff;padding:96px 0 72px}
+.hero-bg{position:absolute;inset:0;pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;animation:drift 14s ease-in-out infinite alternate}
+.orb-1{width:480px;height:480px;background:#D97757;top:-160px;right:-80px}
+.orb-2{width:360px;height:360px;background:#8A4B2F;bottom:-140px;left:-100px;animation-duration:18s;animation-delay:-6s}
+.orb-3{width:220px;height:220px;background:#E8926B;top:40%;left:55%;opacity:.28;animation-duration:11s;animation-delay:-3s}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(-40px,30px) scale(1.12)}}
+.hero-grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+  background-size:56px 56px;
+  -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 0%,#000 30%,transparent 75%);
+  mask-image:radial-gradient(ellipse 90% 80% at 50% 0%,#000 30%,transparent 75%)}
+.hero-inner{position:relative;max-width:860px}
+.hero h1{margin:.25em 0 .4em;color:#fff;font-size:clamp(2.4rem,5.6vw,4rem)}
+.hero .lead{color:#CFC8BE}
+.hero .lead b{color:#fff}
+.hero-kicker{display:inline-flex;align-items:center;gap:9px;font-size:.8rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#E8B29A;border:1px solid rgba(232,146,107,.35);background:rgba(217,119,87,.12);padding:8px 16px;border-radius:999px}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:#E8926B;animation:pulse 2s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(232,146,107,.6)}70%{box-shadow:0 0 0 10px rgba(232,146,107,0)}100%{box-shadow:0 0 0 0 rgba(232,146,107,0)}}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:gradShift 6s ease infinite}
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hero-actions,.cta-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.hero .btn-ghost{color:#F2EFE8;border-color:rgba(255,255,255,.25)}
+.hero .btn-ghost:hover{background:rgba(255,255,255,.08);color:#fff}
+.btn-glow{background:var(--grad);border:none;box-shadow:0 8px 30px rgba(217,119,87,.45)}
+.btn-glow:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(217,119,87,.6)}
 .page-hero{background:linear-gradient(180deg,var(--cream),var(--paper));padding:46px 0 40px}
 .page-hero .lead{margin-top:.6em}
+
+/* scroll reveal */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,1,.3,1);transition-delay:var(--d,0s)}
+.reveal.in{opacity:1;transform:none}
+
+/* offerings */
+.offer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+.offer-card{position:relative;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 24px;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.offer-card:hover{transform:translateY(-5px);border-color:var(--coral);box-shadow:0 16px 40px rgba(23,21,18,.10)}
+.offer-badge{align-self:flex-start;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--coral-deep);background:var(--coral-soft);padding:5px 11px;border-radius:999px;margin-bottom:14px}
+.offer-card h3{font-size:1.25rem}
+.offer-card p{font-size:.95rem;margin:.5em 0 .8em}
+.offer-card .ticks{margin-bottom:14px}
+.offer-card .ticks li{font-size:.9rem}
+.offer-link{margin-top:auto;font-weight:700;font-size:.95rem}
+.offer-card.flagship{background:#171512;border-color:#3A342C}
+.offer-card.flagship h3,.offer-card.flagship .ticks li{color:#F2EFE8}
+.offer-card.flagship p{color:#BFB8AD}
+.offer-card.flagship .offer-badge{background:rgba(217,119,87,.18);color:#E8926B}
+.offer-card.flagship .offer-link{color:#E8926B}
+.offer-card.flagship:hover{box-shadow:0 16px 44px rgba(217,119,87,.28)}
+
+/* location chips */
+.chip-h{margin:26px 0 4px;font-size:1.05rem;color:var(--ink-2)}
+.chip-grid{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.chip{display:inline-block;padding:9px 17px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink-2);font-size:.9rem;font-weight:500;transition:all .25s ease}
+.chip:hover{border-color:var(--coral);color:var(--coral-deep);text-decoration:none;transform:translateY(-2px);box-shadow:0 6px 16px rgba(217,119,87,.18)}
+.chip.live{border-color:var(--coral);color:var(--coral-deep);background:var(--coral-soft);font-weight:700}
+
+/* marquee */
+.clients{padding:26px 0 30px;border-bottom:1px solid var(--line);overflow:hidden}
+.clients .eyebrow{text-align:center;margin-bottom:14px}
+.marquee{display:flex;gap:48px;width:max-content;animation:scrollX 30s linear infinite}
+.marquee:hover{animation-play-state:paused}
+.marquee .client-logos{list-style:none;display:flex;gap:48px;align-items:center;flex:none}
+.marquee .client-logos li{font-family:var(--serif);font-weight:600;font-size:1.05rem;color:var(--muted);white-space:nowrap}
+@keyframes scrollX{from{transform:translateX(0)}to{transform:translateX(calc(-50% - 24px))}}
+
+@media (prefers-reduced-motion:reduce){
+  .orb,.grad-text,.pulse-dot,.marquee{animation:none}
+  .reveal{opacity:1;transform:none;transition:none}
+  *{scroll-behavior:auto}
+}
 
 /* stats */
 .stats{background:var(--ink);color:#fff;padding:26px 0}
@@ -1100,18 +1267,13 @@ p{color:var(--ink-2)}
 .stat-n{display:block;font-family:var(--serif);font-size:1.7rem;color:#fff}
 .stat-l{display:block;font-size:.78rem;color:#C9BEB2;margin-top:2px}
 
-/* clients */
-.clients{padding:30px 0;border-bottom:1px solid var(--line)}
-.clients .eyebrow{text-align:center}
-.client-logos{list-style:none;display:flex;flex-wrap:wrap;gap:10px 26px;justify-content:center}
-.client-logos li{font-family:var(--serif);font-size:1.05rem;color:var(--muted);opacity:.9}
-
 /* sections */
 .section{padding:60px 0}
 .section.alt{background:var(--cream)}
 .spacer{height:36px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.card:hover{transform:translateY(-4px);border-color:var(--coral);box-shadow:0 12px 32px rgba(23,21,18,.08)}
 .card h3{color:var(--ink)}
 .card p{font-size:.95rem;margin-top:.2em}
 
@@ -1199,15 +1361,68 @@ p{color:var(--ink-2)}
 .foot-base .muted{color:#8A8478;font-size:.8rem}
 
 @media(max-width:860px){
-  .grid,.link-grid,.rel-grid,.foot-grid,.rich-grid{grid-template-columns:repeat(2,1fr)}
+  .grid,.link-grid,.rel-grid,.foot-grid,.rich-grid,.offer-grid{grid-template-columns:repeat(2,1fr)}
   .stat-row{grid-template-columns:repeat(3,1fr);gap:18px 8px}
   .site-nav{display:none}
   .page-jump{top:64px}
 }
 @media(max-width:520px){
-  .grid,.link-grid,.rel-grid,.foot-grid,.rich-grid{grid-template-columns:1fr}
+  .grid,.link-grid,.rel-grid,.foot-grid,.rich-grid,.offer-grid{grid-template-columns:1fr}
   .stat-row{grid-template-columns:repeat(2,1fr)}
 }
+"""
+
+APP_JS = r"""(function () {
+  'use strict';
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced || !('IntersectionObserver' in window)) return;
+
+  /* ---- scroll reveal with per-group stagger ---- */
+  var targets = document.querySelectorAll(
+    '.section .card, .section .rich-card, .section .offer-card, .section .link-card, ' +
+    '.section .step, .section .chip, .faq-item, .section h2, .section .lead, .section .eyebrow, .prose p'
+  );
+  var groups = new Map();
+  targets.forEach(function (el) {
+    el.classList.add('reveal');
+    var parent = el.parentElement;
+    var idx = groups.get(parent) || 0;
+    groups.set(parent, idx + 1);
+    el.style.setProperty('--d', Math.min(idx * 0.06, 0.5) + 's');
+  });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  targets.forEach(function (el) { io.observe(el); });
+
+  /* ---- count-up stats ---- */
+  function animateStat(el) {
+    var num = parseFloat(el.dataset.num || '0');
+    var dec = parseInt(el.dataset.dec || '0', 10);
+    var suffix = el.dataset.suffix || '';
+    var locale = el.dataset.locale || 'en-US';
+    var dur = 1600, start = null;
+    function frame(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      var val = num * eased;
+      el.textContent = val.toLocaleString(locale, {
+        minimumFractionDigits: dec, maximumFractionDigits: dec
+      }) + (p === 1 ? suffix : '');
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  var statIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { animateStat(e.target); statIO.unobserve(e.target); }
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.stat-n[data-num]').forEach(function (el) { statIO.observe(el); });
+})();
 """
 
 # ---------------------------------------------------------------------------
@@ -1222,7 +1437,7 @@ def main():
     for s in LIVE_MODELS:    build_model(s)
     build_products_hub()
     for s in LIVE_PRODUCTS:  build_product(s)
-    build_css(); build_favicon()
+    build_css(); build_js(); build_favicon()
     build_sitemap(); build_robots(); build_cname()
     print(f"Built {len(ALL_URLS)} pages -> {OUT}")
     for u in ALL_URLS: print("  ", u)
