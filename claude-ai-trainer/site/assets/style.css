@@ -123,7 +123,7 @@ p{color:var(--ink-2)}
 /* stats */
 .stats{background:var(--ink);color:#fff;padding:26px 0}
 @media (prefers-color-scheme:dark){.stats{background:#141310}}
-.stat-row{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;text-align:center}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;text-align:center}
 .stat-n{display:block;font-family:var(--serif);font-size:1.7rem;color:#fff}
 .stat-l{display:block;font-size:.78rem;color:#C9BEB2;margin-top:2px}
 
@@ -160,7 +160,7 @@ p{color:var(--ink-2)}
 .page-jump a:hover{background:var(--coral-soft);color:var(--coral-deep);text-decoration:none}
 
 /* rich cards (models / products) */
-.rich-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+.rich-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:26px}
 .rich-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
 .rich-card h3{color:var(--ink)}
 .rich-tag{font-size:.95rem;color:var(--coral-deep);font-weight:600;margin:.15em 0 .7em}

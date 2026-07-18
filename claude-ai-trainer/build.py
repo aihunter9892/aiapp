@@ -36,8 +36,9 @@ OUT = os.environ.get("OUT_DIR") or os.path.join(os.path.dirname(os.path.abspath(
 # (display, label, number, decimals, suffix, locale) — number/decimals drive the count-up animation
 STATS = [
     ("2,00,000+", "professionals trained", 200000, 0, "+", "en-IN"),
+    ("300+", "trainers worldwide", 300, 0, "+", "en-US"),
     ("400+", "enterprises & brands", 400, 0, "+", "en-US"),
-    ("16+", "countries delivered", 16, 0, "+", "en-US"),
+    ("44", "countries served", 44, 0, "", "en-US"),
     ("9", "IIMs (visiting faculty)", 9, 0, "", "en-US"),
     ("4.8/5", "average participant rating", 4.8, 1, "/5", "en-US"),
     ("17+", "years of AI & training craft", 17, 0, "+", "en-US"),
@@ -397,6 +398,30 @@ CITY_ORDER = [r[0] for r in _CITY_ROWS]
 
 # Models: slug, name, tagline, family, best_for(list), body paragraphs, use_cases
 MODELS = {
+    "claude-fable-5": {
+        "name": "Claude Fable 5",
+        "tag": "The first of the Claude 5 family — Anthropic's most intelligent generally available model.",
+        "family": "Claude 5 family (Mythos-class flagship)",
+        "best_for": [
+            "The hardest reasoning, research and analysis tasks",
+            "Long-horizon agentic work at frontier quality",
+            "Complex software engineering across large codebases",
+            "High-stakes work where the best available model is the right call",
+        ],
+        "body": [
+            "Claude Fable 5 opens Anthropic's Claude 5 generation — a new Mythos-class tier that sits above "
+            "Opus in capability. It is the most intelligent Claude model generally available, built for the "
+            "work where depth of reasoning genuinely changes the outcome.",
+            "In training we position Fable 5 as the summit of the escalation path: Haiku for speed, Sonnet "
+            "as the daily driver, Opus for hard problems — and Fable 5 when the task deserves the frontier. "
+            "Teams learn to spend that capability where it moves the needle.",
+        ],
+        "use_cases": [
+            ("Frontier reasoning", "The hardest analysis, synthesis and judgement calls."),
+            ("Agentic systems", "Long multi-step agent runs that hold quality end to end."),
+            ("Elite engineering", "Architecture, deep debugging and large-scale refactors."),
+        ],
+    },
     "claude-opus-4-8": {
         "name": "Claude Opus 4.8",
         "tag": "Anthropic's most capable model for deep reasoning, agents and coding.",
@@ -468,7 +493,7 @@ MODELS = {
         ],
     },
 }
-MODEL_ORDER = ["claude-opus-4-8", "claude-sonnet-5", "claude-haiku-4-5"]
+MODEL_ORDER = ["claude-fable-5", "claude-opus-4-8", "claude-sonnet-5", "claude-haiku-4-5"]
 
 # Products: slug, name, tagline, who, body paragraphs, curriculum(list)
 PRODUCTS = {
@@ -916,8 +941,11 @@ CLAUDE_INTRO = [
 
 # Model family overview (capability-focused, current lineup)
 MODELS_OVERVIEW = [
-    ("Claude Opus 4.8", "The flagship — maximum capability.",
-     ["Deepest reasoning and analysis", "Best for hard coding and long agentic tasks",
+    ("Claude Fable 5", "The new frontier — first of the Claude 5 family.",
+     ["Anthropic's most intelligent generally available model", "A tier above Opus in capability",
+      "For the hardest reasoning, agents and coding"]),
+    ("Claude Opus 4.8", "The proven flagship of the Claude 4 line.",
+     ["Deepest Claude 4 reasoning and analysis", "Best for hard coding and long agentic tasks",
       "The model for high-stakes, quality-first work"]),
     ("Claude Sonnet 5", "The balanced workhorse.",
      ["Fast and highly capable", "The sensible default for most day-to-day work",
@@ -1210,8 +1238,8 @@ def build_home():
     <h1>Everything your team needs to <span class="grad-text">master Claude AI</span></h1>
     <p class="lead">Claude is the AI assistant from Anthropic that writes, reasons, analyses and codes at a
       professional level. We turn your people into confident Claude power users — hands-on, on real work,
-      delivered on-site or online by trainers who have taught <b>2,00,000+ professionals</b> at
-      <b>400+ enterprises</b> across <b>16+ countries</b>.</p>
+      delivered by a global bench of <b>300+ trainers</b> who have taught <b>2,00,000+ professionals</b>
+      at <b>400+ enterprises</b> — on-site in 44 countries or live online.</p>
     <div class="hero-actions">
       <a class="btn btn-lg btn-glow" href="#contact">Book a workshop</a>
       <a class="btn btn-lg btn-ghost" href="#what-is-claude">Learn about Claude</a>
@@ -1980,7 +2008,7 @@ p{color:var(--ink-2)}
 /* stats */
 .stats{background:var(--ink);color:#fff;padding:26px 0}
 @media (prefers-color-scheme:dark){.stats{background:#141310}}
-.stat-row{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;text-align:center}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;text-align:center}
 .stat-n{display:block;font-family:var(--serif);font-size:1.7rem;color:#fff}
 .stat-l{display:block;font-size:.78rem;color:#C9BEB2;margin-top:2px}
 
@@ -2017,7 +2045,7 @@ p{color:var(--ink-2)}
 .page-jump a:hover{background:var(--coral-soft);color:var(--coral-deep);text-decoration:none}
 
 /* rich cards (models / products) */
-.rich-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+.rich-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:26px}
 .rich-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
 .rich-card h3{color:var(--ink)}
 .rich-tag{font-size:.95rem;color:var(--coral-deep);font-weight:600;margin:.15em 0 .7em}
