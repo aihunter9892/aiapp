@@ -69,39 +69,331 @@ ROLES = [
 # Data tables (append rows here to scale — only LIVE_* are built)
 # ---------------------------------------------------------------------------
 
-# Countries: slug, name, demonym/adjective, region, hub cities, note
-COUNTRIES = {
-    "india": {
-        "name": "India",
-        "adj": "Indian",
-        "region": "South Asia",
-        "cities": ["Mumbai", "Delhi NCR", "Bengaluru", "Pune", "Hyderabad", "Chennai", "Kolkata", "Ahmedabad"],
-        "hubs": ["Mumbai", "Bengaluru", "Delhi NCR", "Pune", "Hyderabad"],
-        "industries": ["IT & software services", "BFSI", "manufacturing", "pharma & healthcare", "retail & D2C", "media & advertising"],
-        "intro": (
-            "India is where the AI-at-work shift is happening fastest — and where our "
-            "practice has trained the largest share of its 2,00,000+ alumni. From Mumbai "
-            "boardrooms to Bengaluru engineering floors, we bring Claude into the actual "
-            "work your teams do every day, not a slide deck about it."
-        ),
-    },
-}
+# Countries: (slug, name, region, business hubs, industries, intro)
+_COUNTRY_ROWS = [
+    ("india", "India", "South Asia",
+     ["Mumbai", "Delhi NCR", "Bengaluru", "Pune", "Hyderabad", "Chennai", "Kolkata", "Ahmedabad", "Gurgaon", "Noida"],
+     ["IT & software services", "BFSI", "manufacturing", "pharma & healthcare", "retail & D2C", "media & advertising"],
+     "India is where the AI-at-work shift is happening fastest — and where our practice has trained the "
+     "largest share of its 2,00,000+ alumni. From Mumbai boardrooms to Bengaluru engineering floors, we bring "
+     "Claude into the actual work your teams do every day, not a slide deck about it."),
+    ("uae", "UAE", "Middle East",
+     ["Dubai", "Abu Dhabi", "Sharjah"],
+     ["banking & finance", "government & free zones", "real estate & construction", "aviation & logistics", "retail & tourism", "energy"],
+     "From DIFC trading floors to Abu Dhabi's sovereign institutions, the Emirates is building an AI-first "
+     "economy at national-strategy speed. We bring Claude into that ambition — hands-on workshops for banks, "
+     "government entities and family conglomerates across Dubai, Abu Dhabi and Sharjah."),
+    ("usa", "USA", "North America",
+     ["New York", "San Francisco", "Chicago", "Austin", "Seattle"],
+     ["technology & SaaS", "financial services", "healthcare", "retail & e-commerce", "media", "professional services"],
+     "American teams don't need convincing about AI — they need fluency that outpaces the market. From New York "
+     "financial services to Bay Area product orgs, our workshops turn Claude seats into shipped work, "
+     "delivered on-site or live online across US time zones."),
+    ("uk", "UK", "Europe",
+     ["London", "Manchester", "Birmingham", "Edinburgh"],
+     ["financial services", "professional services", "media & creative", "life sciences", "retail", "public sector"],
+     "From the City's trading desks to Soho's creative agencies, UK organisations are past the AI pilot phase "
+     "and into the productivity race. We train London and regional teams to make Claude a daily instrument — "
+     "safely, and in line with your governance."),
+    ("singapore", "Singapore", "Southeast Asia",
+     ["Raffles Place & Marina Bay", "Changi Business Park", "one-north"],
+     ["banking & wealth", "commodities & trading", "logistics & maritime", "technology & startups", "pharma manufacturing", "government"],
+     "Singapore runs on being two steps ahead — and its Smart Nation agenda has made AI fluency a baseline "
+     "skill. We deliver Claude workshops for banks, trading houses, agencies and regional HQs across the "
+     "island, on-site or online."),
+    ("canada", "Canada", "North America",
+     ["Toronto", "Vancouver", "Montreal", "Calgary"],
+     ["banking & insurance", "technology", "energy", "healthcare", "mining", "public sector"],
+     "From Bay Street banks to Vancouver and Montreal tech hubs, Canadian teams are adopting AI with "
+     "characteristic care — governance first, value fast. Our Claude training fits that culture: practical, "
+     "safe and measurable."),
+    ("germany", "Germany", "Europe",
+     ["Berlin", "Munich", "Frankfurt", "Hamburg", "Stuttgart"],
+     ["automotive", "engineering & Mittelstand", "banking", "chemicals & pharma", "logistics", "software"],
+     "German engineering excellence deserves AI tooling used with the same rigour. From Frankfurt finance to "
+     "Bavarian manufacturers and the Mittelstand backbone, we train teams to put Claude to work on "
+     "documentation, analysis, code and process — properly."),
+    ("france", "France", "Europe",
+     ["Paris", "Lyon", "Toulouse", "Marseille"],
+     ["luxury & retail", "banking & insurance", "aerospace", "energy", "consulting", "pharma"],
+     "From La Défense towers to the ateliers of luxury houses, French enterprises are industrialising AI. "
+     "Our Claude workshops give Paris and regional teams a working method — prompting, Projects and agents — "
+     "applied to their own métier."),
+    ("switzerland", "Switzerland", "Europe",
+     ["Zurich", "Geneva", "Basel", "Zug"],
+     ["banking & wealth management", "pharma", "insurance & reinsurance", "commodities trading", "precision manufacturing"],
+     "Swiss organisations hold themselves to a different standard of precision and discretion — and their AI "
+     "adoption is no different. We train banking, pharma and trading teams in Zurich, Geneva and Basel to use "
+     "Claude with exactly that rigour."),
+    ("japan", "Japan", "East Asia",
+     ["Tokyo", "Osaka", "Nagoya", "Fukuoka"],
+     ["automotive", "electronics & manufacturing", "banking & insurance", "trading houses", "pharma"],
+     "Japan's enterprises are moving from AI curiosity to disciplined deployment — kaizen applied to knowledge "
+     "work. Our Claude workshops for Tokyo and Osaka teams are hands-on, structured and built around your "
+     "own gemba: the real work."),
+    ("saudi-arabia", "Saudi Arabia", "Middle East",
+     ["Riyadh", "Jeddah", "Dammam", "NEOM"],
+     ["energy", "government & Vision 2030 programs", "banking", "construction & giga-projects", "retail"],
+     "Vision 2030 has made the Kingdom one of the world's most ambitious AI adopters. From Riyadh ministries "
+     "to giga-project teams, we deliver Claude training that matches that scale — bilingual-friendly, "
+     "hands-on and tied to real deliverables."),
+    ("hong-kong", "Hong Kong", "East Asia",
+     ["Central", "Kowloon East", "Cyberport & Science Park"],
+     ["banking & capital markets", "insurance", "trading & logistics", "professional services", "real estate"],
+     "Hong Kong's finance and trading floors run on speed and precision — the exact conditions where Claude "
+     "compounds. We train banks, insurers and professional firms across Central and Kowloon to fold AI into "
+     "deal work, research and client service."),
+    ("china", "China", "East Asia",
+     ["Shanghai", "Beijing", "Shenzhen", "Guangzhou"],
+     ["manufacturing & supply chain", "e-commerce", "automotive & EV", "electronics", "finance"],
+     "For multinationals and export-facing teams operating in China, global AI fluency is now table stakes. "
+     "We train Shanghai, Beijing and Shenzhen teams — in-person or online — with enterprise-appropriate "
+     "setups for international AI tools."),
+    ("taiwan", "Taiwan", "East Asia",
+     ["Taipei", "Hsinchu", "Taichung", "Kaohsiung"],
+     ["semiconductors", "electronics manufacturing", "ICT", "precision machinery", "finance"],
+     "The island that powers the world's compute is putting AI to work on its own operations. From Hsinchu "
+     "fabs to Taipei HQs, we train engineering and business teams to make Claude part of the daily toolchain."),
+    ("indonesia", "Indonesia", "Southeast Asia",
+     ["Jakarta", "Surabaya", "Bandung", "Bali"],
+     ["banking", "e-commerce & digital", "consumer goods", "energy & mining", "telecom"],
+     "Indonesia's digital economy is scaling faster than teams can hire — which makes AI leverage the "
+     "obvious answer. We train Jakarta's banks, unicorns and conglomerates to put Claude to work across "
+     "operations, marketing and engineering."),
+    ("vietnam", "Vietnam", "Southeast Asia",
+     ["Ho Chi Minh City", "Hanoi", "Da Nang"],
+     ["manufacturing & exports", "software outsourcing", "banking", "e-commerce", "logistics"],
+     "Vietnam is the rising factory and software floor of Asia — and its teams are hungry for leverage. "
+     "From HCMC to Hanoi, our Claude workshops give manufacturers, banks and dev shops a faster way to "
+     "compete globally."),
+    ("philippines", "Philippines", "Southeast Asia",
+     ["Metro Manila", "Cebu", "Davao"],
+     ["BPO & shared services", "banking", "real estate", "retail", "telecom"],
+     "The Philippines runs the world's back office — and AI is rewriting what that work looks like. We help "
+     "BPOs, shared-service centres and banks across Manila and Cebu move up the value chain with Claude, "
+     "not get displaced by it."),
+    ("sri-lanka", "Sri Lanka", "South Asia",
+     ["Colombo", "Kandy", "Galle"],
+     ["IT & BPM", "apparel & manufacturing", "banking", "tea & agri-exports", "tourism & hospitality"],
+     "Colombo's IT-BPM sector and export houses are rebuilding for a digital decade, and AI skills are the "
+     "multiplier. Our Claude workshops give Sri Lankan teams world-class capability at practical, "
+     "local-friendly formats."),
+    ("nepal", "Nepal", "South Asia",
+     ["Kathmandu", "Lalitpur", "Pokhara"],
+     ["banking & microfinance", "IT services", "development sector", "tourism", "fintech & remittances"],
+     "Nepal's young IT workforce and banking sector are leapfrogging straight into the AI era. We train "
+     "Kathmandu teams — banks, dev shops and development organisations — to use Claude as a daily "
+     "productivity engine."),
+    ("uzbekistan", "Uzbekistan", "Central Asia",
+     ["Tashkent", "Samarkand", "Bukhara"],
+     ["banking & fintech", "government digitalisation", "IT park startups", "textiles", "mining"],
+     "Uzbekistan's reform-driven economy is digitalising at remarkable pace, with Tashkent's IT Park at the "
+     "centre. We bring Claude training to banks, ministries and startups building the region's next "
+     "digital chapter."),
+    ("italy", "Italy", "Europe",
+     ["Milan", "Rome", "Turin", "Bologna"],
+     ["fashion & luxury", "banking", "manufacturing & machinery", "food & beverage", "automotive"],
+     "From Milan's fashion houses to the manufacturing districts of the north, Italian excellence is "
+     "artisanal — and AI is its newest tool. We train teams to use Claude with taste: on brand, on brief "
+     "and on their own work."),
+    ("spain", "Spain", "Europe",
+     ["Madrid", "Barcelona", "Valencia", "Bilbao"],
+     ["banking", "tourism & hospitality", "retail & fashion", "energy", "telecom"],
+     "Spanish enterprises — from Madrid's banks to Barcelona's tech scene — are scaling AI beyond pilots. "
+     "Our Claude workshops land in Spanish or English, built around each team's real workflows."),
+    ("sweden", "Sweden", "Europe",
+     ["Stockholm", "Gothenburg", "Malmö"],
+     ["engineering & automotive", "fintech", "telecom", "gaming & tech", "retail"],
+     "Sweden ships world-class products with famously lean teams — exactly the environment where Claude "
+     "multiplies output. We train Stockholm and Gothenburg orgs to fold AI into design, code and operations."),
+    ("denmark", "Denmark", "Europe",
+     ["Copenhagen", "Aarhus", "Odense"],
+     ["pharma", "shipping & logistics", "renewable energy", "design & consumer", "fintech"],
+     "Danish organisations pair pragmatism with design sense, and their AI adoption reflects it. From "
+     "Copenhagen pharma to global shipping lines, we train teams to make Claude part of an elegant, "
+     "efficient workflow."),
+    ("finland", "Finland", "Europe",
+     ["Helsinki", "Espoo", "Tampere"],
+     ["telecom & tech", "engineering", "gaming", "forestry & materials", "energy"],
+     "Finland's engineering culture takes new tools seriously — once proven, they're everywhere. We give "
+     "Helsinki and Espoo teams the proof and the practice: Claude applied to real code, documents and "
+     "decisions."),
+    ("austria", "Austria", "Europe",
+     ["Vienna", "Graz", "Linz", "Salzburg"],
+     ["banking", "industrial manufacturing", "energy", "logistics", "tourism"],
+     "Vienna's banks and Austria's industrial champions are quietly building serious AI capability. Our "
+     "Claude workshops match that style — substantive, well-organised and immediately useful."),
+    ("poland", "Poland", "Europe",
+     ["Warsaw", "Kraków", "Wrocław", "Gdańsk"],
+     ["shared services & IT", "banking", "manufacturing", "logistics", "gaming"],
+     "Poland is Europe's engine room for shared services and software — and AI is redefining both. We train "
+     "Warsaw and Kraków centres to move up the value curve with Claude across finance, HR, IT and delivery."),
+    ("romania", "Romania", "Europe",
+     ["Bucharest", "Cluj-Napoca", "Timișoara", "Iași"],
+     ["IT & outsourcing", "banking", "automotive components", "energy", "telecom"],
+     "Romania's tech talent already builds for the world; Claude makes those teams dramatically faster. "
+     "From Bucharest to Cluj, we train engineering and business teams to work AI-first."),
+    ("greece", "Greece", "Europe",
+     ["Athens", "Thessaloniki", "Patras"],
+     ["shipping", "tourism & hospitality", "banking", "energy", "food & agri"],
+     "From Piraeus shipping offices to a fast-growing Athens tech scene, Greek enterprises are modernising "
+     "at speed. Our Claude workshops give commercial and operations teams practical AI leverage from day one."),
+    ("turkey", "Turkey", "Eurasia",
+     ["Istanbul", "Ankara", "Izmir"],
+     ["banking", "manufacturing & exports", "e-commerce", "construction", "logistics"],
+     "Istanbul's banks, exporters and e-commerce giants compete across three continents — and AI is the "
+     "new edge. We deliver Claude training that works in Turkish business culture: fast, relationship-driven "
+     "and results-first."),
+    ("russia", "Russia", "Eurasia",
+     ["Moscow", "St Petersburg", "Kazan"],
+     ["energy", "banking", "metals & mining", "telecom", "retail"],
+     "For internationally connected teams in Russia, we deliver Claude training online — the same hands-on "
+     "method, adapted to remote delivery and your compliance context."),
+    ("egypt", "Egypt", "Africa",
+     ["Cairo", "Alexandria", "Giza"],
+     ["banking", "telecom", "outsourcing & shared services", "construction", "tourism"],
+     "Cairo is one of the region's great talent pools, and its banks, telcos and shared-service centres are "
+     "embracing AI fast. Our Claude workshops give Egyptian teams world-class skills in practical formats."),
+    ("morocco", "Morocco", "Africa",
+     ["Casablanca", "Rabat", "Tangier", "Marrakech"],
+     ["banking", "automotive & aerospace manufacturing", "offshoring", "agriculture", "tourism"],
+     "From Casablanca's finance district to Tangier's factories serving Europe, Morocco is Africa's "
+     "industrial bridge. We train teams in French or English to put Claude to work across operations "
+     "and services."),
+    ("tunisia", "Tunisia", "Africa",
+     ["Tunis", "Sfax", "Sousse"],
+     ["IT & outsourcing", "textiles & manufacturing", "banking", "agri-exports", "tourism"],
+     "Tunisia's engineers serve clients across Europe — and Claude makes those teams sharper and faster. "
+     "We deliver hands-on workshops in Tunis for IT firms, banks and exporters, in French or English."),
+    ("kenya", "Kenya", "Africa",
+     ["Nairobi", "Mombasa", "Kisumu"],
+     ["banking & mobile money", "telecom", "development sector", "agriculture & exports", "logistics"],
+     "Nairobi leapfrogged the world on mobile money; AI is its next leap. We train Kenya's banks, telcos "
+     "and development organisations to make Claude a daily working tool — practical, safe and local-context "
+     "aware."),
+    ("brazil", "Brazil", "South America",
+     ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Brasília"],
+     ["banking & fintech", "agribusiness", "retail & e-commerce", "energy", "manufacturing", "media"],
+     "São Paulo is Latin America's business capital and its fintech scene rivals anywhere on earth. We "
+     "train Brazilian enterprises — banks, retailers, agrobusiness — to turn Claude into everyday "
+     "productivity, delivered in English or with Portuguese-friendly materials."),
+    ("argentina", "Argentina", "South America",
+     ["Buenos Aires", "Córdoba", "Rosario"],
+     ["software & IT exports", "agribusiness", "banking", "energy", "e-commerce"],
+     "Argentina exports world-class software talent — and that talent multiplied by Claude is formidable. "
+     "We train Buenos Aires teams across tech, banking and agro to work AI-first."),
+    ("mexico", "Mexico", "North America",
+     ["Mexico City", "Monterrey", "Guadalajara"],
+     ["manufacturing & nearshoring", "banking", "retail", "automotive", "fintech"],
+     "Nearshoring has put Mexican operations at the centre of North American supply chains — and AI keeps "
+     "them there. We train CDMX, Monterrey and Guadalajara teams to fold Claude into manufacturing, finance "
+     "and commercial work."),
+    ("colombia", "Colombia", "South America",
+     ["Bogotá", "Medellín", "Cali", "Barranquilla"],
+     ["banking", "BPO & software", "energy", "retail", "logistics"],
+     "Bogotá and Medellín have become serious tech and services hubs, and Colombian teams adopt new tools "
+     "with real energy. Our Claude workshops channel that energy into skills that show up in the P&L."),
+    ("peru", "Peru", "South America",
+     ["Lima", "Arequipa", "Cusco"],
+     ["mining", "banking", "retail", "agri-exports", "logistics"],
+     "Lima's banks, miners and retailers run lean — which is exactly where Claude's leverage lands hardest. "
+     "We deliver practical AI workshops for Peruvian teams, on-site or online."),
+    ("ecuador", "Ecuador", "South America",
+     ["Quito", "Guayaquil", "Cuenca"],
+     ["banking", "agri-exports", "energy", "retail", "logistics"],
+     "From Quito's banks to Guayaquil's exporters, Ecuadorian enterprises are modernising fast. Our Claude "
+     "training gives commercial and operations teams immediate, practical AI capability."),
+    ("bolivia", "Bolivia", "South America",
+     ["La Paz", "Santa Cruz", "Cochabamba"],
+     ["banking", "mining & energy", "agribusiness", "telecom", "commerce"],
+     "Santa Cruz and La Paz businesses are joining the region's AI wave, and early movers will set the "
+     "pace. We bring hands-on Claude training to Bolivian banks, agro firms and operators — online or "
+     "on-site."),
+    ("costa-rica", "Costa Rica", "North America",
+     ["San José", "Heredia", "Cartago"],
+     ["shared services & BPO", "medtech manufacturing", "software", "tourism", "agri-exports"],
+     "Costa Rica hosts some of the hemisphere's best shared-service and medtech operations. We train those "
+     "centres to move up the value chain with Claude — analysis, automation and better client work."),
+    ("new-zealand", "New Zealand", "Oceania",
+     ["Auckland", "Wellington", "Christchurch"],
+     ["agri & dairy exports", "banking", "government", "tech & SaaS", "tourism"],
+     "Kiwi organisations punch far above their weight, and lean teams are exactly where Claude shines. From "
+     "Auckland enterprises to Wellington agencies, we make AI a practical daily tool."),
+]
 
-# City: slug, name, country_slug, region/state, note, industries
-CITIES = {
-    "mumbai": {
-        "name": "Mumbai",
-        "country": "india",
-        "state": "Maharashtra, India",
-        "industries": ["BFSI & capital markets", "media, film & advertising", "pharma", "shipping & logistics", "startups & D2C"],
-        "areas": ["Bandra-Kurla Complex (BKC)", "Lower Parel", "Nariman Point", "Andheri & SEEPZ", "Powai", "Navi Mumbai"],
-        "intro": (
-            "Mumbai runs on speed — trading desks, agencies, studios and BFSI teams that "
-            "cannot afford a slow ramp. Our Claude AI training meets that pace: half a day "
-            "in your BKC or Lower Parel office and your team leaves using Claude on live work."
-        ),
-    },
+COUNTRIES = {
+    slug: {"name": name, "region": region, "cities": cities, "industries": inds, "intro": intro}
+    for slug, name, region, cities, inds, intro in _COUNTRY_ROWS
 }
+COUNTRY_ORDER = [r[0] for r in _COUNTRY_ROWS]
+
+# City: (slug, name, state, areas, industries, intro) — all in India
+_CITY_ROWS = [
+    ("mumbai", "Mumbai", "Maharashtra, India",
+     ["Bandra-Kurla Complex (BKC)", "Lower Parel", "Nariman Point", "Andheri & SEEPZ", "Powai", "Navi Mumbai"],
+     ["BFSI & capital markets", "media, film & advertising", "pharma", "shipping & logistics", "startups & D2C"],
+     "Mumbai runs on speed — trading desks, agencies, studios and BFSI teams that cannot afford a slow ramp. "
+     "Our Claude AI training meets that pace: half a day in your BKC or Lower Parel office and your team "
+     "leaves using Claude on live work."),
+    ("delhi-ncr", "Delhi NCR", "National Capital Region, India",
+     ["Connaught Place", "Nehru Place", "Aerocity", "Okhla & Mohan Estate", "Dwarka", "Saket"],
+     ["government & PSUs", "IT & consulting", "BFSI", "media & communications", "startups", "manufacturing"],
+     "Delhi is where policy, capital and enterprise meet — and its organisations are adopting AI with "
+     "national-mission urgency. From Connaught Place headquarters to Aerocity offices, we train leadership "
+     "and delivery teams to make Claude their daily edge."),
+    ("bengaluru", "Bengaluru", "Karnataka, India",
+     ["MG Road & CBD", "Koramangala", "Whitefield", "Electronic City", "Outer Ring Road", "HSR Layout"],
+     ["IT services & GCCs", "startups & SaaS", "e-commerce", "biotech", "aerospace & defence"],
+     "India's tech capital doesn't need an AI introduction — it needs mastery. We train Bengaluru's GCCs, "
+     "SaaS teams and startups on the deep end of Claude: agentic coding, Projects at team scale and "
+     "workflows that actually ship."),
+    ("pune", "Pune", "Maharashtra, India",
+     ["Hinjawadi", "Kharadi & EON IT Park", "Magarpatta", "Baner-Balewadi", "Senapati Bapat Road"],
+     ["IT & GCCs", "automotive & manufacturing", "engineering R&D", "fintech", "education"],
+     "Pune pairs engineering depth with a young, fast-learning workforce — ideal conditions for Claude "
+     "adoption. From Hinjawadi campuses to auto R&D centres, our workshops turn that talent into an "
+     "AI-first operation."),
+    ("hyderabad", "Hyderabad", "Telangana, India",
+     ["HITEC City", "Gachibowli", "Financial District", "Madhapur", "Banjara Hills"],
+     ["IT services & GCCs", "pharma & life sciences", "aerospace", "startups", "real estate"],
+     "Hyderabad's HITEC City hosts some of the world's largest capability centres, and its pharma corridor "
+     "leads the globe. We train both — engineering floors and lab-adjacent business teams — to put Claude "
+     "to work on their real pipelines."),
+    ("chennai", "Chennai", "Tamil Nadu, India",
+     ["OMR IT Corridor", "Tidel Park", "Guindy", "T. Nagar", "Ambattur"],
+     ["automotive & manufacturing", "IT services & SaaS", "healthcare", "banking back-offices", "port & logistics"],
+     "Chennai builds things that last — cars, software, SaaS companies — with discipline that rewards good "
+     "tooling. Our Claude workshops give OMR tech teams and manufacturing leaders a rigorous, hands-on "
+     "path to AI fluency."),
+    ("kolkata", "Kolkata", "West Bengal, India",
+     ["Salt Lake Sector V", "New Town & Rajarhat", "Park Street & CBD"],
+     ["IT services", "BFSI", "manufacturing & steel", "FMCG", "education"],
+     "Kolkata's enterprises combine institutional depth with a new wave of tech energy in Sector V and New "
+     "Town. We train banks, manufacturers and IT teams to bring Claude into everyday work — practically "
+     "and confidently."),
+    ("ahmedabad", "Ahmedabad", "Gujarat, India",
+     ["SG Highway", "GIFT City (Gandhinagar)", "Prahlad Nagar", "Ashram Road"],
+     ["pharma", "chemicals & manufacturing", "textiles", "fintech & GIFT City", "infrastructure"],
+     "Gujarat's commercial capital moves with famous speed, and GIFT City is pulling global finance next "
+     "door. We train Ahmedabad's pharma, manufacturing and finance teams to convert Claude into throughput."),
+    ("gurgaon", "Gurgaon", "Haryana, India",
+     ["Cyber City", "Golf Course Road", "Udyog Vihar", "Sohna Road"],
+     ["GCCs & consulting", "fintech", "e-commerce", "automotive (Manesar)", "media & ad tech"],
+     "Gurgaon is corporate India's fastest lane — Cyber City towers full of GCCs, consultancies and "
+     "unicorns. Our Claude workshops match that intensity: high-tempo, hands-on and aimed straight at "
+     "billable output."),
+    ("noida", "Noida", "Uttar Pradesh, India",
+     ["Sector 62", "Noida Expressway (Sector 125–142)", "Film City", "Greater Noida"],
+     ["IT & BPO", "media & broadcasting", "electronics manufacturing", "edtech", "startups"],
+     "Noida's mix of IT campuses, newsrooms and electronics plants makes it one of NCR's most versatile "
+     "talent bases. We train those teams — from broadcasters to BPOs — to make Claude a daily instrument."),
+]
+
+CITIES = {
+    slug: {"name": name, "country": "india", "state": state, "areas": areas, "industries": inds, "intro": intro}
+    for slug, name, state, areas, inds, intro in _CITY_ROWS
+}
+CITY_ORDER = [r[0] for r in _CITY_ROWS]
 
 # Models: slug, name, tagline, family, best_for(list), body paragraphs, use_cases
 MODELS = {
@@ -128,7 +420,55 @@ MODELS = {
             ("Agents", "Orchestrate multi-step tasks with tools, memory and self-checking."),
         ],
     },
+    "claude-sonnet-5": {
+        "name": "Claude Sonnet 5",
+        "tag": "The balanced workhorse — frontier intelligence at everyday speed and cost.",
+        "family": "Claude family (balanced tier)",
+        "best_for": [
+            "The default for most day-to-day knowledge work",
+            "Strong coding, writing and analysis at scale",
+            "Team-wide rollouts where cost and speed both matter",
+            "Production workloads on the Claude API",
+        ],
+        "body": [
+            "Claude Sonnet 5 is the model most teams should live in: near-flagship intelligence with the "
+            "speed and economics that make all-day, every-day use sensible. Drafting, analysis, coding, "
+            "customer work — Sonnet handles the bulk of real business tasks brilliantly.",
+            "In training we make Sonnet the home base and teach the escalation path: when a task deserves "
+            "Opus-level depth, and when Haiku's speed wins. That judgement is what separates power users "
+            "from passengers.",
+        ],
+        "use_cases": [
+            ("Everyday drafting", "Emails, briefs, reports and content — fast and consistently good."),
+            ("Coding", "Feature work, refactors and reviews at excellent speed-to-quality."),
+            ("Analysis", "Spreadsheets, documents and dashboards explained and interrogated."),
+        ],
+    },
+    "claude-haiku-4-5": {
+        "name": "Claude Haiku 4.5",
+        "tag": "The fast, economical model — near-frontier quality at real-time speed.",
+        "family": "Claude family (speed tier)",
+        "best_for": [
+            "High-volume and real-time workloads",
+            "Classification, extraction and routing",
+            "Customer-facing assistants where latency matters",
+            "Cost-sensitive API deployments at scale",
+        ],
+        "body": [
+            "Claude Haiku 4.5 delivers a remarkable share of frontier capability at a fraction of the cost "
+            "and latency. For high-volume work — support triage, document extraction, real-time assistance — "
+            "it is often the smartest choice, not the compromise.",
+            "In training we show teams where Haiku genuinely suffices (more often than most expect) and how "
+            "pairing it with Sonnet and Opus builds workflows that are both excellent and economical.",
+        ],
+        "use_cases": [
+            ("Support & service", "Fast, on-brand responses and intelligent triage at volume."),
+            ("Data extraction", "Pull structure out of documents, forms and messages at scale."),
+            ("Real-time apps", "Low-latency assistants and in-product AI features."),
+        ],
+    },
 }
+MODEL_ORDER = ["claude-opus-4-8", "claude-sonnet-5", "claude-haiku-4-5"]
 
 # Products: slug, name, tagline, who, body paragraphs, curriculum(list)
 PRODUCTS = {
@@ -151,13 +491,108 @@ PRODUCTS = {
             "Team workflows: PRs, CI and guardrails for rolling it out",
         ],
     },
+    "claude-apps": {
+        "name": "Claude Apps",
+        "tag": "Claude on web, desktop and mobile — the everyday home for AI-powered work.",
+        "who": "Every professional, from first-time users to daily power users",
+        "body": [
+            "The Claude apps at claude.ai (plus desktop and mobile) are where most people meet Claude: chat "
+            "with files, images and voice; search-connected answers; and the full model family in one place.",
+            "Our training turns casual chatting into a working method — how to brief Claude like a brilliant "
+            "colleague, structure multi-step tasks, use files well, and build personal workflows that save "
+            "hours every week.",
+        ],
+        "curriculum": [
+            "The prompting method: context, task, format, iteration",
+            "Working with documents, spreadsheets and images",
+            "Long conversations, memory and when to start fresh",
+            "Choosing the right model for the task at hand",
+            "Personal workflow design: your top 10 tasks, systematised",
+        ],
+    },
+    "claude-projects": {
+        "name": "Claude Projects",
+        "tag": "Shared context for a team's recurring work — knowledge, instructions and files in one place.",
+        "who": "Teams and functions with recurring, standardisable work",
+        "body": [
+            "Projects give Claude durable context: brand guidelines, SOPs, product docs, tone of voice — set "
+            "once, used by everyone. The result is consistent, on-standard output across an entire team.",
+            "We train teams to design Projects properly: what knowledge to load, how to write project "
+            "instructions that hold, and how to turn one team's best prompts into everyone's baseline.",
+        ],
+        "curriculum": [
+            "Project architecture: knowledge, instructions, conversations",
+            "Writing instructions that keep output on-standard",
+            "Building a team prompt library that compounds",
+            "Projects for functions: marketing, sales, ops, HR patterns",
+            "Governance: what belongs in a Project and what doesn't",
+        ],
+    },
+    "artifacts": {
+        "name": "Artifacts",
+        "tag": "Claude builds documents, apps and visuals in a live side panel — see work take shape.",
+        "who": "Anyone who produces documents, decks, tools or prototypes",
+        "body": [
+            "Artifacts turn Claude from a chat into a workbench: documents, interactive apps, diagrams and "
+            "dashboards built live beside the conversation, edited in place, shared in a click.",
+            "We train teams to think in artifacts — briefs that become documents, ideas that become working "
+            "prototypes, data that becomes an interactive view — collapsing the gap between asking and having.",
+        ],
+        "curriculum": [
+            "From prompt to polished document in one thread",
+            "Interactive artifacts: calculators, mini-apps and visualisations",
+            "Iterating in place: targeted edits without starting over",
+            "Sharing and reusing artifacts across the team",
+            "When to use Artifacts vs Projects vs Claude Code",
+        ],
+    },
+    "claude-for-work": {
+        "name": "Claude for Work",
+        "tag": "Team and Enterprise plans — admin, security and collaboration for org-wide rollout.",
+        "who": "IT, L&D and leadership teams rolling Claude out across an organisation",
+        "body": [
+            "Claude for Work brings the capability under organisational control: central billing, admin and "
+            "user management, enterprise-grade security, and shared Projects that make good practice the "
+            "default.",
+            "Our training pairs the rollout with capability: we help IT and L&D design the deployment — "
+            "seats, guardrails, champions — and then train the workforce so the licences actually get used.",
+        ],
+        "curriculum": [
+            "Plan design: Team vs Enterprise, seats and structure",
+            "Security, data handling and admin controls",
+            "Governance: acceptable-use guardrails people actually follow",
+            "Shared Projects as your org's operating layer",
+            "Adoption programme: champions, cohorts and measurement",
+        ],
+    },
+    "developer-platform": {
+        "name": "Claude API & MCP",
+        "tag": "The developer platform — build Claude into your own products, tools and agents.",
+        "who": "Engineering and product teams building with the Claude API",
+        "body": [
+            "The Claude Developer Platform is how Claude becomes part of your product: the API and SDKs, "
+            "tool use, structured outputs, and the Model Context Protocol (MCP) — the open standard that "
+            "connects AI to your systems and data.",
+            "We train engineering teams from first API call to production agents: prompt design as "
+            "engineering, tool-calling patterns, MCP servers for your internal systems, evaluation and cost "
+            "control.",
+        ],
+        "curriculum": [
+            "Claude API fundamentals: messages, models, streaming",
+            "Tool use and structured outputs that hold in production",
+            "MCP: connecting Claude to your tools, data and services",
+            "Agent patterns: planning, memory, guardrails, evaluation",
+            "Cost, latency and model-mix engineering",
+        ],
+    },
 }
+PRODUCT_ORDER = ["claude-apps", "claude-projects", "artifacts", "claude-code", "claude-for-work", "developer-platform"]
 
 # What is live this build (only these are generated + linked)
-LIVE_COUNTRIES = ["india"]
-LIVE_CITIES = ["mumbai"]
-LIVE_MODELS = ["claude-opus-4-8"]
-LIVE_PRODUCTS = ["claude-code"]
+LIVE_COUNTRIES = COUNTRY_ORDER
+LIVE_CITIES = CITY_ORDER
+LIVE_MODELS = MODEL_ORDER
+LIVE_PRODUCTS = PRODUCT_ORDER
 
 # ---------------------------------------------------------------------------
 # URL helpers (pretty URLs via folder/index.html; relative for portability)
@@ -166,6 +601,7 @@ def country_path(slug):  return f"/claude-ai-trainer-in-{slug}/"
 def city_path(slug):     return f"/claude-ai-trainer-in-{slug}/"
 def model_path(slug):    return f"/claude-models/{slug}/"
 def product_path(slug):  return f"/claude-products/{slug}/"
+def program_path(slug):  return f"/programs/{slug}/"
 
 def rel(from_url, to_url):
     """Root-relative links work fine on Pages + custom domain; keep them simple."""
@@ -177,11 +613,13 @@ def esc(s): return html.escape(s, quote=True)
 # Shared chrome
 # ---------------------------------------------------------------------------
 def nav_links():
-    items = [("/", "Home")]
-    if LIVE_COUNTRIES: items.append(("/#locations", "Locations"))
-    if LIVE_MODELS:    items.append(("/claude-models/", "Claude models"))
-    if LIVE_PRODUCTS:  items.append(("/claude-products/", "Claude products"))
-    return items
+    return [
+        ("/", "Home"),
+        ("/programs/", "Programs"),
+        ("/claude-models/", "Models"),
+        ("/claude-products/", "Products"),
+        ("/locations/", "Locations"),
+    ]
 
 def header(active=""):
     def link(h, t):
@@ -205,13 +643,16 @@ def footer():
         lis = "".join(f'<li><a href="{esc(u)}">{esc(t)}</a></li>' for u, t in links)
         return f'<div class="foot-col"><h3>{esc(title)}</h3><ul>{lis}</ul></div>'
 
-    loc_links = [(country_path(s), f"Claude AI Trainer in {COUNTRIES[s]['name']}") for s in LIVE_COUNTRIES]
-    loc_links += [(city_path(s), f"Claude AI Trainer in {CITIES[s]['name']}") for s in LIVE_CITIES]
+    prog_links = [("/programs/", "All programs")] + [(program_path(s), PROGRAMS[s]["name"]) for s in PROGRAM_ORDER]
     model_links = [("/claude-models/", "All Claude models")] + [(model_path(s), MODELS[s]["name"]) for s in LIVE_MODELS]
     prod_links = [("/claude-products/", "All Claude products")] + [(product_path(s), PRODUCTS[s]["name"]) for s in LIVE_PRODUCTS]
-    company = [("/", "Home"), ("/#programs", "Programs"), ("/#formats", "Formats"), ("/#contact", "Book a workshop")]
+    loc_links = [("/locations/", "All locations")]
+    loc_links += [(country_path(s), COUNTRIES[s]["name"]) for s in ["india", "uae", "usa", "uk", "singapore"]]
+    loc_links += [(city_path(s), CITIES[s]["name"]) for s in ["mumbai", "delhi-ncr", "bengaluru"]]
+    company = [("/", "Home"), ("/#what-is-claude", "What is Claude"), ("/#formats", "Formats"), ("/#contact", "Book a workshop")]
 
-    cols = col("Locations", loc_links) + col("Claude models", model_links) + col("Claude products", prod_links) + col("Company", company)
+    cols = (col("Programs", prog_links) + col("Claude models", model_links) +
+            col("Claude products", prod_links) + col("Locations", loc_links) + col("Company", company))
     return f"""
 <footer class="site-foot">
   <div class="wrap">
@@ -381,11 +822,15 @@ def related(exclude_url=""):
             f'<li><a href="{esc(u)}">{esc(t)}</a></li>' for u, t in pairs if u != exclude_url
         )
         return f'<div class="rel-col"><h3>{esc(title)}</h3><ul>{lis}</ul></div>' if lis else ""
-    locs = [(country_path(s), f"Claude AI Trainer in {COUNTRIES[s]['name']}") for s in LIVE_COUNTRIES]
-    locs += [(city_path(s), f"Claude AI Trainer in {CITIES[s]['name']}") for s in LIVE_CITIES]
+    locs = [("/locations/", "All locations")]
+    locs += [(country_path(s), f"Claude AI Trainer in {COUNTRIES[s]['name']}")
+             for s in ["india", "uae", "usa", "uk", "singapore"]]
+    locs += [(city_path(s), f"Claude AI Trainer in {CITIES[s]['name']}") for s in ["mumbai", "bengaluru"]]
+    progs = [(program_path(s), PROGRAMS[s]["name"]) for s in PROGRAM_ORDER]
     mods = [(model_path(s), f"{MODELS[s]['name']} training") for s in LIVE_MODELS]
     prods = [(product_path(s), f"{PRODUCTS[s]['name']} training") for s in LIVE_PRODUCTS]
-    cols = links("Locations", locs) + links("Claude models", mods) + links("Claude products", prods)
+    cols = (links("Programs", progs) + links("Claude models", mods) +
+            links("Claude products", prods) + links("Locations", locs))
     return f"""
 <section class="related" aria-label="Explore more">
   <div class="wrap">
@@ -430,26 +875,28 @@ def steps_html(steps):
 
 def offerings_html():
     cards = []
-    for name, badge, desc, points, flagship in OFFERINGS:
-        lis = "".join(f"<li>{esc(p)}</li>" for p in points)
-        cls = "offer-card flagship" if flagship else "offer-card"
+    for slug in PROGRAM_ORDER:
+        p = PROGRAMS[slug]
+        lis = "".join(f"<li>{esc(x)}</li>" for x in p["includes"][:3])
+        cls = "offer-card flagship" if p["flagship"] else "offer-card"
         cards.append(
             f'<article class="{cls}">'
-            f'<span class="offer-badge">{esc(badge)}</span>'
-            f'<h3>{esc(name)}</h3><p>{esc(desc)}</p>'
+            f'<span class="offer-badge">{esc(p["badge"])}</span>'
+            f'<h3><a href="{esc(program_path(slug))}">{esc(p["name"])}</a></h3><p>{esc(p["tag"])}</p>'
             f'<ul class="ticks">{lis}</ul>'
-            f'<a class="offer-link" href="#contact">Enquire →</a>'
+            f'<a class="offer-link" href="{esc(program_path(slug))}">Explore program →</a>'
             f'</article>'
         )
     return f'<div class="offer-grid">{"".join(cards)}</div>'
 
-def chips_html(names, live_map=None):
+def chips_html(names, live_map=None, highlight=()):
     """Render location chips. live_map: name -> url for chips that have real pages."""
     live_map = live_map or {}
     out = []
     for n in names:
         if n in live_map:
-            out.append(f'<a class="chip live" href="{esc(live_map[n])}">{esc(n)}</a>')
+            cls = "chip live" if n in highlight else "chip"
+            out.append(f'<a class="{cls}" href="{esc(live_map[n])}">{esc(n)}</a>')
         else:
             out.append(f'<a class="chip" href="#contact" title="Enquire about {esc(n)}">{esc(n)}</a>')
     return f'<div class="chip-grid">{"".join(out)}</div>'
@@ -517,44 +964,167 @@ WHY_TRAIN = [
     ("Change that sticks", "Reusable Projects, prompt libraries and follow-up so the habit outlasts the workshop."),
 ]
 
-# Offerings — the productised programs
-OFFERINGS = [
-    ("Corporate Training", "Flagship",
-     "Fully customised Claude workshops for your teams — on-site or online, built from your real work, tools and industry.",
-     ["Half-day to 2-day formats", "Function-specific playbooks", "Rollout guardrails included"], True),
-    ("Claude Masterclass", "2 hours",
-     "A high-energy, live masterclass that takes a room from curious to confident — the fastest introduction to Claude done right.",
-     ["Live demos on real tasks", "Prompting method that sticks", "Perfect town-hall or offsite session"], False),
-    ("Claude for CXOs", "Executive",
-     "A focused briefing for CEOs, CXOs and boards: where Claude creates leverage, what to govern, and how to lead an AI-first org.",
-     ["Strategy, risk & ROI lens", "Peer examples from 400+ enterprises", "90-minute or half-day"], False),
-    ("Open Batches", "Individuals",
-     "Public cohorts for professionals and small teams — join the next live online batch and learn alongside peers.",
-     ["Live, hands-on sessions", "Certificate of completion", "New batches every month"], False),
-    ("Claude Code Bootcamp", "Engineering",
-     "A deep, practice-heavy immersion for engineering and data teams — from first agentic task to shipping with Claude Code daily.",
-     ["Real repo, real tickets", "Agent workflows & MCP", "1–2 day intensive"], False),
-    ("AI Champions Program", "Train-the-trainer",
-     "We train your internal champions to keep the adoption compounding — curriculum, coaching and certification included.",
-     ["Build in-house expertise", "Ready-made curriculum", "Quarterly refreshers"], False),
-]
-
-# All target countries (chips on home; dedicated pages roll out over time)
-ALL_COUNTRIES = [
-    "India", "UAE", "US", "UK", "Singapore", "Canada", "Germany", "France",
-    "Switzerland", "Japan", "Saudi Arabia", "Hong Kong", "China", "Taiwan",
-    "Indonesia", "Vietnam", "Philippines", "Sri Lanka", "Nepal", "Uzbekistan",
-    "Italy", "Spain", "Sweden", "Denmark", "Finland", "Austria", "Poland",
-    "Romania", "Greece", "Turkey", "Russia", "Egypt", "Morocco", "Tunisia",
-    "Kenya", "Brazil", "Argentina", "Mexico", "Colombia", "Peru", "Ecuador",
-    "Bolivia", "Costa Rica", "New Zealand",
-]
-
-# Major Indian cities (chips on home)
-INDIA_METROS = [
-    "Mumbai", "Delhi NCR", "Bengaluru", "Pune", "Hyderabad",
-    "Chennai", "Kolkata", "Ahmedabad", "Gurgaon", "Noida",
-]
+# Programs — the productised offerings (each gets its own page)
+PROGRAMS = {
+    "corporate-training": {
+        "name": "Corporate Training", "badge": "Flagship", "flagship": True,
+        "duration": "Half-day to 2-day · on-site or online",
+        "tag": "Fully customised Claude workshops for your teams — on-site or online, built from your real work, tools and industry.",
+        "who": "Teams and departments at enterprises and growing companies",
+        "body": [
+            "Our flagship engagement: a Claude workshop designed around your organisation — your industry, "
+            "your tools, your actual documents and workflows. No generic demos; from the first exercise, "
+            "your people work on their own tasks with Claude, coached live.",
+            "We scope the cohort by function and seniority, build the examples from your world, and leave "
+            "behind the infrastructure of adoption: shared Projects, prompt libraries and guardrails.",
+        ],
+        "includes": [
+            "Pre-workshop scoping call and curriculum tailoring",
+            "Hands-on delivery for up to multiple cohorts",
+            "Function-specific playbooks and prompt libraries",
+            "Shared Claude Projects set up for your teams",
+            "Rollout guardrails and post-workshop support",
+        ],
+        "outcomes": [
+            "Teams using Claude on real work from day one",
+            "A common prompting method across the organisation",
+            "Documented playbooks per function",
+            "Clear, safe usage guardrails",
+        ],
+    },
+    "claude-masterclass": {
+        "name": "Claude Masterclass", "badge": "2 hours", "flagship": False,
+        "duration": "2 hours · in-person or live online",
+        "tag": "A high-energy, live masterclass that takes a room from curious to confident — the fastest introduction to Claude done right.",
+        "who": "All-hands audiences, offsites, leadership town halls, conferences",
+        "body": [
+            "Two hours that change how a room thinks about AI. The Claude Masterclass is a live, demo-driven "
+            "session that shows exactly what Claude can do on real business tasks — and hands the audience a "
+            "prompting method they can use the same afternoon.",
+            "It's the ideal opener: energising for an offsite or town hall, and the proven first step before "
+            "a deeper corporate programme.",
+        ],
+        "includes": [
+            "Live demos on tasks from your industry",
+            "The TAGS-style contextual prompting method, taught simply",
+            "Interactive audience exercises",
+            "Q&A tuned to your organisation's questions",
+            "Take-home quick-reference prompt guide",
+        ],
+        "outcomes": [
+            "A shared, accurate mental model of Claude",
+            "Immediate hands-on confidence",
+            "Energy and pull for deeper adoption",
+            "A clear next-step roadmap",
+        ],
+    },
+    "claude-for-cxos": {
+        "name": "Claude for CXOs", "badge": "Executive", "flagship": False,
+        "duration": "90 minutes or half-day · boardroom or virtual",
+        "tag": "A focused briefing for CEOs, CXOs and boards: where Claude creates leverage, what to govern, and how to lead an AI-first org.",
+        "who": "CEOs, CXOs, boards and senior leadership teams",
+        "body": [
+            "Leaders don't need to become prompt engineers — they need judgement: where AI creates real "
+            "leverage in their business, what to govern, what to fund and what to ignore. This briefing "
+            "delivers exactly that, drawn from work with 400+ enterprises.",
+            "It's candid, hype-free and hands-on enough that every leader leaves having used Claude on a "
+            "real leadership task — strategy, review, communication — themselves.",
+        ],
+        "includes": [
+            "Executive-level view of the Claude platform and model family",
+            "Where AI is creating P&L impact — peer examples",
+            "Governance, risk and data framework for AI at work",
+            "Hands-on: each leader works a real task with Claude",
+            "An adoption roadmap for the organisation",
+        ],
+        "outcomes": [
+            "Aligned leadership view of AI opportunity and risk",
+            "A governance posture you can defend",
+            "Personal fluency at the top",
+            "A funded, sequenced adoption plan",
+        ],
+    },
+    "open-batches": {
+        "name": "Open Batches", "badge": "Individuals", "flagship": False,
+        "duration": "Live online cohorts · new batches monthly",
+        "tag": "Public cohorts for professionals and small teams — join the next live online batch and learn alongside peers.",
+        "who": "Individual professionals, freelancers and small teams",
+        "body": [
+            "Not every learner comes with an enterprise behind them. Open Batches bring the same hands-on "
+            "Claude curriculum to public cohorts — live online sessions where you learn alongside peers from "
+            "across industries and geographies.",
+            "Expect the same method as our corporate work: real tasks, live coaching, and a personal workflow "
+            "you leave actually using.",
+        ],
+        "includes": [
+            "Live online, hands-on sessions (not recordings)",
+            "The complete prompting and Projects curriculum",
+            "Personal workflow design for your own role",
+            "Certificate of completion",
+            "Alumni community and resources",
+        ],
+        "outcomes": [
+            "Daily, confident Claude use in your own work",
+            "A portfolio of reusable prompts and Projects",
+            "A certificate that signals real capability",
+            "Peers to keep learning with",
+        ],
+    },
+    "claude-code-bootcamp": {
+        "name": "Claude Code Bootcamp", "badge": "Engineering", "flagship": False,
+        "duration": "1–2 day intensive · on-site or online",
+        "tag": "A deep, practice-heavy immersion for engineering and data teams — from first agentic task to shipping with Claude Code daily.",
+        "who": "Software engineers, data teams and technical leaders",
+        "body": [
+            "This is the deep end: a practice-heavy bootcamp where engineering teams work in their own "
+            "repositories with Claude Code — scoping agent tasks, steering multi-file changes, wiring up "
+            "MCP tools and keeping quality high under review.",
+            "Teams leave with working conventions — how to brief the agent, when to plan vs act, how to keep "
+            "changes reviewable — and the confidence to make agentic coding the default, not the demo.",
+        ],
+        "includes": [
+            "Setup, permissions and safe defaults on a real repo",
+            "Agentic workflows: scoping, planning, steering, review",
+            "Project context, custom commands and MCP integration",
+            "Team conventions for PRs, CI and quality gates",
+            "Real tickets shipped during the bootcamp",
+        ],
+        "outcomes": [
+            "Engineers shipping with Claude Code daily",
+            "Team conventions that keep quality high",
+            "Measurable cycle-time improvement",
+            "An internal playbook for agentic development",
+        ],
+    },
+    "ai-champions-program": {
+        "name": "AI Champions Program", "badge": "Train-the-trainer", "flagship": False,
+        "duration": "Multi-week program · cohort-based",
+        "tag": "We train your internal champions to keep the adoption compounding — curriculum, coaching and certification included.",
+        "who": "L&D teams and organisations building durable in-house AI capability",
+        "body": [
+            "External training starts the fire; internal champions keep it burning. This program selects and "
+            "develops your own people into certified Claude champions — equipped with our curriculum, "
+            "coaching techniques and refresh cadence.",
+            "It's how adoption survives attrition, reorgs and the next model release: capability that lives "
+            "inside your organisation, not in a vendor's calendar.",
+        ],
+        "includes": [
+            "Champion selection framework and cohort design",
+            "Deep-dive training beyond the standard curriculum",
+            "Teach-back practice with live coaching",
+            "Ready-to-run internal workshop materials",
+            "Certification and quarterly refreshers",
+        ],
+        "outcomes": [
+            "A certified internal training bench",
+            "Self-sustaining adoption rhythm",
+            "Lower long-run enablement cost",
+            "A durable AI-first culture",
+        ],
+    },
+}
+PROGRAM_ORDER = ["corporate-training", "claude-masterclass", "claude-for-cxos",
+                 "open-batches", "claude-code-bootcamp", "ai-champions-program"]
 
 # How we train — methodology
 METHODOLOGY = [
@@ -574,10 +1144,10 @@ def build_home():
     desc = ("Corporate Claude AI training delivered on-site and online across India and 40+ "
             "countries. 2,00,000+ professionals trained, 400+ enterprises, 4.8/5 rating. Book a workshop.")
 
-    loc_pairs = [(country_path(s), f"Claude AI Trainer in {COUNTRIES[s]['name']}") for s in LIVE_COUNTRIES]
-    loc_pairs += [(city_path(s), f"Claude AI Trainer in {CITIES[s]['name']}") for s in LIVE_CITIES]
-    deep_pairs = [(model_path(s), f"{MODELS[s]['name']} training") for s in LIVE_MODELS]
-    deep_pairs += [(product_path(s), f"{PRODUCTS[s]['name']} training") for s in LIVE_PRODUCTS]
+    deep_pairs = [("/programs/", "All training programs"),
+                  ("/claude-models/", "All Claude models"),
+                  ("/claude-products/", "All Claude products"),
+                  ("/locations/", "All locations")]
 
     intro_html = "".join(f"<p>{esc(p)}</p>" for p in CLAUDE_INTRO)
 
@@ -624,7 +1194,10 @@ def build_home():
   </div>
 </nav>"""
 
-    live_loc = {"India": country_path("india"), "Mumbai": city_path("mumbai")}
+    live_loc = {COUNTRIES[s]["name"]: country_path(s) for s in LIVE_COUNTRIES}
+    live_loc.update({CITIES[s]["name"]: city_path(s) for s in LIVE_CITIES})
+    metro_names = [CITIES[s]["name"] for s in CITY_ORDER]
+    country_names = [COUNTRIES[s]["name"] for s in COUNTRY_ORDER]
 
     body = f"""
 <section class="hero">
@@ -731,12 +1304,12 @@ def build_home():
   <div class="wrap">
     <p class="eyebrow">Where we deliver</p>
     <h2>Claude AI training, worldwide</h2>
-    <p class="lead">On-site in 44 countries and online everywhere. Pick your location to enquire —
-      dedicated city and country pages are rolling out.</p>
+    <p class="lead">On-site in 44 countries and online everywhere. Pick your location for a dedicated
+      page on Claude AI training there.</p>
     <h3 class="chip-h">India — major cities</h3>
-    {chips_html(INDIA_METROS, live_loc)}
+    {chips_html(metro_names, live_loc)}
     <h3 class="chip-h">Countries we serve</h3>
-    {chips_html(ALL_COUNTRIES, live_loc)}
+    {chips_html(country_names, live_loc)}
     <div class="spacer"></div>
     {link_grid("Go deeper", deep_pairs, "Sample deep-dive pages — many more locations, models and products are on the way.")}
   </div>
@@ -786,6 +1359,19 @@ def build_country(slug):
   </div>
 </section>"""
 
+    siblings = [s for s in COUNTRY_ORDER if COUNTRIES[s]["region"] == d["region"] and s != slug]
+    sibling_section = ""
+    if siblings:
+        sib_map = {COUNTRIES[s]["name"]: country_path(s) for s in siblings}
+        sibling_section = f"""
+<section class="section">
+  <div class="wrap">
+    <h2>Also in {esc(d['region'])}</h2>
+    {chips_html([COUNTRIES[s]['name'] for s in siblings], sib_map)}
+    <p class="note"><a href="/locations/">See all 44 countries and India metros →</a></p>
+  </div>
+</section>"""
+
     body = f"""
 {breadcrumbs_html(trail)}
 <section class="page-hero">
@@ -812,6 +1398,7 @@ def build_country(slug):
 </section>
 
 {city_section}
+{sibling_section}
 
 <section class="section alt">
   <div class="wrap">
@@ -1075,6 +1662,136 @@ def build_product(slug):
     write(url, page(url, title, desc, body, ld, active="/claude-products/"))
 
 
+def build_programs_hub():
+    url = "/programs/"
+    title = "Claude AI Training Programs | Claude AI Trainer"
+    desc = ("Six ways to bring Claude into your organisation — corporate training, masterclass, CXO "
+            "briefings, open batches, Claude Code bootcamp and AI champions. Compare programs and book.")
+    trail = [("Home", "/"), ("Programs", url)]
+    body = f"""
+{breadcrumbs_html(trail)}
+<section class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow">Our offerings</p>
+    <h1>Claude AI training programs</h1>
+    <p class="lead">From a two-hour masterclass to a company-wide capability build — pick the program that
+      fits where your organisation is on the AI curve.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    {offerings_html()}
+  </div>
+</section>
+{clients_strip()}
+{related(exclude_url=url)}
+{cta("Not sure which program fits? Ask us")}
+"""
+    ld = [org_ld(), breadcrumb_ld(trail)]
+    write(url, page(url, title, desc, body, ld, active="/programs/"))
+
+
+def build_program(slug):
+    d = PROGRAMS[slug]
+    url = program_path(slug)
+    name = d["name"]
+    title = f"{name} — Claude AI Training | Claude AI Trainer"
+    desc = f"{d['tag']} {d['duration']}. Delivered by trainers behind 2,00,000+ professionals. Book now."
+    trail = [("Home", "/"), ("Programs", "/programs/"), (name, url)]
+
+    bodyp = "".join(f"<p>{esc(p)}</p>" for p in d["body"])
+    includes = "".join(f"<li>{esc(x)}</li>" for x in d["includes"])
+    outcomes = "".join(f"<li>{esc(x)}</li>" for x in d["outcomes"])
+    faqs = [
+        (f"Who is {name} for?", esc(d["who"]) + "."),
+        ("How long does it take?", esc(d["duration"]) + "."),
+        ("Is it customised to us?",
+         "Yes — every engagement starts with a scoping call, and examples are built from your industry and "
+         "workflows. See <a href='/#how'>how our workshops work</a>."),
+        ("What does it cost?",
+         "Engagements are scoped to your headcount and goals; indicative range ₹50,000–₹3,00,000+ per "
+         "engagement. We send a fixed proposal after a short call."),
+    ]
+    body = f"""
+{breadcrumbs_html(trail)}
+<section class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow">{esc(d['badge'])} · {esc(d['duration'])}</p>
+    <h1>{esc(name)}</h1>
+    <p class="lead">{esc(d['tag'])}</p>
+    <div class="hero-actions">
+      <a class="btn btn-lg btn-glow" href="#contact">Book {esc(name)}</a>
+      <a class="btn btn-lg btn-ghost" href="/programs/">Compare all programs</a>
+    </div>
+  </div>
+</section>
+{stats_bar()}
+<section class="section">
+  <div class="wrap narrow prose">
+    <h2>About this program</h2>
+    {bodyp}
+    <h3>What's included</h3>
+    <ul class="ticks">{includes}</ul>
+    <h3>Outcomes you can expect</h3>
+    <ul class="ticks">{outcomes}</ul>
+    <p><b>Who it's for:</b> {esc(d['who'])}.</p>
+  </div>
+</section>
+{clients_strip()}
+{faq_block(faqs)}
+{related(exclude_url=url)}
+{cta(f"Bring {name} to your organisation")}
+"""
+    ld = [org_ld(), breadcrumb_ld(trail),
+          service_ld(name, desc, url), course_ld(name, desc, url), faq_ld(faqs)]
+    write(url, page(url, title, desc, body, ld, active="/programs/"))
+
+
+def build_locations_hub():
+    url = "/locations/"
+    title = "Claude AI Training Locations — 44 Countries & India Metros | Claude AI Trainer"
+    desc = ("Find Claude AI training near you: dedicated pages for 44 countries and every major Indian "
+            "metro. On-site and online corporate workshops. Pick your location.")
+    trail = [("Home", "/"), ("Locations", url)]
+    live_loc = {COUNTRIES[s]["name"]: country_path(s) for s in LIVE_COUNTRIES}
+    live_loc.update({CITIES[s]["name"]: city_path(s) for s in LIVE_CITIES})
+    metro_names = [CITIES[s]["name"] for s in CITY_ORDER]
+
+    # group countries by region for a structured hub
+    regions = {}
+    for s in COUNTRY_ORDER:
+        regions.setdefault(COUNTRIES[s]["region"], []).append(COUNTRIES[s]["name"])
+    region_blocks = "".join(
+        f'<h3 class="chip-h">{esc(region)}</h3>{chips_html(names, live_loc)}'
+        for region, names in regions.items()
+    )
+    body = f"""
+{breadcrumbs_html(trail)}
+<section class="page-hero">
+  <div class="wrap">
+    <p class="eyebrow">Where we deliver</p>
+    <h1>Claude AI training locations</h1>
+    <p class="lead">On-site workshops in 44 countries and across every major Indian metro — and live online
+      everywhere. Every location below has a dedicated page.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="wrap">
+    <h2>India — major cities</h2>
+    {chips_html(metro_names, live_loc)}
+    <div class="spacer"></div>
+    <h2>Countries</h2>
+    {region_blocks}
+  </div>
+</section>
+{stats_bar()}
+{related(exclude_url=url)}
+{cta("Book Claude AI training in your city")}
+"""
+    ld = [org_ld(), breadcrumb_ld(trail)]
+    write(url, page(url, title, desc, body, ld, active="/locations/"))
+
+
 # ---------------------------------------------------------------------------
 # Output plumbing
 # ---------------------------------------------------------------------------
@@ -1331,7 +2048,7 @@ p{color:var(--ink-2)}
 /* related */
 .related{padding:56px 0;border-top:1px solid var(--line)}
 .rel-h{margin-bottom:20px}
-.rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.rel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px}
 .rel-col h3{font-family:var(--sans);font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
 .rel-col ul{list-style:none;margin-top:10px}
 .rel-col li{margin:.4em 0}
@@ -1350,7 +2067,7 @@ p{color:var(--ink-2)}
 /* footer */
 .site-foot{background:var(--ink);color:#C9BEB2;padding:52px 0 30px}
 @media (prefers-color-scheme:dark){.site-foot{background:#141310}}
-.foot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-bottom:30px}
+.foot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:24px;margin-bottom:30px}
 .foot-col h3{color:#fff;font-family:var(--sans);font-size:.8rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
 .foot-col ul{list-style:none}
 .foot-col li{margin:.4em 0}
@@ -1431,12 +2148,15 @@ def main():
         shutil.rmtree(OUT)
     os.makedirs(OUT, exist_ok=True)
     build_home()
+    build_locations_hub()
     for s in LIVE_COUNTRIES: build_country(s)
     for s in LIVE_CITIES:    build_city(s)
     build_models_hub()
     for s in LIVE_MODELS:    build_model(s)
     build_products_hub()
     for s in LIVE_PRODUCTS:  build_product(s)
+    build_programs_hub()
+    for s in PROGRAM_ORDER:  build_program(s)
     build_css(); build_js(); build_favicon()
     build_sitemap(); build_robots(); build_cname()
     print(f"Built {len(ALL_URLS)} pages -> {OUT}")

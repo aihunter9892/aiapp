@@ -7,10 +7,9 @@ Everything is generated from a single data-driven script, so scaling to all 44
 countries, every India metro, and every Claude model & product is just adding a
 row to a table and re-running.
 
-## What's in this first build (for review)
+## What's in this build
 
-One page of **each type**, richly interlinked, so the pattern can be approved
-before scaling:
+The complete site — 74 interlinked pages:
 
 | Type | Page | URL |
 |---|---|---|
