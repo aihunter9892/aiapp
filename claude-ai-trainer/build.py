@@ -401,6 +401,98 @@ def link_grid(title, pairs, blurb=""):
     b = f'<p class="lead">{esc(blurb)}</p>' if blurb else ""
     return f'<h2>{esc(title)}</h2>{b}<div class="link-grid">{cards}</div>'
 
+def rich_grid(items):
+    """items: (title, tag, [points]) -> cards with a heading, sub-line and bullets."""
+    out = []
+    for title, tag, points in items:
+        lis = "".join(f"<li>{esc(p)}</li>" for p in points)
+        out.append(
+            f'<article class="rich-card"><h3>{esc(title)}</h3>'
+            f'<p class="rich-tag">{esc(tag)}</p><ul class="ticks">{lis}</ul></article>'
+        )
+    return f'<div class="rich-grid">{"".join(out)}</div>'
+
+def steps_html(steps):
+    out = []
+    for i, (t, d) in enumerate(steps, 1):
+        out.append(
+            f'<li class="step"><span class="step-n">{i}</span>'
+            f'<div><h3>{esc(t)}</h3><p>{esc(d)}</p></div></li>'
+        )
+    return f'<ol class="steps">{"".join(out)}</ol>'
+
+# ---------------------------------------------------------------------------
+# Educational content — "everything about Claude" (home page)
+# ---------------------------------------------------------------------------
+CLAUDE_INTRO = [
+    "Claude is the AI assistant built by Anthropic — a family of large language models designed to be genuinely "
+    "helpful at real work while staying safe, steerable and honest. It reads and writes long documents, reasons "
+    "through hard problems, analyses data, writes and ships code, understands images and diagrams, and can use "
+    "tools to take action on your behalf.",
+    "Teams reach for Claude because it is strong where knowledge work actually lives: a large context window for "
+    "whole reports and codebases, careful reasoning you can trust on nuanced tasks, and a calm, professional voice. "
+    "But a tool is only as good as the hands using it — which is exactly what our training fixes.",
+]
+
+# Model family overview (capability-focused, current lineup)
+MODELS_OVERVIEW = [
+    ("Claude Opus 4.8", "The flagship — maximum capability.",
+     ["Deepest reasoning and analysis", "Best for hard coding and long agentic tasks",
+      "The model for high-stakes, quality-first work"]),
+    ("Claude Sonnet 5", "The balanced workhorse.",
+     ["Fast and highly capable", "The sensible default for most day-to-day work",
+      "Strong coding and writing at lower cost than Opus"]),
+    ("Claude Haiku 4.5", "The fast, economical model.",
+     ["Lowest latency and cost", "Ideal for high-volume, real-time tasks",
+      "Great for classification, extraction and support"]),
+]
+
+# Product suite overview
+PRODUCTS_OVERVIEW = [
+    ("Claude apps", "Web, desktop and mobile at claude.ai — chat, files, voice and more.",
+     ["The everyday home for Claude", "Upload docs, images and spreadsheets", "Available on every device"]),
+    ("Claude Projects", "Give Claude shared context for a team's recurring work.",
+     ["Keep knowledge, instructions and files in one place", "Consistent answers across a team",
+      "Perfect for playbooks and SOPs"]),
+    ("Artifacts", "Claude builds documents, apps and visuals in a live side panel.",
+     ["See work take shape as you go", "Edit and iterate in place", "Share the result in a click"]),
+    ("Claude Code", "Agentic coding across the terminal, IDE, desktop and web.",
+     ["Reads, writes and runs your code", "Plans and ships multi-file features", "For engineering and data teams"]),
+    ("Claude for Work", "Team and Enterprise plans with admin, security and collaboration.",
+     ["Central billing and controls", "Enterprise-grade security", "Roll Claude out across the org"]),
+    ("Developer Platform", "The Claude API plus agents and Model Context Protocol (MCP).",
+     ["Build Claude into your own products", "Connect Claude to your tools and data", "Automate real workflows"]),
+]
+
+# What Claude can do — capabilities
+CAPABILITIES = [
+    ("Write & edit", "Drafts, rewrites, briefs, emails and on-brand copy — in your voice."),
+    ("Research & summarise", "Digest long PDFs, reports and threads into clear, cited answers."),
+    ("Analyse data", "Explore spreadsheets, spot patterns and explain the numbers."),
+    ("Code & build", "From a quick script to shipping features with Claude Code."),
+    ("See & interpret", "Read screenshots, charts, diagrams and documents."),
+    ("Automate with agents", "Chain steps and tools together to finish real tasks."),
+]
+
+# Why train — benefits
+WHY_TRAIN = [
+    ("A faster ramp", "Skip months of trial and error. Your team gets to confident daily use in days, not quarters."),
+    ("Real ROI on AI spend", "Licences are only worth it if people use them well. We turn seats into productivity."),
+    ("Safe, governed adoption", "Clear guardrails on what to share, what to check, and where AI does and doesn't belong."),
+    ("Consistent practice", "Everyone learns the same methods and templates, so quality is even across the team."),
+    ("Function-specific playbooks", "Marketing, sales, engineering, ops and HR each leave with prompts for their own work."),
+    ("Change that sticks", "Reusable Projects, prompt libraries and follow-up so the habit outlasts the workshop."),
+]
+
+# How we train — methodology
+METHODOLOGY = [
+    ("Scope", "A short call to understand your teams, tools, data and goals."),
+    ("Tailor", "We build every example from your real work and industry — no generic demos."),
+    ("Train", "Hands-on from minute one: your people do their own tasks with Claude, coached live."),
+    ("Embed", "They leave with Projects, prompt templates and guardrails ready to use tomorrow."),
+    ("Support", "Follow-up resources and office hours so the adoption keeps compounding."),
+]
+
 # ---------------------------------------------------------------------------
 # PAGE BUILDERS
 # ---------------------------------------------------------------------------
@@ -412,55 +504,133 @@ def build_home():
 
     loc_pairs = [(country_path(s), f"Claude AI Trainer in {COUNTRIES[s]['name']}") for s in LIVE_COUNTRIES]
     loc_pairs += [(city_path(s), f"Claude AI Trainer in {CITIES[s]['name']}") for s in LIVE_CITIES]
-    model_pairs = [(model_path(s), f"{MODELS[s]['name']}") for s in LIVE_MODELS]
-    prod_pairs = [(product_path(s), f"{PRODUCTS[s]['name']}") for s in LIVE_PRODUCTS]
+    deep_pairs = [(model_path(s), f"{MODELS[s]['name']} training") for s in LIVE_MODELS]
+    deep_pairs += [(product_path(s), f"{PRODUCTS[s]['name']} training") for s in LIVE_PRODUCTS]
+
+    intro_html = "".join(f"<p>{esc(p)}</p>" for p in CLAUDE_INTRO)
 
     faqs = [
+        ("What is Claude?",
+         "Claude is Anthropic's AI assistant — a family of large language models that can write, research, analyse "
+         "data, code, read images and use tools to get real work done, with a strong focus on safety and reliability. "
+         "See the <a href='#what-is-claude'>overview</a> above."),
         ("What is Claude AI training?",
-         "It's hands-on corporate training that gets your team using Anthropic's Claude on real work — "
-         "prompting, Claude Projects, Claude Code and AI agents — mapped to your industry and tools. "
-         "We deliver it on-site or online, from a 2-hour masterclass to a 2-day bootcamp."),
+         "Hands-on corporate training that gets your team using Claude on real work — prompting, Claude Projects, "
+         "Claude Code and AI agents — mapped to your industry and tools. Delivered on-site or online, from a "
+         "2-hour masterclass to a 2-day bootcamp."),
+        ("Which Claude model should we use?",
+         "It depends on the task: <b>Opus</b> for the hardest reasoning and coding, <b>Sonnet</b> as the balanced "
+         "default, <b>Haiku</b> for fast, high-volume work. Choosing well is part of what we teach — see "
+         "<a href='#models'>Claude models</a>."),
         ("Who is this for?",
-         "Leadership teams, marketing, sales, product, engineering, operations, finance and HR. "
-         "We tailor every cohort by <a href='/#programs'>role and seniority</a> so the examples are relevant."),
+         "Leadership, marketing, sales, product, engineering, operations, finance and HR. We tailor every cohort by "
+         "<a href='#programs'>role and seniority</a> so the examples are relevant."),
         ("Where do you deliver?",
          "Across India — including <a href='" + city_path('mumbai') + "'>Mumbai</a> and every major metro — "
          "and in 40+ countries worldwide, on-site or live online."),
         ("How much does it cost?",
          "Engagements typically range from ₹50,000 for a focused masterclass to ₹3,00,000+ for a multi-day, "
          "multi-team programme. We scope to your headcount and goals and send a fixed proposal."),
-        ("Which Claude models and products do you cover?",
-         "All the current ones — see our <a href='/claude-models/'>Claude models</a> and "
-         "<a href='/claude-products/'>Claude products</a> pages. Training always uses the model and tool that fits the job."),
+        ("Is our data safe?",
+         "Yes — a core part of every workshop is safe, governed use: what to share, what to verify, and where AI "
+         "does and doesn't belong. We help you set sensible guardrails for the whole organisation."),
     ]
+
+    # in-page section nav
+    section_nav = """
+<nav class="page-jump" aria-label="On this page">
+  <div class="wrap jump-inner">
+    <a href="#what-is-claude">What is Claude</a>
+    <a href="#models">Models</a>
+    <a href="#products">Products</a>
+    <a href="#capabilities">What it does</a>
+    <a href="#training">Training</a>
+    <a href="#programs">By team</a>
+    <a href="#locations">Locations</a>
+    <a href="#faq">FAQ</a>
+  </div>
+</nav>"""
 
     body = f"""
 <section class="hero">
   <div class="wrap hero-inner">
     <p class="eyebrow">Corporate Claude AI training · India &amp; 40+ countries</p>
-    <h1>Turn your team into Claude power users</h1>
-    <p class="lead">Hands-on Claude AI workshops built around the work your people actually do —
-      delivered on-site or online by trainers who have taught <b>2,00,000+ professionals</b>
-      at <b>400+ enterprises</b> across <b>16+ countries</b>.</p>
+    <h1>Everything your team needs to master Claude AI</h1>
+    <p class="lead">Claude is the AI assistant from Anthropic that writes, reasons, analyses and codes at a
+      professional level. We turn your people into confident Claude power users — hands-on, on real work,
+      delivered on-site or online by trainers who have taught <b>2,00,000+ professionals</b> at
+      <b>400+ enterprises</b> across <b>16+ countries</b>.</p>
     <div class="hero-actions">
       <a class="btn btn-lg" href="#contact">Book a workshop</a>
-      <a class="btn btn-lg btn-ghost" href="#programs">See the programs</a>
+      <a class="btn btn-lg btn-ghost" href="#what-is-claude">Learn about Claude</a>
     </div>
   </div>
 </section>
 {stats_bar()}
 {clients_strip()}
+{section_nav}
 
-<section class="section" id="programs">
+<section class="section" id="what-is-claude">
+  <div class="wrap narrow prose">
+    <p class="eyebrow">The basics</p>
+    <h2>What is Claude?</h2>
+    {intro_html}
+  </div>
+</section>
+
+<section class="section alt" id="models">
   <div class="wrap">
-    <p class="eyebrow">What we train</p>
-    <h2>Claude, mapped to every team</h2>
-    <p class="lead">One platform, many jobs. We tailor the curriculum so each function leaves with playbooks for its own work.</p>
+    <p class="eyebrow">The model family</p>
+    <h2>Meet the Claude models</h2>
+    <p class="lead">Anthropic ships a family of Claude models tuned for different jobs. Knowing which to reach
+      for — and why — is half the skill. Here's the current line-up.</p>
+    {rich_grid(MODELS_OVERVIEW)}
+    <p class="note">New models join the Claude family over time; our training always covers the current line-up
+      and how to pick the right one for each task.</p>
+  </div>
+</section>
+
+<section class="section" id="products">
+  <div class="wrap">
+    <p class="eyebrow">The product suite</p>
+    <h2>Claude is more than a chat box</h2>
+    <p class="lead">From the everyday apps to Projects, Artifacts, Claude Code and the developer platform —
+      each product unlocks a different kind of work.</p>
+    {rich_grid(PRODUCTS_OVERVIEW)}
+  </div>
+</section>
+
+<section class="section alt" id="capabilities">
+  <div class="wrap">
+    <p class="eyebrow">What Claude can do</p>
+    <h2>Six things your team will put to work on day one</h2>
+    {feature_grid(CAPABILITIES)}
+  </div>
+</section>
+
+<section class="section" id="training">
+  <div class="wrap">
+    <p class="eyebrow">Why train with us</p>
+    <h2>Owning Claude is a skill — we teach it</h2>
+    <p class="lead">Buying licences is easy. Getting real, safe, everyday value out of them is the hard part.
+      That's the gap we close.</p>
+    {feature_grid(WHY_TRAIN)}
+    <div class="spacer"></div>
+    <h2 id="how">How our workshops work</h2>
+    {steps_html(METHODOLOGY)}
+  </div>
+</section>
+
+<section class="section alt" id="programs">
+  <div class="wrap">
+    <p class="eyebrow">Tailored by team</p>
+    <h2>Claude, mapped to every function</h2>
+    <p class="lead">One platform, many jobs. Each function leaves with playbooks for its own work.</p>
     {feature_grid(ROLES)}
   </div>
 </section>
 
-<section class="section alt" id="formats">
+<section class="section" id="formats">
   <div class="wrap">
     <p class="eyebrow">How it runs</p>
     <h2>Formats that fit your calendar</h2>
@@ -468,19 +638,12 @@ def build_home():
   </div>
 </section>
 
-<section class="section" id="locations">
+<section class="section alt" id="locations">
   <div class="wrap">
     <p class="eyebrow">Where we deliver</p>
     {link_grid("Claude AI training near you", loc_pairs, "On-site across India and online worldwide. More locations are added every month.")}
-  </div>
-</section>
-
-<section class="section alt">
-  <div class="wrap">
-    <p class="eyebrow">Go deep on the platform</p>
-    {link_grid("Claude models we train on", model_pairs, "Know exactly which model to reach for — and why.")}
     <div class="spacer"></div>
-    {link_grid("Claude products we train on", prod_pairs, "From the chat apps to Claude Code and agents.")}
+    {link_grid("Go deeper", deep_pairs, "Sample deep-dive pages — many more locations, models and products are on the way.")}
   </div>
 </section>
 
@@ -966,6 +1129,27 @@ p{color:var(--ink-2)}
 .ticks{list-style:none;margin:.6em 0}
 .ticks li{padding-left:26px;position:relative;margin:.35em 0;color:var(--ink-2)}
 .ticks li:before{content:"✳";position:absolute;left:0;color:var(--coral)}
+.note{margin-top:20px;font-size:.9rem;color:var(--muted);font-style:italic}
+
+/* in-page jump nav */
+.page-jump{position:sticky;top:64px;z-index:40;background:color-mix(in srgb,var(--paper) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.jump-inner{display:flex;gap:6px;overflow-x:auto;padding:10px 22px}
+.page-jump a{white-space:nowrap;font-size:.85rem;font-weight:600;color:var(--ink-2);padding:6px 12px;border-radius:999px}
+.page-jump a:hover{background:var(--coral-soft);color:var(--coral-deep);text-decoration:none}
+
+/* rich cards (models / products) */
+.rich-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+.rich-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.rich-card h3{color:var(--ink)}
+.rich-tag{font-size:.95rem;color:var(--coral-deep);font-weight:600;margin:.15em 0 .7em}
+.rich-card .ticks li{font-size:.92rem}
+
+/* methodology steps */
+.steps{list-style:none;counter-reset:none;margin-top:24px;display:grid;gap:14px}
+.step{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.step-n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font-family:var(--serif);font-size:1.05rem}
+.step h3{margin:.1em 0 .1em}
+.step p{font-size:.95rem}
 
 /* crumbs */
 .crumbs{padding:16px 22px 0;font-size:.85rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -1015,12 +1199,13 @@ p{color:var(--ink-2)}
 .foot-base .muted{color:#8A8478;font-size:.8rem}
 
 @media(max-width:860px){
-  .grid,.link-grid,.rel-grid,.foot-grid{grid-template-columns:repeat(2,1fr)}
+  .grid,.link-grid,.rel-grid,.foot-grid,.rich-grid{grid-template-columns:repeat(2,1fr)}
   .stat-row{grid-template-columns:repeat(3,1fr);gap:18px 8px}
   .site-nav{display:none}
+  .page-jump{top:64px}
 }
 @media(max-width:520px){
-  .grid,.link-grid,.rel-grid,.foot-grid{grid-template-columns:1fr}
+  .grid,.link-grid,.rel-grid,.foot-grid,.rich-grid{grid-template-columns:1fr}
   .stat-row{grid-template-columns:repeat(2,1fr)}
 }
 """
