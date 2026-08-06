@@ -54,7 +54,9 @@ The Hyderabad agenda still says Opus 4, Sonnet 4, Haiku 3.5 while other pages sa
 **Fix:** sweep every city page for model names now, and put a quarterly refresh reminder in the calendar. Anthropic ships models faster than a yearly refresh cycle.
 
 ### Gap 4 · No pricing signal
-You don't have to publish a rate card. But total silence hands the "what does it cost" query, and the AI-engine citations for it, entirely to Farhan. A soft anchor keeps you in that conversation without boxing you in: "Half-day executive briefings start under ₹X per participant for groups of 20+; full multi-week FDE cohorts are scoped per engagement." Pick numbers you're comfortable with; the format matters more than the figure.
+You don't have to publish a rate card. But total silence hands the "what does it cost" query, and the AI-engine citations for it, entirely to Farhan. A soft anchor keeps you in that conversation without boxing you in.
+
+**Decided (Aug 2026):** hands-on workshops at ₹4,000 to ₹8,000 per participant, minimum batch of 20; briefings and FDE cohorts scoped per engagement. This is implemented on the Pune page in three places (body copy, FAQ, and Offer/PriceSpecification schema) and positions above Farhan's ₹3,500 to ₹6,000 band, which is right: the authority stack justifies the premium, and matching his price would undercut the positioning. Roll the same anchor out to every city page.
 
 ### Gap 5 · Wasted title tags
 Several pages carry the default suffix "Generative AI, Claude AI, ChatGPT, Digital Marketing Trainer". That's a site name, not a pitch, and it eats the characters where AI-LearnX puts "200K Context for BFSI & Legal".
@@ -76,7 +78,7 @@ Twelve sections, in order. Every city page uses the same skeleton; only the loca
 1. **Hero** · H1 "Claude AI Trainer in {City}", trust pill, stat cluster, dual CTA (Book a workshop / WhatsApp)
 2. **Client logo strip** · same national logos everywhere, plus any client with a {City} office
 3. **Contact form band** · above the fold on mobile scroll, keep it to 4 fields
-4. **Why {City} teams book this workshop** · the localization heart: name the business districts, the dominant industries, the specific pain. 200+ words, unique per city, never templated prose.
+4. **Why {City} teams book this workshop** · the localization heart: name the business districts, the dominant industries, the specific pain. 200+ words, unique per city, never templated prose. Go past district names down to recognisable landmarks and buildings (EON IT Park, World Trade Center Kharadi, ICC Trade Tower, the airport-to-office commute). Landmarks are what a local buyer recognises and what proves to Google the page wasn't written from a template; AI-LearnX does this and it works.
 5. **What the workshop covers** · current model family (Opus 4.6 / Sonnet 4.6 / Haiku 4.5), Projects, Agent Skills, MCP connectors, agentic AI, Claude Code track for engineering teams. Shared across cities; keep in one place editorially so a model update is one edit replicated.
 6. **{City} use cases** · 4 to 6 industry-specific scenarios mapped to that city's economy
 7. **Formats** · 60-minute exec briefing → 1-day hands-on → 2-day deep dive → multi-week FDE cohort
