@@ -1,0 +1,41 @@
+name: LinkedIn AI-training opportunity digest
+
+on:
+  schedule:
+    # 03:30 UTC = 09:00 IST every day
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: linkedin-opportunity-watch
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run unit tests
+        run: python -m unittest -v test_watch
+
+      - name: Scan last 24 hours and send digest
+        env:
+          BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          OUTPUT_DIR: out
+        run: python watch.py
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: digest
+          path: linkedin-opportunity-watch/out/
+          if-no-files-found: ignore
